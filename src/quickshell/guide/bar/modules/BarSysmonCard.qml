@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import "../../../"
 import "../../../reusables"
 import "../../../reusables/guide"
@@ -10,41 +9,20 @@ BarModuleCard {
     title: I18n.t("guide.bar.modules.sysmon", "System monitor")
     moduleId: "sysmon"
     previewSideHeight: 150
+    styles: card.tab.sysmonStyles
+    currentStyle: card.tab.sysmonStyle
+    styleSettingId: "bar_sysmon_style"
+    styleKeywords: "sysmon system monitor circle style wave ring"
+    styleIcon: "󱐋"
+    styleTitle: I18n.t("guide.bar.sysmon.style.title", "Circle style")
+    styleDescription: I18n.t("guide.bar.sysmon.style.desc", "Visual appearance of the progress rings")
+    stylesFirst: true
+    onStyleSelected: id => card.tab.setSysmonStyle(id)
 
     widgetComponent: Component {
         BarPreviewWidget {
-            property string sysmonStyle: tab.sysmonStyle
+            property string sysmonStyle: variantId !== "" ? variantId : tab.sysmonStyle
             property var sysmonStats: tab.sysmonStats
-        }
-    }
-
-    SettingsRow {
-        rootObj: card.rootObj
-        settingId: "bar_sysmon_style"
-        searchKeywords: "sysmon system monitor circle style wave ring"
-        baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
-        icon: "󱐋"
-        title: I18n.t("guide.bar.sysmon.style.title", "Circle style")
-        description: I18n.t("guide.bar.sysmon.style.desc", "Visual appearance of the progress rings")
-
-        Switch {
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            implicitWidth: rootObj.s(200)
-            implicitHeight: rootObj.s(32)
-            cornerRadius: ThemeBackend.borderRadius
-            fontPixelSize: rootObj.s(11)
-            options: [
-                I18n.t("guide.bar.sysmon.style.wave", "Wave"),
-                I18n.t("guide.bar.sysmon.style.circle", "Circle")
-            ]
-            currentIndex: card.tab.sysmonStyle === "circle" ? 1 : 0
-            accentColor: ThemeBackend.mauve
-            baseColor: ThemeBackend.surface0
-            textColor: ThemeBackend.text
-            activeTextColor: ThemeBackend.crust
-            onValueChanged: function(index, value) {
-                card.tab.setSysmonStyle(index === 1 ? "circle" : "wave");
-            }
         }
     }
 

@@ -115,6 +115,23 @@
         "title": "Tutup dengan klik kanan",
         "desc": "Tutup notifikasi dengan klik kanan"
       },
+      "timeout_low": {
+        "title": "Batas waktu urgensi rendah",
+        "desc": "Berapa lama notifikasi urgensi rendah tetap di layar"
+      },
+      "timeout_normal": {
+        "title": "Batas waktu normal",
+        "desc": "Berapa lama notifikasi biasa tetap di layar"
+      },
+      "timeout_critical": {
+        "title": "Batas waktu mendesak",
+        "desc": "Berapa lama notifikasi mendesak tetap di layar"
+      },
+      "override_timeouts": {
+        "title": "Timpa batas waktu aplikasi",
+        "desc": "Secara bawaan, nilai di atas hanya dipakai saat aplikasi tidak menetapkan batas waktunya sendiri. Aktifkan untuk selalu memakainya"
+      },
+      "timeout_never": "Tidak pernah",
       "test": "Uji notifikasi",
       "test_desc": "Ini adalah notifikasi uji coba"
     },
@@ -218,6 +235,10 @@
       "quickactions": {
         "title": "Tindakan cepat",
         "desc": "Aktifkan hamparan tindakan cepat mengambang"
+      },
+      "daily_ping": {
+        "title": "Ping harian",
+        "desc": "Kirim satu permintaan kosong per hari untuk menghitung pengguna aktif. Tidak ada data yang dilampirkan"
       },
       "location": {
         "title": "Lokasi",
@@ -364,8 +385,12 @@
             "name": {
               "pills": "Kapsul",
               "numbers": "Angka",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morf",
+              "trace": "Jejak"
+            },
+            "morph": "Bentuk ekspresif yang berubah",
+            "trace": "Simpul terhubung dengan pulsa bergerak"
           },
           "name": "Ruang kerja"
         },
@@ -384,7 +409,8 @@
             "name": {
               "classic": "Klasik",
               "material": "Material",
-              "badge": "Dot Matrix"
+              "badge": "Dot Matrix",
+              "pill": "Pil"
             }
           }
         },
@@ -401,6 +427,10 @@
         "bottom": "Bawah",
         "left": "Kiri",
         "right": "Kanan"
+      },
+      "monitors": {
+        "title": "Monitor",
+        "desc": "Pilih monitor mana yang menampilkan bilah"
       },
       "width": {
         "title": "Lebar bilah",
@@ -504,8 +534,12 @@
         "style": {
           "title": "Gaya lingkaran",
           "desc": "Tampilan visual cincin progres",
-          "wave": "Gelombang",
-          "circle": "Lingkaran"
+          "wave": "Cincin terisi gelombang cair",
+          "circle": "Cincin progres sederhana",
+          "name": {
+            "wave": "Gelombang",
+            "circle": "Lingkaran"
+          }
         },
         "items": {
           "title": "Statistik",
@@ -642,6 +676,16 @@
         "preview": {
           "title": "Judul lagu",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Gaya media",
+          "desc": "Pilih tampilan visual untuk modul media",
+          "name": {
+            "classic": "Klasik",
+            "ambient": "Ambien"
+          },
+          "classic": "Gambar mini album di latar polos",
+          "ambient": "Sampul album buram di balik kontrol"
         }
       },
       "thickness": {
@@ -656,7 +700,9 @@
           "launcher": "Peluncur",
           "night_light": "Lampu malam",
           "caffeine": "Kafein",
-          "shuffle": "Acak wallpaper"
+          "shuffle": "Acak wallpaper",
+          "color_picker": "Pemilih warna",
+          "clipboard": "Papan Klip"
         },
         "style": {
           "title": "Gaya",
@@ -691,6 +737,14 @@
         "select_dir": "Pilih direktori...",
         "select_wallpaper": "Pilih gambar latar",
         "select": "Gambar latar",
+        "carousel": {
+          "title": "Karusel wallpaper",
+          "desc": "Tampilkan wallpaper acak dari folder sesuai jadwal, melewati semua wallpaper sebelum ada yang berulang",
+          "interval": {
+            "title": "Interval pergantian",
+            "desc": "Detik antar pergantian wallpaper, dari 10 detik hingga seminggu"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Transisi",
@@ -718,6 +772,31 @@
           "paint": {
             "name": "Cat",
             "desc": "Lukis wallpaper baru sel demi sel dari koloni yang tumbuh di seluruh layar"
+          },
+          "wave": {
+            "name": "Gelombang cair",
+            "desc": "Menyapu layar dengan gelombang cair melengkung",
+            "direction_desc": "Tepi atau sudut asal gelombang menyapu"
+          },
+          "blinds": {
+            "name": "Tirai venesia",
+            "desc": "Membuka bilah sejajar di seluruh layar secara bergelombang",
+            "orientation_desc": "Sumbu arah bukaan tirai"
+          },
+          "clock": {
+            "name": "Sapuan jam",
+            "desc": "Menyapu searah jarum jam mengelilingi titik seperti radar",
+            "origin_desc": "Titik poros sapuan"
+          },
+          "hex": {
+            "name": "Kisi heksagon",
+            "desc": "Menampilkan wallpaper baru melalui sarang lebah heksagon bergelombang",
+            "size_title": "Ukuran heksagon",
+            "size_desc": "Ukuran setiap ubin heksagon pada kisi"
+          },
+          "ink": {
+            "name": "Sebaran tinta",
+            "desc": "Mekar secara organik melintasi layar seperti tinta cat air"
           },
           "orientation": {
             "title": "Orientasi",
@@ -973,6 +1052,9 @@
       "orientation": {
         "horizontal": "Horizontal",
         "vertical": "Vertikal"
+      },
+      "keyboard_layout": {
+        "title": "Tampilkan saat tata letak papan ketik berubah"
       }
     },
     "common": {
@@ -1254,7 +1336,10 @@
     "tab_emojis": "Emoji",
     "placeholder_emojis": "Cari emoji berdasarkan nama atau kata kunci...",
     "search_run": "Cari dengan {provider}",
-    "search_hint": "Ketik untuk mencari dengan {provider}"
+    "search_hint": "Ketik untuk mencari dengan {provider}",
+    "tab_windows": "Jendela",
+    "placeholder_windows": "Cari jendela yang terbuka...",
+    "window_workspace": "Ruang kerja {ws}"
   },
   "calendar": {
     "loading": "Memuat...",
@@ -1602,7 +1687,11 @@
       "ocr_missing_body": "Buka pengaturan tangkapan layar untuk memasang bahasa.",
       "ocr_uncertain_title": "Teks disalin, tetapi mungkin tidak akurat",
       "ocr_language_hint": "Teks mungkin dalam bahasa yang belum terpasang. Tambahkan bahasa di pengaturan tangkapan layar.",
-      "ocr_open_settings": "Buka pengaturan"
+      "ocr_open_settings": "Buka pengaturan",
+      "color_copied_title": "Warna disalin"
+    },
+    "color_picker": {
+      "copied": "Disalin"
     }
   },
   "start": {
@@ -1611,7 +1700,7 @@
     "welcome": "Selamat Datang",
     "tagline": "Shell desktop yang dibangun untuk",
     "you": "Anda",
-    "start_preview": "Mulai pratinjau"
+    "hold_to_start": "Tahan untuk memulai"
   },
   "syspanel": {
     "user": {
@@ -1778,6 +1867,7 @@
       "no_results": "Tidak ada yang ditemukan"
     },
     "types": {
+      "snake": "Ular",
       "clock": "Jam",
       "music": "Musik",
       "weather": "Cuaca",
@@ -1810,7 +1900,8 @@
       "lumen": "Lumen",
       "lyrics": "Lirik",
       "simpleLyrics": "Lirik Sederhana",
-      "circle": "Lingkaran"
+      "circle": "Lingkaran",
+      "graph": "Grafik"
     },
     "presets": {
       "minimal": {
@@ -1841,13 +1932,17 @@
       "no_contributions": "Tidak ada kontribusi yang ditemukan"
     },
     "settings": {
+      "snakeLength": "Panjang",
+      "snakeSpeed": "Kecepatan",
       "lyricsLines": "Baris",
       "lyricsAlignment": "Perataan",
       "textContent": "Teks",
       "hideText": "Sembunyikan teks",
       "lineThickness": "Ketebalan",
       "usageStyle": "Gaya",
-      "visualizerStyle": "Gaya visualizer"
+      "visualizerStyle": "Gaya visualizer",
+      "updateRate": "Pembaruan per menit",
+      "perMinute": "/mnt"
     },
     "align": {
       "left": "Kiri",
@@ -1863,6 +1958,10 @@
     "style": {
       "circle": "Lingkaran",
       "wave": "Gelombang"
+    },
+    "usageGraph": {
+      "average": "Rata-rata",
+      "peak": "Puncak"
     }
   },
   "cli": {
@@ -1925,7 +2024,8 @@
       "reboot": "Mulai ulang sistem",
       "poweroff": "Matikan sistem",
       "redactor": "Buka atau alihkan editor tata letak widget desktop",
-      "lock_redactor": "Alihkan, buka, atau tutup editor tata letak layar kunci"
+      "lock_redactor": "Alihkan, buka, atau tutup editor tata letak layar kunci",
+      "colorpicker": "Pilih warna dari layar dan salin ke papan klip"
     },
     "usage_label": "Penggunaan:",
     "config_desc": "Baca dan ubah pengaturan (get, set, dump, path, edit)",
@@ -1971,11 +2071,15 @@
   },
   "installer": {
     "auth": {
-      "error_failed": "Autentikasi gagal."
+      "error_failed": "Autentikasi gagal.",
+      "title": "Hak istimewa administrator diperlukan",
+      "prompt": "Masukkan kata sandi sudo Anda untuk melanjutkan",
+      "verifying": "Memverifikasi kredensial...",
+      "hint": "Tekan Enter untuk autentikasi atau Esc untuk kembali"
     },
     "os": {
       "error_root": "Kesalahan: Jangan jalankan skrip ini langsung dengan root/sudo. Jalankan sebagai pengguna biasa.",
-      "error_unsupported": "OS tidak didukung ({os}). Serpantinum hanya mendukung Arch Linux dan turunannya.",
+      "error_unsupported": "OS tidak didukung ({os}). Serpantinum mendukung Arch Linux, Fedora, Void Linux, Gentoo, dan turunannya.",
       "error_not_found": "Tidak dapat mendeteksi OS. /etc/os-release tidak ditemukan.",
       "unknown_cpu": "CPU tidak dikenal",
       "unknown_gpu": "GPU tidak dikenal / mesin virtual",
@@ -2021,6 +2125,12 @@
       "menu_reinstall": "Instal ulang",
       "menu_install": "Instal",
       "menu_exit": "Keluar",
+      "menu_uninstall": "Copot",
+      "uninstall_title": "Yakin ingin mencopot Serpantinum?",
+      "uninstall_removes": "Ini akan menghapus shell, serpantinum-core, serpantinum-audio, serpantinum-gamma, tema SDDM, serta pengaturan, status, dan cache Serpantinum, lalu mengembalikan aplikasi bertema, Qt, dan SDDM ke bawaan sistem.",
+      "uninstall_keeps": "Ski, compositor, konfigurasinya, wallpaper, dan paket sistem tidak akan diubah.",
+      "uninstall_cancel": "Tidak, kembali",
+      "uninstall_confirm": "Ya, copot Serpantinum",
       "error_no_compositor": "Anda harus memilih setidaknya satu kompositor yang didukung sebelum melanjutkan.",
       "tagline": "Shell desktop yang dibangun untuk Anda",
       "support_creator": "Dukung pembuat:",
@@ -2028,7 +2138,86 @@
       "installed_success": "✔ Serpantinum {ver} ({commit}) berhasil diinstal.",
       "failed_packages": "Paket-paket berikut mengalami kesalahan saat instalasi:",
       "restart_prompt": "Mulai ulang kompositor Anda atau jalankan 'serpantinumd start' untuk memulai.",
-      "ask_reboot": "Apakah Anda ingin memulai ulang sistem? [y/n] "
+      "ask_reboot": "Apakah Anda ingin memulai ulang sistem? [y/n] ",
+      "section_system": "Sistem",
+      "section_links": "Tautan",
+      "section_config": "Konfigurasi",
+      "section_actions": "Tindakan",
+      "mode_fresh": "Instalasi baru",
+      "mode_current": "Pembaruan",
+      "mode_legacy": "Migrasi versi lama",
+      "status_enabled": "Aktif",
+      "status_disabled": "Nonaktif",
+      "status_yes": "Ya",
+      "status_no": "Tidak",
+      "status_wayland": "Wayland",
+      "status_x11": "X11 / bawaan",
+      "status_full_pack": "Paket lengkap",
+      "status_random_pack": "3 acak",
+      "status_none_selected": "Belum ada yang dipilih",
+      "status_missing_count": "{missing} hilang",
+      "status_all_installed": "Semua terinstal",
+      "action_inspect": "Periksa",
+      "action_configure": "Konfigurasi",
+      "action_toggle": "Alihkan",
+      "pkg_title": "Ringkasan instalasi paket",
+      "pkg_tab_all": "Semua",
+      "pkg_tab_missing": "Hilang",
+      "pkg_tab_installed": "Terinstal",
+      "pkg_search_placeholder": "Tekan / untuk menyaring paket",
+      "pkg_search_empty": "Tidak ada paket yang cocok dengan saringan Anda",
+      "pkg_badge_installed": "Terinstal",
+      "pkg_badge_missing": "Akan diinstal",
+      "pkg_summary": "{total} total · {installed} terinstal · {missing} akan diinstal",
+      "compositors_subtitle": "{count} dipilih",
+      "compositors_hint": "Spasi atau Enter untuk mengalihkan · Esc setelah selesai",
+      "sddm_hint": "Kiri/Kanan atau Enter untuk mengalihkan · Esc setelah selesai",
+      "preview_badge": "Pratinjau · tanpa perubahan",
+      "preview_state_hint": "Ganti mode",
+      "preview_reboot_notice": "Mode pratinjau: mulai ulang sistem dilewati.",
+      "hint_navigate": "Navigasi",
+      "hint_switch": "Ganti / alihkan",
+      "hint_select": "Pilih",
+      "hint_quit": "Keluar",
+      "hint_back": "Kembali",
+      "hint_search": "Cari",
+      "hint_filter": "Saring",
+      "hint_toggle_log": "Tampilkan/sembunyikan log",
+      "hint_scroll": "Gulir",
+      "progress_installing": "Menginstal Serpantinum",
+      "progress_updating": "Memperbarui Serpantinum",
+      "progress_reinstalling": "Menginstal ulang Serpantinum",
+      "progress_uninstalling": "Mencopot Serpantinum",
+      "progress_step_of": "Langkah {current} dari {total}",
+      "progress_steps_title": "Langkah instalasi",
+      "progress_output_title": "Keluaran langsung",
+      "progress_waiting_input": "Input diperlukan — ketik jawaban lalu tekan Enter",
+      "progress_skipped": "Dilewati",
+      "progress_failed_title": "Langkah gagal",
+      "progress_retry": "Ulangi langkah",
+      "progress_continue": "Tetap lanjutkan",
+      "progress_abort": "Keluar dari pemasang",
+      "progress_log_saved": "Log lengkap disimpan ke {path}",
+      "complete_title_install": "Instalasi selesai",
+      "complete_title_update": "Pembaruan selesai",
+      "complete_title_reinstall": "Instalasi ulang selesai",
+      "complete_title_uninstall": "Pencopotan selesai",
+      "complete_summary": "Ringkasan",
+      "complete_version": "Versi",
+      "complete_compositors": "Kompositor",
+      "complete_sddm": "SDDM",
+      "complete_wallpapers": "Gambar latar",
+      "complete_duration": "Waktu berlalu",
+      "btn_restart": "Mulai ulang sekarang",
+      "btn_exit": "Keluar ke shell",
+      "btn_return_menu": "Kembali ke menu",
+      "terminal_too_small": "Jendela terminal terlalu kecil. Ubah ukuran menjadi minimal {cols}×{rows}.",
+      "social": "Sosial:",
+      "compositors_row": "Kompositor target",
+      "packages_row": "Ringkasan paket",
+      "pkg_count_short": "{count} paket",
+      "hint_fast_forward": "Percepat",
+      "preview_mode_switched": "Mode pratinjau: {mode}"
     },
     "deps": {
       "syncing": "Menyinkronkan dan memperbarui paket sistem (pacman -Syyu)...",
@@ -2088,6 +2277,30 @@
       "installing": "Memasang pengelola file Ski...",
       "unsupported_arch": "Paket prakompilasi Ski hanya tersedia untuk x86_64, dilewati.",
       "up_to_date": "-> Ski {version} sudah terpasang."
+    },
+    "uninstall": {
+      "stopping": "Menghentikan Serpantinum dan layanannya...",
+      "resetting": "Mengembalikan tema aplikasi ke bawaan sistem...",
+      "removing": "Menghapus berkas Serpantinum...",
+      "done": "Serpantinum telah dicopot. Hapus baris autostart dari konfigurasi compositor jika tidak diperlukan lagi."
+    },
+    "steps": {
+      "prepare": "Siapkan telemetri dan lingkungan",
+      "migrate": "Migrasikan konfigurasi lama",
+      "backup": "Cadangkan konfigurasi kompositor yang ada",
+      "deps": "Instal paket sistem dan font",
+      "ski": "Instal pengelola file Ski",
+      "audio": "Instal mesin audio Serpantinum",
+      "gamma": "Instal filter cahaya biru Serpantinum",
+      "core": "Instal layanan inti Serpantinum",
+      "deploy": "Terapkan shell dan konfigurasi kompositor",
+      "sddm": "Konfigurasikan manajer tampilan SDDM",
+      "wallpapers": "Instal paket gambar latar",
+      "config": "Inisialisasi pengaturan dan layanan",
+      "finalize": "Simpan status versi dan selesaikan",
+      "uninstall_stop": "Hentikan Serpantinum dan daemon",
+      "uninstall_reset": "Kembalikan tema aplikasi dan bawaan Qt",
+      "uninstall_remove": "Hapus berkas dan konfigurasi Serpantinum"
     }
   },
   "datetime": {
@@ -2233,5 +2446,8 @@
   },
   "common": {
     "select": "Pilih..."
+  },
+  "osd": {
+    "keyboard_layout": "Tata letak papan ketik"
   }
 }

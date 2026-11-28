@@ -88,6 +88,12 @@ if [[ "$ACTION" =~ ^[0-9]+$ ]]; then
         else
             mmsg dispatch "view,$ACTION" >/dev/null 2>&1 &
         fi
+    elif [[ "$DE" == *"umbriel"* ]] || [[ -n "${UMBRIEL_SOCKET:-}" ]]; then
+        if [[ "$TARGET" == "move" ]]; then
+            { umbriel msg window-move-to-workspace "$ACTION" 2>/dev/null || umbriel msg "window-move-to-workspace:$ACTION"; } >/dev/null 2>&1 &
+        else
+            { umbriel msg workspace-switch "$ACTION" 2>/dev/null || umbriel msg "workspace-switch:$ACTION"; } >/dev/null 2>&1 &
+        fi
     elif [[ "$DE" == *"sway"* ]] || [[ -n "${SWAYSOCK:-}" ]]; then
         if [[ "$TARGET" == "move" ]]; then
             swaymsg move container to workspace number "$ACTION" >/dev/null 2>&1 &

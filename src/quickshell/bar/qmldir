@@ -1,6 +1,6 @@
 Bar 1.0 Bar.qml
-SideBar 1.0 SideBar.qml
-TopBar 1.0 TopBar.qml
+BarLayout 1.0 BarLayout.qml
 BarModule 1.0 BarModule.qml
 singleton BarModuleRegistry 1.0 BarModuleRegistry.qml
 BarFaceBase 1.0 BarFaceBase.qml
+BarPillFaceBase 1.0 BarPillFaceBase.qml

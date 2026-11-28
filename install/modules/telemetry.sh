@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if ! declare -f os_release_get >/dev/null; then
+    source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/os_release.sh"
+fi
+
 WORKER_URL="https://dots-telemetry.ilyamiro-work.workers.dev"
 
 MODE=""
@@ -61,12 +65,9 @@ fi
 
 TELEMETRY_ID=$(format_uuid "$TELEMETRY_ID")
 
-if [[ -z "$OS_NAME" && -f /etc/os-release ]]; then
-    OS_NAME=$(grep '^PRETTY_NAME=' /etc/os-release | cut -d= -f2 | tr -d '"')
-fi
-
-if [[ "$OS_NAME" =~ "Fedora" ]]; then
-    exit 0
+if [[ -z "$OS_NAME" ]]; then
+    OS_NAME="$(os_release_get PRETTY_NAME || true)"
+    [[ -z "$OS_NAME" ]] && OS_NAME="$(os_release_get NAME || true)"
 fi
 
 if [[ -z "$WORKER_URL" || "$WORKER_URL" == *"YOUR_USERNAME"* ]]; then
@@ -86,6 +87,15 @@ if [[ "$MODE" == "init" || "$MODE" == "full" ]]; then
 EOF
 )
 elif [[ "$MODE" == "done" ]]; then
+    if [[ "$INSTALL_STATE" == "fresh" ]]; then
+        OLD_VERSION=""
+    elif [[ "$INSTALL_STATE" == "legacy" ]]; then
+        OLD_VERSION="${OLD_VERSION#v}"
+        if [[ ! "$OLD_VERSION" =~ ^1(\.|$) || "$OLD_VERSION" == "$VERSION" ]]; then
+            OLD_VERSION=""
+        fi
+    fi
+
     [[ -z "$RAM_INFO" ]] && RAM_INFO=$(awk '/MemTotal/ {printf "%.1f GB", $2/1024/1024}' /proc/meminfo 2>/dev/null || echo "Unknown")
     [[ -z "$KERNEL_INFO" ]] && KERNEL_INFO=$(uname -r 2>/dev/null || echo "Unknown")
     [[ -z "$DE_INFO" ]] && DE_INFO=${XDG_CURRENT_DESKTOP:-"TTY / Unknown"}
@@ -122,5 +132,5 @@ EOF
 fi
 
 if [[ -n "$payload" ]]; then
-    curl -X POST -H "Content-Type: application/json" -d "$payload" "$WORKER_URL" -s -o /dev/null &
+    setsid -f curl -X POST -H "Content-Type: application/json" -d "$payload" "$WORKER_URL" -s -o /dev/null </dev/null >/dev/null 2>&1
 fi

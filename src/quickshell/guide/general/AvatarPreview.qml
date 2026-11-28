@@ -73,6 +73,7 @@ Rectangle {
                 fillMode: Image.PreserveAspectCrop
                 cache: false
                 asynchronous: true
+                sourceSize: Qt.size(Math.max(1, Math.ceil(Math.max(width, avatarPreviewRect.Layout.preferredWidth) * 2 * (Screen.devicePixelRatio || 1))), Math.max(1, Math.ceil(Math.max(height, avatarPreviewRect.Layout.preferredHeight) * 2 * (Screen.devicePixelRatio || 1))))
             }
 
             MultiEffect {

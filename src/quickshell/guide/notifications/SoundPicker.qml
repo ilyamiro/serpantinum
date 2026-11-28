@@ -7,21 +7,15 @@ import "../../reusables"
 FilePicker {
     id: soundPickerRoot
 
-   function s(val) {
-	return Scaler.s(val);
-   }	
-
-    preferredWidth: s(1040)
-    previewWidth: s(340)
-    titleText: typeof I18n !== "undefined" ? I18n.t("guide.sound_picker.title") : "Select notification sound"
+    preferredWidth: Scaler.s(1040)
+    previewWidth: Scaler.s(340)
+    titleText: typeof I18n !== "undefined" ? I18n.t("guide.sound_picker.title", "Select notification sound") : "Select notification sound"
     nameFilters: ["*.wav", "*.ogg", "*.mp3", "*.flac", "*.opus", "*.oga", "*.m4a", "*.aac"]
     showPreview: true
 
-    places: [
-        { name: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.places.home") : "Home", icon: "󰋜", path: "file://" + (Quickshell.env("HOME") || "") },
-        { name: typeof I18n !== "undefined" ? I18n.t("guide.file_picker.places.downloads") : "Downloads", icon: "󰇚", path: "file://" + (Quickshell.env("HOME") || "") + "/Downloads" },
-        { name: typeof I18n !== "undefined" ? I18n.t("guide.sound_picker.places.user_sounds") : "User Sounds", icon: "󰎈", path: "file://" + (Quickshell.env("HOME") || "") + "/.local/share/sounds" },
-        { name: typeof I18n !== "undefined" ? I18n.t("guide.sound_picker.places.system_sounds") : "System Sounds", icon: "󰓃", path: "file:///usr/share/sounds" }
+    extraPlaces: [
+        { name: typeof I18n !== "undefined" ? I18n.t("guide.sound_picker.places.user_sounds", "User sounds") : "User sounds", icon: "󰎈", path: "file://" + Caching.xdgDataHome + "/sounds" },
+        { name: typeof I18n !== "undefined" ? I18n.t("guide.sound_picker.places.system_sounds", "System sounds") : "System sounds", icon: "󰓃", path: "file:///usr/share/sounds" }
     ]
 
     signal soundSelected(string filePath, string fileName)
@@ -54,13 +48,13 @@ FilePicker {
 
                 ColumnLayout {
                     anchors.centerIn: parent
-                    width: parent.width - soundPickerRoot.s(32)
-                    spacing: soundPickerRoot.s(16)
+                    width: parent.width - Scaler.s(32)
+                    spacing: Scaler.s(16)
 
                     Rectangle {
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: soundPickerRoot.s(80)
-                        Layout.preferredHeight: soundPickerRoot.s(80)
+                        Layout.preferredWidth: Scaler.s(80)
+                        Layout.preferredHeight: Scaler.s(80)
                         radius: soundPickerRoot.crLarge
                         color: gf2.active ? "transparent" : ThemeBackend.surface1
 
@@ -76,7 +70,7 @@ FilePicker {
                             anchors.centerIn: parent
                             text: "󰎈"
                             font.family: ThemeBackend.iconFont
-                            font.pixelSize: soundPickerRoot.s(36)
+                            font.pixelSize: Scaler.s(36)
                             color: soundPickerRoot.selectedFilePath !== "" ? ThemeBackend.mauve : ThemeBackend.subtext0
                         }
                     }
@@ -84,7 +78,7 @@ FilePicker {
                     ColumnLayout {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignHCenter
-                        spacing: soundPickerRoot.s(4)
+                        spacing: Scaler.s(4)
 
                         Text {
                             Layout.fillWidth: true
@@ -97,11 +91,11 @@ FilePicker {
                                         return soundPickerRoot.selectedFileName;
                                     }
                                 }
-                                return typeof I18n !== "undefined" ? I18n.t("guide.sound_picker.no_sound_selected") : "No sound selected";
+                                return typeof I18n !== "undefined" ? I18n.t("guide.sound_picker.no_sound_selected", "No sound selected") : "No sound selected";
                             }
                             font.family: ThemeBackend.fontFamily
                             font.weight: Font.Bold
-                            font.pixelSize: soundPickerRoot.s(14)
+                            font.pixelSize: Scaler.s(14)
                             color: soundPickerRoot.selectedFileName !== "" ? ThemeBackend.text : ThemeBackend.subtext0
                             elide: Text.ElideMiddle
                         }
@@ -111,7 +105,7 @@ FilePicker {
                             horizontalAlignment: Text.AlignHCenter
                             text: soundPickerRoot.selectedFilePath !== "" ? soundPickerRoot.selectedFilePath : ""
                             font.family: ThemeBackend.fontFamily
-                            font.pixelSize: soundPickerRoot.s(11)
+                            font.pixelSize: Scaler.s(11)
                             color: ThemeBackend.subtext0
                             elide: Text.ElideMiddle
                             visible: soundPickerRoot.selectedFilePath !== ""
@@ -121,11 +115,11 @@ FilePicker {
                     IconButton {
                         id: playSoundButton
                         Layout.alignment: Qt.AlignHCenter
-                        Layout.preferredWidth: soundPickerRoot.s(44)
-                        Layout.preferredHeight: soundPickerRoot.s(44)
-                        cornerRadius: soundPickerRoot.s(12)
+                        Layout.preferredWidth: Scaler.s(44)
+                        Layout.preferredHeight: Scaler.s(44)
+                        cornerRadius: Scaler.s(12)
                         buttonIcon: "󰐊"
-                        iconFontSize: soundPickerRoot.s(22)
+                        iconFontSize: Scaler.s(22)
                         accentColor: ThemeBackend.surface1
                         textColor: isHoveredOrHighlighted ? ThemeBackend.green : ThemeBackend.text
                         enabled: soundPickerRoot.selectedFilePath !== ""

@@ -24,31 +24,14 @@ Item {
     readonly property string screenName: hostScreen && hostScreen.name ? hostScreen.name : ""
     readonly property bool live: visible && screenName !== "" && rects.length > 0
 
-    readonly property real originX: {
-        const w = hostWindow;
-        const scr = hostScreen;
-        if (!w || !scr || !w.anchors) return 0;
-        const a = w.anchors;
-        const m = w.margins;
-        if (a.left) return m.left;
-        if (a.right) return scr.width - w.width - m.right;
-        return (scr.width - w.width) / 2;
-    }
-
-    readonly property real originY: {
-        const w = hostWindow;
-        const scr = hostScreen;
-        if (!w || !scr || !w.anchors) return 0;
-        const a = w.anchors;
-        const m = w.margins;
-        if (a.top) return m.top;
-        if (a.bottom) return scr.height - w.height - m.bottom;
-        return (scr.height - w.height) / 2;
-    }
+    readonly property point windowOrigin: SurfaceRegistry.windowOrigin(hostWindow, hostScreen)
+    readonly property real originX: windowOrigin.x
+    readonly property real originY: windowOrigin.y
 
     property bool ready: false
     property bool inRebuild: false
     property string lastScreen: ""
+    property var knownDependentKinds: ({})
 
     function schedule() {
         if (ready) Qt.callLater(rebuild);
@@ -68,14 +51,39 @@ Item {
     onOriginYChanged: schedule()
 
     onScreenNameChanged: {
-        if (lastScreen !== "") SurfaceField.withdraw(lastScreen, surfaceId);
+        if (lastScreen !== "") SurfaceRegistry.withdrawShape(lastScreen, surfaceId);
         lastScreen = screenName;
         schedule();
     }
 
     Connections {
-        target: SurfaceField
-        function onRevisionChanged() { if (!root.inRebuild) root.schedule(); }
+        target: SurfaceRegistry
+        function onScreenShapesChanged(changedScreen, changedKind) {
+            if (root.inRebuild || changedScreen !== root.screenName) return;
+            if (!changedKind) {
+                root.schedule();
+                return;
+            }
+            if (root.attachTo && root.attachTo.indexOf(changedKind) !== -1) {
+                root.schedule();
+                return;
+            }
+            if (root.knownDependentKinds && root.knownDependentKinds[changedKind]) {
+                root.schedule();
+                return;
+            }
+            if (root.kind !== "") {
+                const all = SurfaceRegistry.shapesOn(root.screenName);
+                for (const id in all) {
+                    if (id === root.surfaceId) continue;
+                    const e = all[id];
+                    if (e && e.kind === changedKind && e.attachTo && e.attachTo.indexOf(root.kind) !== -1) {
+                        root.schedule();
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     Connections {
@@ -100,7 +108,7 @@ Item {
 
     Component.onDestruction: {
         ready = false;
-        SurfaceField.withdraw(screenName, surfaceId);
+        SurfaceRegistry.withdrawShape(screenName, surfaceId);
     }
 
     function clipShape(s, x0, y0, x1, y1) {
@@ -218,15 +226,20 @@ Item {
 
         const owners = [];
         const dependents = [];
+        const depKinds = {};
         if (isLive) {
-            const all = SurfaceField.shapesOn(screenName);
+            const all = SurfaceRegistry.shapesOn(screenName);
             for (const id in all) {
                 if (id === surfaceId) continue;
                 const e = all[id];
                 if (attachTo.indexOf(e.kind) !== -1) owners.push(e);
-                else if (e.attachTo && e.attachTo.indexOf(kind) !== -1) dependents.push(e);
+                else if (e.attachTo && e.attachTo.indexOf(kind) !== -1) {
+                    dependents.push(e);
+                    if (e.kind) depKinds[e.kind] = true;
+                }
             }
         }
+        knownDependentKinds = depKinds;
 
         let k = filletRadius;
         for (let i = 0; i < owners.length; i++) k = Math.max(k, owners[i].smoothing || 0);
@@ -281,9 +294,9 @@ Item {
 
         if (publishShape && isLive && shapes.length > 0) {
             const v = shapeNear(shapes[0], k, owners);
-            SurfaceField.publish(screenName, surfaceId, { kind: kind, attachTo: attachTo, smoothing: filletRadius, x: v.x, y: v.y, w: v.w, h: v.h, r: v.r });
+            SurfaceRegistry.publishShape(screenName, surfaceId, { kind: kind, attachTo: attachTo, smoothing: filletRadius, x: v.x, y: v.y, w: v.w, h: v.h, r: v.r });
         } else {
-            SurfaceField.withdraw(screenName, surfaceId);
+            SurfaceRegistry.withdrawShape(screenName, surfaceId);
         }
 
         inRebuild = false;

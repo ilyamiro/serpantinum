@@ -9,6 +9,92 @@ import "../"
 ShellRoot {
     id: globalRoot
 
+    WallpaperCarousel {}
+
+    Variants {
+        id: overviewRoot
+        model: Compositor.hasOverviewBackdrop ? Quickshell.screens : []
+
+        delegate: Component {
+            PanelWindow {
+                id: overviewWindow
+
+                required property var modelData
+                screen: modelData
+
+                WlrLayershell.namespace: "wallpaper-overview"
+                WlrLayershell.layer: WlrLayer.Background
+
+                focusable: false
+                exclusionMode: ExclusionMode.Ignore
+                color: "#0a0a0f"
+
+                anchors { top: true; bottom: true; left: true; right: true }
+
+                readonly property string screenName: screen && screen.name ? screen.name : ""
+                readonly property var engine: Wallpaper.engines[screenName] || null
+                readonly property bool hasWallpaper: engine !== null && engine.currentWallpaperPath !== ""
+                readonly property real screenWidth: screen && screen.width > 0 ? screen.width : width
+                readonly property real screenHeight: screen && screen.height > 0 ? screen.height : height
+                readonly property size textureSize: Qt.size(Math.max(1, Math.round(screenWidth / 4)), Math.max(1, Math.round(screenHeight / 4)))
+                readonly property string wallpaperSource: {
+                    if (!engine) return "";
+                    if (engine.activeLayer === 0) {
+                        if (engine.isVideoA) return engine.snapReadyA ? "file://" + engine.layerSnapshotPathA + "?rev=" + engine.snapRevA : "";
+                        return engine.pathA !== "" ? "file://" + engine.pathA : "";
+                    }
+                    if (engine.isVideoB) return engine.snapReadyB ? "file://" + engine.layerSnapshotPathB + "?rev=" + engine.snapRevB : "";
+                    return engine.pathB !== "" ? "file://" + engine.pathB : "";
+                }
+
+                property string displayedSource: ""
+
+                onWallpaperSourceChanged: {
+                    if (wallpaperSource !== "") displayedSource = wallpaperSource;
+                    else if (!hasWallpaper) displayedSource = "";
+                }
+
+                onHasWallpaperChanged: {
+                    if (!hasWallpaper) displayedSource = "";
+                }
+
+                Component.onCompleted: {
+                    if (wallpaperSource !== "") displayedSource = wallpaperSource;
+                }
+
+                Image {
+                    id: overviewImage
+                    anchors.fill: parent
+                    anchors.margins: -64
+                    visible: false
+                    source: overviewWindow.displayedSource
+                    fillMode: Image.PreserveAspectCrop
+                    asynchronous: true
+                    cache: true
+                    smooth: true
+                    sourceSize: overviewWindow.textureSize
+                }
+
+                MultiEffect {
+                    anchors.fill: overviewImage
+                    source: overviewImage
+                    autoPaddingEnabled: false
+                    blurEnabled: true
+                    blurMax: 64
+                    blur: 1.0
+                    visible: overviewWindow.displayedSource !== ""
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: "black"
+                    opacity: 0.38
+                    visible: overviewWindow.displayedSource !== ""
+                }
+            }
+        }
+    }
+
     Variants {
         id: root
         model: Quickshell.screens
@@ -60,6 +146,7 @@ ShellRoot {
                 property int activeTransitionType: 0
                 property bool wipeIsVertical: false
                 property int swipeDirection: 0
+                property real hexSize: 80.0
                 property real transitionOriginX: 0.5
                 property real transitionOriginY: 0.5
                 property real transitionSeed: 0.0
@@ -427,6 +514,7 @@ ShellRoot {
                     barWindow.activeDuration = fx.duration;
                     barWindow.wipeIsVertical = fx.vertical;
                     barWindow.swipeDirection = fx.direction;
+                    barWindow.hexSize = fx.hexSize;
                     barWindow.transitionSeed = Math.random() * 100.0;
 
                     if (fromMenu && customOriginX >= 0 && customOriginY >= 0) {
@@ -603,7 +691,7 @@ ShellRoot {
                         property real progress: barWindow.transitionProgress
                         property real transitionType: barWindow.activeTransitionType
                         property vector2d origin: Qt.vector2d(barWindow.transitionOriginX, barWindow.transitionOriginY)
-                        property vector4d params: Qt.vector4d(barWindow.wipeIsVertical ? 1.0 : 0.0, barWindow.swipeDirection, barWindow.transitionSeed, 0.0)
+                        property vector4d params: Qt.vector4d(barWindow.activeTransitionType === 8 ? barWindow.hexSize : (barWindow.wipeIsVertical ? 1.0 : 0.0), barWindow.swipeDirection, barWindow.transitionSeed, 0.0)
                         property color tint: "transparent"
 
                         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_transition.frag.qsb"
@@ -671,7 +759,7 @@ ShellRoot {
                         property real progress: barWindow.transitionProgress
                         property real transitionType: barWindow.activeTransitionType
                         property vector2d origin: Qt.vector2d(barWindow.transitionOriginX, barWindow.transitionOriginY)
-                        property vector4d params: Qt.vector4d(barWindow.wipeIsVertical ? 1.0 : 0.0, barWindow.swipeDirection, barWindow.transitionSeed, 0.0)
+                        property vector4d params: Qt.vector4d(barWindow.activeTransitionType === 8 ? barWindow.hexSize : (barWindow.wipeIsVertical ? 1.0 : 0.0), barWindow.swipeDirection, barWindow.transitionSeed, 0.0)
                         property color tint: "transparent"
 
                         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_transition.frag.qsb"
@@ -733,13 +821,13 @@ ShellRoot {
                         id: paintGlow
                         anchors.fill: parent
                         z: 3
-                        visible: barWindow.activeTransitionType === 4 && !barWindow.isPreloading && barWindow.transitionProgress < 1.0
+                        visible: (barWindow.activeTransitionType === 4 || barWindow.activeTransitionType === 9) && !barWindow.isPreloading && barWindow.transitionProgress < 1.0
 
                         property vector2d itemSize: Qt.vector2d(width, height)
                         property real progress: barWindow.transitionProgress
                         property real transitionType: barWindow.activeTransitionType
                         property vector2d origin: Qt.vector2d(barWindow.transitionOriginX, barWindow.transitionOriginY)
-                        property vector4d params: Qt.vector4d(0.0, 0.0, barWindow.transitionSeed, 1.0)
+                        property vector4d params: Qt.vector4d(barWindow.activeTransitionType === 8 ? barWindow.hexSize : (barWindow.wipeIsVertical ? 1.0 : 0.0), barWindow.swipeDirection, barWindow.transitionSeed, 1.0)
                         property color tint: ThemeBackend.mauve
 
                         fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/transitions/wallpaper_transition.frag.qsb"

@@ -13,10 +13,11 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "general_avatar"
         icon: "󰀄"
         title: I18n.t("guide.general.avatar.title") || "Profile picture"
         description: I18n.t("guide.general.avatar.desc") || "Choose profile picture"
-        searchKeywords: "avatar profile picture photo image"
+        searchKeywords: "avatar profile picture photo user icon image"
 
         RowLayout {
             spacing: rootObj.s(12)
@@ -39,16 +40,15 @@ SettingsBlob {
                     onTriggered: section.tab.openImagePicker(section.tab.currentAvatarSourcePath)
                 }
 
-                Dropdown {
+                PathDropdown {
                     id: avatarDropdown
                     Layout.alignment: Qt.AlignRight
                     implicitWidth: rootObj.s(280)
                     implicitHeight: rootObj.s(32)
                     options: section.tab.currentAvatarSourcePath !== "" ? [section.tab.currentAvatarSourcePath] : []
                     currentIndex: 0
-                    isPathSelector: true
                     fuzzySearch: true
-                    placeholderText: section.tab.currentAvatarSourcePath !== "" ? section.tab.currentAvatarSourcePath : "Select image path..."
+                    placeholderText: section.tab.currentAvatarSourcePath !== "" ? section.tab.currentAvatarSourcePath : I18n.t("guide.general.avatar.placeholder", "Select image path...")
                     fontFamily: ThemeBackend.fontFamily
                     accentColor: ThemeBackend.mauve
                     baseColor: ThemeBackend.surface0
@@ -60,16 +60,10 @@ SettingsBlob {
                     cornerRadius: ThemeBackend.borderRadius
                     fontPixelSize: rootObj.s(11)
                     onValueChanged: function(index, value) {
-                        let gs = Object.assign({}, section.tab.generalSettings);
-                        gs.avatarPath = value;
-                        section.tab.generalSettings = gs;
-                        section.tab.updateGeneralSettings();
+                        section.tab.setGeneralSetting("avatarPath", value);
                     }
                     onSelected: function(index, value) {
-                        let gs = Object.assign({}, section.tab.generalSettings);
-                        gs.avatarPath = value;
-                        section.tab.generalSettings = gs;
-                        section.tab.updateGeneralSettings();
+                        section.tab.setGeneralSetting("avatarPath", value);
                     }
                 }
             }
@@ -82,6 +76,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "general_language"
+        searchKeywords: "language locale translation i18n english interface region"
         icon: "󰗊"
         title: I18n.t("guide.general.language.title")
         description: I18n.t("guide.general.language.desc")
@@ -105,8 +101,7 @@ SettingsBlob {
             cornerRadius: ThemeBackend.borderRadius
             fontPixelSize: rootObj.s(11)
             onValueChanged: function(index, value) {
-                section.tab.currentLanguage = section.tab.languageCodes[index];
-                section.tab.updateGeneralSettings();
+                section.tab.setGeneralSetting("language", section.tab.languageCodes[index]);
             }
         }
     }

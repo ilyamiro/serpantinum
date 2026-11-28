@@ -2,7 +2,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.Polkit
-import "."
+import "../"
 
 Item {
     id: root

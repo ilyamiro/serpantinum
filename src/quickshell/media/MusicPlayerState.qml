@@ -3,36 +3,22 @@ import QtQuick.Window
 import Quickshell.Io
 import Quickshell.Services.Mpris
 import "../"
+import "../reusables"
 
-Item {
+HostedPanel {
     id: root
 
     readonly property bool active: root.visible
+    readonly property bool spectrumRegistered: spectrumGate.active
 
-    property bool spectrumRegistered: false
-
-    function registerSpectrum() {
-        if (!spectrumRegistered) {
-            spectrumRegistered = true;
-            Spectrum.registerConsumer();
-        }
-    }
-
-    function unregisterSpectrum() {
-        if (spectrumRegistered) {
-            spectrumRegistered = false;
-            Spectrum.unregisterConsumer();
-        }
-    }
-
-    function s(val) { 
-        return Scaler.s(val); 
+    SubscriptionGate {
+        id: spectrumGate
+        target: Spectrum
+        wanted: root.active
     }
 
     function formatTime(sec) {
-        sec = Math.floor(sec || 0);
-        let m = Math.floor(sec / 60), s = sec % 60;
-        return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+        return MprisController.formatTime(sec);
     }
 
     property int barCount: 60
@@ -45,7 +31,6 @@ Item {
         when: root.active
     }
 
-    // Sub-bass and kick strength for the glow and the disc bounce
     property var beat: {
         let source = rawBarLevels;
         if (!source || source.length === 0) return { bass: 0.0, kick: 0.0 };
@@ -63,62 +48,15 @@ Item {
     property real bassLevel: beat.bass
     property real kickLevel: beat.kick
 
-    property var playerList: {
-        if (!Mpris.players || !Mpris.players.values) return [];
-        let list = [];
-        let vals = Mpris.players.values;
-        for (let i = 0; i < vals.length; i++) {
-            if (vals[i]) list.push(vals[i]);
-        }
-        return list;
-    }
-
-    property var manualPlayer: null
-
-    property var targetPlayer: {
-        if (manualPlayer) {
-            for (let i = 0; i < playerList.length; i++) {
-                if (playerList[i] === manualPlayer) return manualPlayer;
-            }
-        }
-        return MprisController.activePlayer;
-    }
-
-    property bool hasTargetPlayer: targetPlayer !== null
-
-    property var playerOptions: {
-        let list = playerList;
-        let names = [];
-        let counts = {};
-        for (let i = 0; i < list.length; i++) {
-            let base = list[i].identity || list[i].desktopEntry || ("Player " + (i + 1));
-            counts[base] = (counts[base] || 0) + 1;
-        }
-        for (let i = 0; i < list.length; i++) {
-            let p = list[i];
-            let base = p.identity || p.desktopEntry || ("Player " + (i + 1));
-            if (counts[base] > 1 && p.trackTitle) {
-                names.push(base + " (" + p.trackTitle + ")");
-            } else {
-                names.push(base);
-            }
-        }
-        return names;
-    }
-
-    property int currentPlayerIndex: {
-        if (!targetPlayer) return 0;
-        for (let i = 0; i < playerList.length; i++) {
-            if (playerList[i] === targetPlayer) return i;
-        }
-        return 0;
-    }
+    readonly property var playerList: MprisController.players
+    readonly property var targetPlayer: MprisController.targetPlayer
+    readonly property bool hasTargetPlayer: targetPlayer !== null
+    readonly property var playerOptions: MprisController.playerOptions
+    readonly property int currentPlayerIndex: MprisController.currentPlayerIndex
 
     function selectPlayerByIndex(idx) {
-        if (idx >= 0 && idx < playerList.length) {
-            manualPlayer = playerList[idx];
-            triggerLocalArtFetch();
-        }
+        MprisController.selectPlayerByIndex(idx);
+        triggerLocalArtFetch();
     }
 
     property real currentLivePosition: targetPlayer ? targetPlayer.position : 0
@@ -166,6 +104,7 @@ Item {
     property string localTextColor: ""
     property string localDeviceIcon: "󰓃"
     property string localDeviceName: "Speaker"
+    property string localFetchArtUrl: ""
 
     Process {
         id: customArtFetchProc
@@ -173,10 +112,13 @@ Item {
             "bash",
             Caching.qsDir + "/media/art_fetch.sh",
             root.targetPlayer ? (root.targetPlayer.dbusName || root.targetPlayer.identity || "") : "",
-            root.targetPlayer ? (root.targetPlayer.trackArtUrl || "") : "",
+            root.localFetchArtUrl.startsWith("data:") ? "data:stdin" : root.localFetchArtUrl,
             root.targetPlayer ? (root.targetPlayer.trackTitle || "") : "",
             root.targetPlayer ? (root.targetPlayer.trackArtist || "") : ""
         ]
+        onStarted: {
+            if (stdinEnabled && root.localFetchArtUrl.startsWith("data:")) write(root.localFetchArtUrl + "\n");
+        }
         stdout: StdioCollector {
             onStreamFinished: {
                 let txt = this.text.trim();
@@ -206,6 +148,8 @@ Item {
     function triggerLocalArtFetch() {
         if (root.targetPlayer && root.targetPlayer !== MprisController.activePlayer) {
             customArtFetchProc.running = false;
+            root.localFetchArtUrl = root.targetPlayer.trackArtUrl || "";
+            customArtFetchProc.stdinEnabled = root.localFetchArtUrl.startsWith("data:");
             customArtFetchProc.running = true;
         } else if (root.targetPlayer && root.targetPlayer === MprisController.activePlayer) {
             if (!MprisController.artUrl) {

@@ -9,45 +9,12 @@ Item {
 
     readonly property bool isVertical: widget ? widget.orientation === "vertical" : false
 
-    readonly property string fullTimeStr: {
-        if (widget && widget.timeStr !== undefined && widget.timeStr !== null && String(widget.timeStr) !== "") {
-            return String(widget.timeStr);
-        }
-        if (typeof DateTime !== "undefined" && DateTime.time !== undefined && DateTime.time !== null && String(DateTime.time) !== "") {
-            return String(DateTime.time);
-        }
-        var h = widget && widget.hourStr !== undefined ? String(widget.hourStr) : (typeof DateTime !== "undefined" && DateTime.hour !== undefined ? String(DateTime.hour) : "14");
-        var m = widget && widget.minuteStr !== undefined && String(widget.minuteStr) !== "" ? String(widget.minuteStr) : "";
-        var s = widget && widget.secondStr !== undefined && String(widget.secondStr) !== "" ? String(widget.secondStr) : "";
-        if (s !== "") return h + ":" + m + ":" + s;
-        if (m !== "") return h + ":" + m;
-        return h;
-    }
-
-    readonly property var parsedTime: {
-        var str = fullTimeStr.trim();
-        var ap = "";
-
-        var ampmMatch = str.match(/\s*([a-zA-Z.]+)\s*$/);
-        if (ampmMatch && /^(am|pm|a\.m\.|p\.m\.)$/i.test(ampmMatch[1])) {
-            ap = ampmMatch[1].toUpperCase().replace(/\./g, "");
-            str = str.substring(0, ampmMatch.index).trim();
-        }
-
-        var parts = str.split(":");
-        var h = parts.length > 0 && parts[0] !== "" ? parts[0] : (widget && widget.hourStr ? String(widget.hourStr) : "14");
-        var m = parts.length > 1 ? parts[1] : "";
-        var s = parts.length > 2 ? parts[2] : "";
-
-        return {
-            hours: h,
-            minutes: m,
-            seconds: s,
-            ampm: ap,
-            hasMinutes: m !== "",
-            hasSeconds: s !== ""
-        };
-    }
+    readonly property string hours: (widget && widget.hourStr !== undefined && widget.hourStr !== "") ? String(widget.hourStr) : (typeof DateTime !== "undefined" && DateTime.hours ? String(DateTime.hours) : "14")
+    readonly property string minutes: (widget && widget.minuteStr !== undefined) ? String(widget.minuteStr) : (typeof DateTime !== "undefined" && DateTime.minutes ? String(DateTime.minutes) : "")
+    readonly property string seconds: (widget && widget.secondStr !== undefined) ? String(widget.secondStr) : (typeof DateTime !== "undefined" && DateTime.seconds ? String(DateTime.seconds) : "")
+    readonly property string ampm: (widget && widget.ampmStr !== undefined) ? String(widget.ampmStr) : (typeof DateTime !== "undefined" && DateTime.ampm ? String(DateTime.ampm) : "")
+    readonly property bool hasMinutes: minutes !== ""
+    readonly property bool hasSeconds: seconds !== ""
 
     implicitWidth: bodyLoader.item ? bodyLoader.item.implicitWidth : 0
     implicitHeight: bodyLoader.item ? bodyLoader.item.implicitHeight : 0
@@ -97,7 +64,7 @@ Item {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: parsedTime.hours
+                text: classicFaceRoot.hours
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 13 : 14) : 14
                 font.weight: Font.Black
@@ -105,9 +72,9 @@ Item {
             }
 
             Text {
-                visible: parsedTime.hasMinutes
+                visible: classicFaceRoot.hasMinutes
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: parsedTime.minutes
+                text: classicFaceRoot.minutes
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 13 : 14) : 14
                 font.weight: Font.Black
@@ -115,9 +82,9 @@ Item {
             }
 
             Text {
-                visible: parsedTime.hasSeconds
+                visible: classicFaceRoot.hasSeconds
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: parsedTime.seconds
+                text: classicFaceRoot.seconds
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 11 : 12) : 12
                 font.weight: Font.Bold
@@ -125,9 +92,9 @@ Item {
             }
 
             Text {
-                visible: parsedTime.ampm !== ""
+                visible: classicFaceRoot.ampm !== ""
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: parsedTime.ampm
+                text: classicFaceRoot.ampm
                 font.family: ThemeBackend.fontFamily
                 font.pixelSize: widget ? widget.s(widget.isCompact ? 8 : 9) : 9
                 font.weight: Font.Bold

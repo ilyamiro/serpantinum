@@ -9,9 +9,12 @@ SettingsBlob {
     required property var tab
     readonly property var rootObj: tab.rootObj
     property alias barPosDropdown: barPosDropdown
+    property alias barMonitorSelector: barMonitorSelector
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "bar_position"
+        searchKeywords: "bar position placement side edge top bottom left right sidebar"
         icon: "󱂬"
         title: I18n.t("guide.bar.position.title")
         description: I18n.t("guide.bar.position.desc")
@@ -34,11 +37,42 @@ SettingsBlob {
             fontPixelSize: rootObj.s(11)
             onValueChanged: function(index, value) {
                 section.tab.clearPendingGroup();
-                if (index === 0) section.tab.barPosition = "top";
-                else if (index === 1) section.tab.barPosition = "bottom";
-                else if (index === 2) section.tab.barPosition = "left";
-                else if (index === 3) section.tab.barPosition = "right";
-                section.tab.updateBarSettings();
+                let pos = "top";
+                if (index === 1) pos = "bottom";
+                else if (index === 2) pos = "left";
+                else if (index === 3) pos = "right";
+                section.tab.setBarSetting("position", pos);
+            }
+        }
+    }
+
+    SettingsRow {
+        rootObj: section.tab.rootObj
+        settingId: "bar_monitors"
+        searchKeywords: "bar monitors displays screens outputs multi-monitor visibility show hide"
+        icon: "󰍹"
+        title: I18n.t("guide.bar.monitors.title", "Monitors")
+        description: I18n.t("guide.bar.monitors.desc", "Select which monitors display the bar")
+
+        MonitorSelector {
+            id: barMonitorSelector
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            allowEmpty: true
+            manageSelection: false
+            selectedMonitors: section.tab.barMonitors
+            buttonHeight: rootObj.s(32)
+            buttonCornerRadius: rootObj.s(8)
+            buttonHorizontalPadding: rootObj.s(12)
+            textFontSize: Math.round(rootObj.s(11))
+            spacing: rootObj.s(8)
+            activeColor: ThemeBackend.mauve
+            activeTextColor: ThemeBackend.crust
+            inactiveColor: ThemeBackend.surface1
+            inactiveTextColor: ThemeBackend.text
+            bgOpacity: 1.0
+            onSelectionChanged: function(selected) {
+                section.tab.clearPendingGroup();
+                section.tab.setBarMonitors(selected);
             }
         }
     }
@@ -46,6 +80,8 @@ SettingsBlob {
     SettingsRow {
         id: widthInnerBox
         rootObj: section.tab.rootObj
+        settingId: "bar_width"
+        searchKeywords: "bar width height length size percentage span"
         icon: "󰘖"
         title: {
             if (section.tab.barPosition === "left" || section.tab.barPosition === "right") {
@@ -91,19 +127,19 @@ SettingsBlob {
                 section.tab.clearPendingGroup();
                 let rounded = Math.round(val);
                 if (section.tab.currentBarWidth !== rounded) {
-                    section.tab.currentBarWidth = rounded;
-                    section.tab.barWidthDebounceTimer.restart();
+                    section.tab.setBarSettingDebounced("width", rounded);
                 }
             }
             onDragFinished: {
-                section.tab.barWidthDebounceTimer.stop();
-                section.tab.updateBarSettings();
+                section.tab.flushBarSettings();
             }
         }
     }
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "bar_thickness"
+        searchKeywords: "bar thickness height size scale slim compact tall"
         icon: "󰘖"
         title: I18n.t("guide.bar.thickness.title", "Bar thickness")
         description: I18n.t("guide.bar.thickness.desc", "Change how thick the bar is, modules scale to fit")
@@ -129,13 +165,11 @@ SettingsBlob {
                 section.tab.clearPendingGroup();
                 let rounded = Math.round(val);
                 if (section.tab.currentBarThickness !== rounded) {
-                    section.tab.currentBarThickness = rounded;
-                    section.tab.barWidthDebounceTimer.restart();
+                    section.tab.setBarSettingDebounced("height", rounded);
                 }
             }
             onDragFinished: {
-                section.tab.barWidthDebounceTimer.stop();
-                section.tab.updateBarSettings();
+                section.tab.flushBarSettings();
             }
         }
     }
@@ -143,6 +177,8 @@ SettingsBlob {
     SettingsRow {
         id: centerByEdgesBox
         rootObj: section.tab.rootObj
+        settingId: "bar_center_by_edges"
+        searchKeywords: "bar center alignment edges balance modules middle"
         icon: "󰉹"
         title: I18n.t("guide.bar.center_by_edges.title")
         description: (section.tab.barPosition === "left" || section.tab.barPosition === "right") ? I18n.t("guide.bar.center_by_edges.desc_vertical") : I18n.t("guide.bar.center_by_edges.desc")
@@ -156,8 +192,7 @@ SettingsBlob {
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
                 section.tab.clearPendingGroup();
-                section.tab.centerByEdges = c;
-                section.tab.updateBarSettings();
+                section.tab.setBarSetting("centerByEdges", c);
             }
         }
     }

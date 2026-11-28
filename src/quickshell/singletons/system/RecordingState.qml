@@ -4,7 +4,7 @@ import Quickshell
 import Quickshell.Io
 import "../../"
 
-Singleton {
+RefCountedService {
     id: root
 
     property bool isRecording: false
@@ -12,21 +12,10 @@ Singleton {
     property real recStartEpoch: 0
     readonly property string recTimeFormatted: String(Math.floor(recSeconds / 60)).padStart(2, "0") + ":" + String(recSeconds % 60).padStart(2, "0")
     readonly property string recCacheDir: Caching.cacheDir ? Caching.getCacheDir("recording") : ""
-
-    property int subscribers: 0
-    readonly property bool active: subscribers > 0 && recCacheDir !== ""
-
-    function subscribe() {
-        subscribers++;
-        checkRecording();
-    }
-
-    function unsubscribe() {
-        if (subscribers > 0) subscribers--;
-    }
+    readonly property bool watching: active && recCacheDir !== ""
 
     function checkRecording() {
-        if (!active) return;
+        if (!watching) return;
         recCheckProc.running = false;
         recCheckProc.running = true;
     }
@@ -38,8 +27,8 @@ Singleton {
         }
     }
 
-    onActiveChanged: {
-        if (active) {
+    onWatchingChanged: {
+        if (watching) {
             checkRecording();
         } else {
             recCheckProc.running = false;
@@ -70,14 +59,14 @@ Singleton {
 
     FileView {
         path: root.recCacheDir ? root.recCacheDir + "/rec_pid" : ""
-        watchChanges: root.active
+        watchChanges: root.watching
         printErrors: false
         onFileChanged: root.checkRecording()
     }
 
     Timer {
         interval: 1000
-        running: root.active && root.isRecording
+        running: root.watching && root.isRecording
         repeat: true
         onTriggered: {
             root.recSeconds = Math.max(0, Math.floor(Date.now() / 1000 - root.recStartEpoch));

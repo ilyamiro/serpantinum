@@ -13,10 +13,10 @@ GuideTab {
     property alias weekAppListModel: weekAppListModel
     property alias weekListModel: weekListModel
 
-    readonly property color textMain: ThemeBackend.liquidGlass ? "#ffffff" : ThemeBackend.text
-    readonly property color textSub: ThemeBackend.liquidGlass ? "#ffffff" : ThemeBackend.subtext0
-    readonly property color textDim: ThemeBackend.liquidGlass ? "#ffffff" : ThemeBackend.overlay0
-    readonly property color textAccent: ThemeBackend.liquidGlass ? "#ffffff" : ThemeBackend.mauve
+    readonly property color textMain: ThemeBackend.text
+    readonly property color textSub: ThemeBackend.subtext0
+    readonly property color textDim: ThemeBackend.overlay0
+    readonly property color textAccent: ThemeBackend.mauve
 
     readonly property var monthNames: [
         I18n.t("guide.wellbeing.months.january"),
@@ -591,9 +591,7 @@ GuideTab {
     }
 
     function iconSource(ic) {
-        if (!ic) return "";
-        if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-        return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+        return AppMatcher.iconSource(ic);
     }
 
     function appInfo(appClass) {

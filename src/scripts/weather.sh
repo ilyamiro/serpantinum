@@ -378,7 +378,8 @@ if [[ "$ACTION" == "--getdata" ]]; then
     get_data
 
 elif [[ "$ACTION" == "--json" ]]; then
-    CACHE_LIMIT=900
+    CACHE_LIMIT=$(get_setting "general" '{}' | jq -r '((.weatherInterval // 30) | tonumber? // 30) * 60 | if . < 60 then 1800 else floor end' 2>/dev/null)
+    [[ "$CACHE_LIMIT" =~ ^[0-9]+$ ]] || CACHE_LIMIT=1800
     PENDING_RETRY_LIMIT=3600
 
     loc_json=$(get_location)
@@ -434,7 +435,7 @@ elif [[ "$ACTION" == "--json" ]]; then
                 get_data &
             fi
         else
-            if [ $diff -gt $CACHE_LIMIT ]; then
+            if [ $diff -ge $((CACHE_LIMIT - 60)) ]; then
                 log_debug "Cache exceeded normal limit. Launching background fetch..."
                 touch "$json_file"
                 get_data &

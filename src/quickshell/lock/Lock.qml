@@ -4,7 +4,6 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Services.Pam
-import Quickshell.Services.UPower
 import "../"
 
 Scope {
@@ -31,18 +30,18 @@ Scope {
     property string defaultPamConfig: ""
     readonly property string noFpPamDir: Caching.getRunDir("lock") + "/pam"
     readonly property int passwordLockoutMs: 30000
-    readonly property var lockscreenSettings: Config.getSetting("lockscreen", { "fingerprintEnabled": true, "attemptLimitEnabled": false, "passwordMaxAttempts": 5, "fingerprintMaxAttempts": 5 })
+    readonly property var lockscreenSettings: Config.peekSetting("lockscreen", { "fingerprintEnabled": true, "attemptLimitEnabled": false, "passwordMaxAttempts": 5, "fingerprintMaxAttempts": 5 })
     readonly property bool fingerprintEnabled: lockscreenSettings.fingerprintEnabled !== false
     readonly property bool attemptLimitEnabled: lockscreenSettings.attemptLimitEnabled === true
     readonly property int passwordMaxAttempts: Math.max(1, Math.round(Number(lockscreenSettings.passwordMaxAttempts) || 5))
     readonly property int fingerprintMaxAttempts: Math.max(1, Math.round(Number(lockscreenSettings.fingerprintMaxAttempts) || 5))
 
-    readonly property bool isDesktop: UPower.displayDevice.ready ? !UPower.displayDevice.isLaptopBattery : SystemInfo.isDesktop
-    readonly property int batCap: UPower.displayDevice.ready ? Math.round(UPower.displayDevice.percentage * 100) : 0
+    readonly property bool isDesktop: SysData.isDesktop
+    readonly property int batCap: SysData.batteryCapacity
     readonly property string batPercent: batCap + "%"
-    readonly property string batStatus: UPower.displayDevice.ready ? (UPower.displayDevice.state === UPowerDeviceState.FullyCharged ? "Full" : (UPower.displayDevice.state === UPowerDeviceState.Charging ? "Charging" : "Unknown")) : "Unknown"
-    readonly property bool isCharging: UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
-    readonly property string batIcon: isCharging ? "󰂄" : (batCap > 20 ? "󰁹" : "󰂃")
+    readonly property string batStatus: SysData.batteryStatus === "Fully Charged" ? "Full" : SysData.batteryStatus
+    readonly property bool isCharging: SysData.isCharging
+    readonly property string batIcon: SysData.batteryIcon
 
     readonly property color batDynamicColor: {
         if (batCap <= 15 && !isCharging) return ThemeBackend.red;

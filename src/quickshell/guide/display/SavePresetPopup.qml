@@ -1,23 +1,19 @@
 import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls
 import Quickshell
 import "../../"
 import "../../reusables"
 import "../../widgets"
 
-Popup {
+GuideModal {
     id: savePresetPopup
-    parent: rootObj ? rootObj : undefined
-    x: parent && parent.width > 0 ? Math.max(0, Math.round((parent.width - width) / 2)) : 0
-    y: parent && parent.height > 0 ? Math.max(0, Math.round((parent.height - height) / 2)) : 0
-    modal: true
-    dim: true
-    width: rootObj ? Math.min(rootObj.width - rootObj.s(32), rootObj.s(720)) : 720
-    padding: rootObj ? rootObj.s(20) : 20
-    closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
-    property var rootObj
+    title: I18n.t("guide.display.widgets.save_preset.title", "Save preset")
+    preferredWidth: s(720)
+    padding: s(20)
+    cornerRadius: ThemeBackend.clampedBorderRadius
+    contentSpacing: s(16)
+
     property string targetMonitor: ""
     property var targetWidgets: []
 
@@ -42,19 +38,9 @@ Popup {
     }
 
     function getScreen(monName) {
-        if (Quickshell.screens && Quickshell.screens.length > 0) {
-            let target = String(monName || "").trim().toLowerCase();
-            for (let i = 0; i < Quickshell.screens.length; i++) {
-                let scr = Quickshell.screens[i];
-                if (scr && scr.name) {
-                    let nm = String(scr.name).trim().toLowerCase();
-                    let safe = nm.replace(/[^a-zA-Z0-9_-]/g, "_");
-                    if (nm === target || safe === target) return scr;
-                }
-            }
-            return Quickshell.screens[0];
-        }
-        return null;
+        let scr = Compositor.screenByName(monName);
+        if (scr) return scr;
+        return (Quickshell.screens && Quickshell.screens.length > 0) ? Quickshell.screens[0] : null;
     }
 
     function getScreenDimensions(monName) {
@@ -158,160 +144,105 @@ Popup {
         return Qt.resolvedUrl("../../widgets/faces/" + cap + "Face.qml");
     }
 
-    Connections {
-        target: savePresetPopup.rootObj ? savePresetPopup.rootObj : null
-        function onVisibleChanged() {
-            if (savePresetPopup.rootObj && !savePresetPopup.rootObj.visible) {
-                savePresetPopup.close();
-            }
-        }
-    }
+    Rectangle {
+        id: currentPreviewBox
+        Layout.fillWidth: true
 
-    Connections {
-        target: savePresetPopup.parent && savePresetPopup.parent !== savePresetPopup.rootObj ? savePresetPopup.parent : null
-        function onVisibleChanged() {
-            if (savePresetPopup.parent && !savePresetPopup.parent.visible) {
-                savePresetPopup.close();
-            }
-        }
-    }
+        property var screenDims: savePresetPopup.getScreenDimensions(savePresetPopup.targetMonitor)
+        property real sWidth: screenDims.w > 0 ? screenDims.w : 1920
+        property real sHeight: screenDims.h > 0 ? screenDims.h : 1080
+        property real sAspect: (sWidth > 0 && sHeight > 0) ? (sWidth / sHeight) : (16 / 9)
 
-    background: Rectangle {
-        radius: ThemeBackend.clampedBorderRadius
-        color: gf1.active ? "transparent" : ThemeBackend.base
+        Layout.preferredHeight: Math.round(width / sAspect)
+        Layout.minimumHeight: Layout.preferredHeight
+        Layout.maximumHeight: Layout.preferredHeight
+        radius: ThemeBackend.borderRadius
+        color: Qt.darker(ThemeBackend.surface0, 1.15)
+        clip: true
 
-        GlassFill {
-            id: gf1
+        Item {
             anchors.fill: parent
-            radius: parent.radius
-            tintColor: ThemeBackend.base
-            tintAmount: 0.25
-        }
-    }
-
-    contentItem: ColumnLayout {
-        spacing: rootObj ? rootObj.s(16) : 16
-
-        RowLayout {
-            Layout.fillWidth: true
-
-            Text {
-                text: I18n.t("guide.display.widgets.save_preset.title", "Save Preset")
-                color: ThemeBackend.text
-                font.family: ThemeBackend.fontFamily
-                font.pixelSize: rootObj ? rootObj.s(16) : 16
-                font.bold: true
-                Layout.fillWidth: true
-            }
-
-            CloseButton {
-                size: rootObj ? rootObj.s(30) : 30
-                cornerRadius: rootObj ? rootObj.s(8) : 8
-                iconFontSize: rootObj ? rootObj.s(14) : 14
-                onClicked: savePresetPopup.close()
-            }
-        }
-
-        Rectangle {
-            id: currentPreviewBox
-            Layout.fillWidth: true
-
-            property var screenDims: savePresetPopup.getScreenDimensions(savePresetPopup.targetMonitor)
-            property real sWidth: screenDims.w > 0 ? screenDims.w : 1920
-            property real sHeight: screenDims.h > 0 ? screenDims.h : 1080
-            property real sAspect: (sWidth > 0 && sHeight > 0) ? (sWidth / sHeight) : (16 / 9)
-
-            Layout.preferredHeight: Math.round(width / sAspect)
-            Layout.minimumHeight: Layout.preferredHeight
-            Layout.maximumHeight: Layout.preferredHeight
-            radius: ThemeBackend.borderRadius
-            color: Qt.darker(ThemeBackend.surface0, 1.15)
             clip: true
 
             Item {
-                anchors.fill: parent
-                clip: true
+                width: currentPreviewBox.sWidth
+                height: currentPreviewBox.sHeight
+                transformOrigin: Item.TopLeft
+                scale: (currentPreviewBox.width > 0 ? currentPreviewBox.width : 1) / currentPreviewBox.sWidth
+                enabled: false
+
+                BoundedImage {
+                    anchors.fill: parent
+                    devicePixelRatio: ((Screen.devicePixelRatio && Screen.devicePixelRatio > 0) ? Screen.devicePixelRatio : 1) * parent.scale
+                    source: (savePresetPopup.visible && savePresetPopup.targetMonitor) ? savePresetPopup.getWallpaperSource(savePresetPopup.targetMonitor) : ""
+                    fillMode: Image.PreserveAspectCrop
+                    smooth: true
+                    cache: true
+                    asynchronous: false
+                }
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: "#000000"
+                    opacity: 0.25
+                }
 
                 Item {
-                    width: currentPreviewBox.sWidth
-                    height: currentPreviewBox.sHeight
-                    transformOrigin: Item.TopLeft
-                    scale: (currentPreviewBox.width > 0 ? currentPreviewBox.width : 1) / currentPreviewBox.sWidth
-                    enabled: false
+                    anchors.fill: parent
 
-                    BoundedImage {
-                        anchors.fill: parent
-                        devicePixelRatio: ((Screen.devicePixelRatio && Screen.devicePixelRatio > 0) ? Screen.devicePixelRatio : 1) * parent.scale
-                        source: (savePresetPopup.visible && savePresetPopup.targetMonitor) ? savePresetPopup.getWallpaperSource(savePresetPopup.targetMonitor) : ""
-                        fillMode: Image.PreserveAspectCrop
-                        smooth: true
-                        cache: true
-                        asynchronous: false
-                    }
+                    Repeater {
+                        model: savePresetPopup.visible ? savePresetPopup.targetWidgets : []
+                        delegate: Item {
+                            id: curMiniContainer
+                            required property var modelData
+                            required property int index
 
-                    Rectangle {
-                        anchors.fill: parent
-                        color: "#000000"
-                        opacity: 0.25
-                    }
+                            readonly property string typeStr: modelData.type || modelData.wType || "time"
+                            readonly property var defSize: (typeof WidgetRegistry !== "undefined" && typeof WidgetRegistry.defaultSize === "function")
+                                ? WidgetRegistry.defaultSize(typeStr)
+                                : ({ w: 250, h: 120 })
+                            readonly property string defVariant: (typeof WidgetRegistry !== "undefined" && typeof WidgetRegistry.defaultVariant === "function")
+                                ? WidgetRegistry.defaultVariant(typeStr)
+                                : "default"
+                            readonly property string variantStr: modelData.variant || modelData.wVariant || curMiniContainer.defVariant
 
-                    Item {
-                        anchors.fill: parent
+                            readonly property real rawW: modelData.w !== undefined ? modelData.w : (modelData.width !== undefined ? modelData.width : (modelData.wWidth !== undefined ? modelData.wWidth : defSize.w))
+                            readonly property real rawH: modelData.h !== undefined ? modelData.h : (modelData.height !== undefined ? modelData.height : (modelData.wHeight !== undefined ? modelData.wHeight : defSize.h))
 
-                        Repeater {
-                            model: savePresetPopup.visible ? savePresetPopup.targetWidgets : []
-                            delegate: Item {
-                                id: curMiniContainer
-                                required property var modelData
-                                required property int index
+                            readonly property real resolvedW: (modelData.stretchWidth || modelData.wStretchWidth) ? currentPreviewBox.sWidth : savePresetPopup.resolveDimension(rawW, currentPreviewBox.sWidth, defSize.w)
+                            readonly property real resolvedH: (modelData.stretchHeight || modelData.wStretchHeight) ? currentPreviewBox.sHeight : savePresetPopup.resolveDimension(rawH, currentPreviewBox.sHeight, defSize.h)
 
-                                readonly property string typeStr: modelData.type || modelData.wType || "time"
-                                readonly property var defSize: (typeof WidgetRegistry !== "undefined" && typeof WidgetRegistry.defaultSize === "function")
-                                    ? WidgetRegistry.defaultSize(typeStr)
-                                    : ({ w: 250, h: 120 })
-                                readonly property string defVariant: (typeof WidgetRegistry !== "undefined" && typeof WidgetRegistry.defaultVariant === "function")
-                                    ? WidgetRegistry.defaultVariant(typeStr)
-                                    : "default"
-                                readonly property string variantStr: modelData.variant || modelData.wVariant || curMiniContainer.defVariant
+                            readonly property var resolvedPos: savePresetPopup.resolvePosition(modelData, currentPreviewBox.sWidth, currentPreviewBox.sHeight, resolvedW, resolvedH)
 
-                                readonly property real rawW: modelData.w !== undefined ? modelData.w : (modelData.width !== undefined ? modelData.width : (modelData.wWidth !== undefined ? modelData.wWidth : defSize.w))
-                                readonly property real rawH: modelData.h !== undefined ? modelData.h : (modelData.height !== undefined ? modelData.height : (modelData.wHeight !== undefined ? modelData.wHeight : defSize.h))
+                            readonly property real rawRotation: parseFloat(modelData.wRotation !== undefined ? modelData.wRotation : (modelData.rotation !== undefined ? modelData.rotation : 0)) || 0
+                            readonly property int faceRotation: ((Math.round(rawRotation) % 360) + 360) % 360
+                            readonly property bool isQuarterTurn: faceRotation % 180 !== 0
 
-                                readonly property real resolvedW: (modelData.stretchWidth || modelData.wStretchWidth) ? currentPreviewBox.sWidth : savePresetPopup.resolveDimension(rawW, currentPreviewBox.sWidth, defSize.w)
-                                readonly property real resolvedH: (modelData.stretchHeight || modelData.wStretchHeight) ? currentPreviewBox.sHeight : savePresetPopup.resolveDimension(rawH, currentPreviewBox.sHeight, defSize.h)
+                            x: resolvedPos.x
+                            y: resolvedPos.y
+                            width: isQuarterTurn ? resolvedH : resolvedW
+                            height: isQuarterTurn ? resolvedW : resolvedH
+                            opacity: modelData.wOpacity !== undefined ? modelData.wOpacity : (modelData.opacity !== undefined ? modelData.opacity : 1.0)
 
-                                readonly property var resolvedPos: savePresetPopup.resolvePosition(modelData, currentPreviewBox.sWidth, currentPreviewBox.sHeight, resolvedW, resolvedH)
-
-                                readonly property real rawRotation: parseFloat(modelData.wRotation !== undefined ? modelData.wRotation : (modelData.rotation !== undefined ? modelData.rotation : 0)) || 0
-                                readonly property int faceRotation: ((Math.round(rawRotation) % 360) + 360) % 360
-                                readonly property bool isQuarterTurn: faceRotation % 180 !== 0
-
-                                x: resolvedPos.x
-                                y: resolvedPos.y
-                                width: isQuarterTurn ? resolvedH : resolvedW
-                                height: isQuarterTurn ? resolvedW : resolvedH
-                                opacity: modelData.wOpacity !== undefined ? modelData.wOpacity : (modelData.opacity !== undefined ? modelData.opacity : 1.0)
-
-                                Loader {
-                                    anchors.centerIn: parent
-                                    width: curMiniContainer.resolvedW
-                                    height: curMiniContainer.resolvedH
-                                    rotation: curMiniContainer.faceRotation
-                                    asynchronous: false
-                                    source: savePresetPopup.getFaceUrl(curMiniContainer.typeStr, curMiniContainer.variantStr)
-                                    onLoaded: {
-                                        if (item) {
-                                            if ("variant" in item) item.variant = curMiniContainer.variantStr;
-                                            if ("wVariant" in item) item.wVariant = curMiniContainer.variantStr;
-                                            if ("type" in item) item.type = curMiniContainer.typeStr;
-                                            if ("wType" in item) item.wType = curMiniContainer.typeStr;
-                                            if ("wWidth" in item) item.wWidth = curMiniContainer.resolvedW;
-                                            if ("wHeight" in item) item.wHeight = curMiniContainer.resolvedH;
-                                            if ("imagePath" in item) item.imagePath = modelData.imagePath || modelData.wImagePath || "";
-                                            if ("wImagePath" in item) item.wImagePath = modelData.imagePath || modelData.wImagePath || "";
-                                            if ("previewMode" in item) item.previewMode = true;
-                                            if ("screen" in item) item.screen = savePresetPopup.getScreen(savePresetPopup.targetMonitor);
-                                        }
+                            Loader {
+                                anchors.centerIn: parent
+                                width: curMiniContainer.resolvedW
+                                height: curMiniContainer.resolvedH
+                                rotation: curMiniContainer.faceRotation
+                                asynchronous: false
+                                source: savePresetPopup.getFaceUrl(curMiniContainer.typeStr, curMiniContainer.variantStr)
+                                onLoaded: {
+                                    if (item) {
+                                        if ("variant" in item) item.variant = curMiniContainer.variantStr;
+                                        if ("wVariant" in item) item.wVariant = curMiniContainer.variantStr;
+                                        if ("type" in item) item.type = curMiniContainer.typeStr;
+                                        if ("wType" in item) item.wType = curMiniContainer.typeStr;
+                                        if ("wWidth" in item) item.wWidth = curMiniContainer.resolvedW;
+                                        if ("wHeight" in item) item.wHeight = curMiniContainer.resolvedH;
+                                        if ("imagePath" in item) item.imagePath = modelData.imagePath || modelData.wImagePath || "";
+                                        if ("wImagePath" in item) item.wImagePath = modelData.imagePath || modelData.wImagePath || "";
+                                        if ("previewMode" in item) item.previewMode = true;
+                                        if ("screen" in item) item.screen = savePresetPopup.getScreen(savePresetPopup.targetMonitor);
                                     }
                                 }
                             }
@@ -319,44 +250,44 @@ Popup {
                     }
                 }
             }
-
-            Rectangle {
-                anchors.fill: parent
-                color: "transparent"
-                radius: ThemeBackend.borderRadius
-            }
         }
 
-        RowLayout {
+        Rectangle {
+            anchors.fill: parent
+            color: "transparent"
+            radius: ThemeBackend.borderRadius
+        }
+    }
+
+    RowLayout {
+        Layout.fillWidth: true
+        spacing: savePresetPopup.s(10)
+
+        Input {
+            id: presetNameInput
             Layout.fillWidth: true
-            spacing: rootObj ? rootObj.s(10) : 10
+            Layout.preferredHeight: savePresetPopup.s(38)
+            placeholderText: I18n.t("guide.display.widgets.preset_name_placeholder", "Enter preset name...")
+            baseColor: ThemeBackend.surface0
+            accentColor: ThemeBackend.mauve
+            textColor: ThemeBackend.text
+            subTextColor: ThemeBackend.subtext0
+            borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
+            cornerRadius: ThemeBackend.borderRadius
+            fontPixelSize: savePresetPopup.s(13)
+            onAccepted: savePresetPopup.commitSave()
+        }
 
-            Input {
-                id: presetNameInput
-                Layout.fillWidth: true
-                Layout.preferredHeight: rootObj ? rootObj.s(38) : 38
-                placeholderText: I18n.t("guide.display.widgets.preset_name_placeholder", "Enter preset name...")
-                baseColor: ThemeBackend.surface0
-                accentColor: ThemeBackend.mauve
-                textColor: ThemeBackend.text
-                subTextColor: ThemeBackend.subtext0
-                borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
-                cornerRadius: ThemeBackend.borderRadius
-                fontPixelSize: rootObj ? rootObj.s(13) : 13
-                onAccepted: savePresetPopup.commitSave()
-            }
-
-            IconButton {
-                size: rootObj ? rootObj.s(38) : 38
-                Layout.preferredWidth: rootObj ? rootObj.s(38) : 38
-                Layout.preferredHeight: rootObj ? rootObj.s(38) : 38
-                cornerRadius: ThemeBackend.borderRadius
-                buttonIcon: "󰄬"
-                iconFontSize: rootObj ? rootObj.s(18) : 18
-                accentColor: ThemeBackend.mauve
-                textColor: ThemeBackend.crust
-                onClicked: savePresetPopup.commitSave()
-            }
+        IconButton {
+            size: savePresetPopup.s(38)
+            Layout.preferredWidth: savePresetPopup.s(38)
+            Layout.preferredHeight: savePresetPopup.s(38)
+            cornerRadius: ThemeBackend.borderRadius
+            buttonIcon: "󰄬"
+            iconFontSize: savePresetPopup.s(18)
+            accentColor: ThemeBackend.mauve
+            textColor: ThemeBackend.crust
+            onClicked: savePresetPopup.commitSave()
         }
     }
 }

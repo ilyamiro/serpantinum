@@ -33,6 +33,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "general_time_format"
+        searchKeywords: "time format clock 12h 24h am pm seconds hour minutes pattern"
         icon: "󰅐"
         title: I18n.t("guide.bar.time.title", "Time format")
         description: I18n.t("guide.bar.time.desc", "Format pattern (e.g. HH:mm:ss)")

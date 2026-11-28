@@ -3,6 +3,8 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const CF_BEACON_TOKEN = 'c2690c3444a34bc4aed5966aa3778e88';
+const FONT_STYLESHEET_URL =
+  'https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap';
 
 const config: Config = {
   title: 'Serpantinum',
@@ -27,6 +29,8 @@ const config: Config = {
     locales: ['en'],
   },
 
+  clientModules: [require.resolve('./src/clientModules/themeMotion.ts')],
+
   scripts: [
     {
       src: 'https://static.cloudflareinsights.com/beacon.min.js',
@@ -36,6 +40,21 @@ const config: Config = {
   ],
 
   headTags: [
+    {
+      tagName: 'link',
+      attributes: {rel: 'preconnect', href: 'https://fonts.googleapis.com'},
+    },
+    {
+      tagName: 'link',
+      attributes: {rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous'},
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'stylesheet',
+        href: FONT_STYLESHEET_URL,
+      },
+    },
     {
       tagName: 'link',
       attributes: {rel: 'icon', href: '/favicon-48.png', type: 'image/png', sizes: '48x48'},

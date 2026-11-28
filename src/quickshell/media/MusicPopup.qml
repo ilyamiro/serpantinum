@@ -19,8 +19,6 @@ MusicEqualizerState {
     property alias toLyricsAnim: toLyricsAnim
     property alias lyricsPickerPopup: lyricsPickerPopup
 
-    property var exitCallback: null
-
     function startExit(onFinished) {
         introAnim.stop();
         chargeAnim.stop();
@@ -44,29 +42,24 @@ MusicEqualizerState {
         if (bottomSectionSwitch.currentIndex === 1) playAudioIntro();
     }
 
-    property bool lyricsSubscribed: false
+    readonly property bool lyricsWanted: popupRoot.active && (bottomSectionSwitch.currentIndex === 2)
+
+    SubscriptionGate {
+        target: Lyrics
+        wanted: popupRoot.lyricsWanted
+    }
 
     function updateLyricsSubscription() {
-        let shouldSub = popupRoot.active && (bottomSectionSwitch.currentIndex === 2);
-        if (shouldSub && !lyricsSubscribed) {
-            lyricsSubscribed = true;
-            Lyrics.customPlayer = popupRoot.targetPlayer;
-            Lyrics.subscribe();
-        } else if (!shouldSub && lyricsSubscribed) {
-            lyricsSubscribed = false;
-            Lyrics.customPlayer = null;
-            Lyrics.unsubscribe();
-        } else if (shouldSub && lyricsSubscribed) {
-            Lyrics.customPlayer = popupRoot.targetPlayer;
-        }
+        Lyrics.customPlayer = popupRoot.lyricsWanted ? popupRoot.targetPlayer : null;
     }
+
+    onLyricsWantedChanged: updateLyricsSubscription()
 
     Shortcut {
         sequence: "Tab"
         enabled: popupRoot.active
         onActivated: {
             bottomSectionSwitch.currentIndex = (bottomSectionSwitch.currentIndex + 1) % 3;
-            popupRoot.updateLyricsSubscription();
         }
     }
 
@@ -75,7 +68,6 @@ MusicEqualizerState {
         enabled: popupRoot.active
         onActivated: {
             bottomSectionSwitch.currentIndex = (bottomSectionSwitch.currentIndex + 2) % 3;
-            popupRoot.updateLyricsSubscription();
         }
     }
 
@@ -84,11 +76,9 @@ MusicEqualizerState {
         if (active) {
             forceActiveFocus();
             resetAndPlayIntro();
-            registerSpectrum();
             triggerLocalArtFetch();
         } else {
             exitAnim.stop();
-            unregisterSpectrum();
             if (lyricsPickerPopup.visible || lyricsPickerPopup.opened) {
                 lyricsPickerPopup.closePicker();
             }
@@ -105,18 +95,13 @@ MusicEqualizerState {
         if (active) {
             forceActiveFocus();
             resetAndPlayIntro();
-            registerSpectrum();
             triggerLocalArtFetch();
             updateLyricsSubscription();
         }
     }
 
     Component.onDestruction: {
-        unregisterSpectrum();
-        if (lyricsSubscribed) {
-            lyricsSubscribed = false;
-            Lyrics.unsubscribe();
-        }
+        Lyrics.customPlayer = null;
     }
 
     Text {
@@ -364,13 +349,7 @@ MusicEqualizerState {
             }
         }
         ScriptAction {
-            script: {
-                if (popupRoot.exitCallback) {
-                    let cb = popupRoot.exitCallback;
-                    popupRoot.exitCallback = null;
-                    cb();
-                }
-            }
+            script: popupRoot.finishExit()
         }
     }
 

@@ -115,6 +115,23 @@
         "title": "Close with right click",
         "desc": "Dismiss a notification by right-clicking it"
       },
+      "timeout_low": {
+        "title": "Low urgency timeout",
+        "desc": "How long low urgency notifications stay on screen"
+      },
+      "timeout_normal": {
+        "title": "Normal timeout",
+        "desc": "How long regular notifications stay on screen"
+      },
+      "timeout_critical": {
+        "title": "Urgent timeout",
+        "desc": "How long urgent notifications stay on screen"
+      },
+      "override_timeouts": {
+        "title": "Override app timeouts",
+        "desc": "By default the values above are only used when the app doesn't set its own timeout. Turn on to always use them"
+      },
+      "timeout_never": "Never",
       "test": "Test notification",
       "test_desc": "This is a test notification"
     },
@@ -218,6 +235,10 @@
       "quickactions": {
         "title": "Quickactions",
         "desc": "Enable floating quickactions overlay"
+      },
+      "daily_ping": {
+        "title": "Daily ping",
+        "desc": "Send one empty request a day to count active users. No data is attached"
       },
       "location": {
         "title": "Location",
@@ -364,8 +385,12 @@
             "name": {
               "pills": "Pills",
               "numbers": "Numbers",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Morph",
+              "trace": "Trace"
+            },
+            "morph": "Expressive morphing shapes",
+            "trace": "Connected nodes with traveling pulse"
           },
           "name": "Workspaces"
         },
@@ -384,7 +409,8 @@
             "name": {
               "classic": "Classic",
               "material": "Material",
-              "badge": "Dot Matrix"
+              "badge": "Dot Matrix",
+              "pill": "Pill"
             }
           }
         },
@@ -401,6 +427,10 @@
         "bottom": "Bottom",
         "left": "Left",
         "right": "Right"
+      },
+      "monitors": {
+        "title": "Monitors",
+        "desc": "Select which monitors display the bar"
       },
       "width": {
         "title": "Bar width",
@@ -504,8 +534,12 @@
         "style": {
           "title": "Circle style",
           "desc": "Visual appearance of the progress rings",
-          "wave": "Wave",
-          "circle": "Circle"
+          "wave": "Rings filled with a liquid wave",
+          "circle": "Clean progress rings",
+          "name": {
+            "wave": "Wave",
+            "circle": "Circle"
+          }
         },
         "items": {
           "title": "Stats",
@@ -642,6 +676,16 @@
         "preview": {
           "title": "Song title",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Media style",
+          "desc": "Choose the visual appearance of the media module",
+          "name": {
+            "classic": "Classic",
+            "ambient": "Ambient"
+          },
+          "classic": "Album thumbnail on a plain background",
+          "ambient": "Blurred album art behind the controls"
         }
       },
       "thickness": {
@@ -656,7 +700,9 @@
           "launcher": "Launcher",
           "night_light": "Night light",
           "caffeine": "Caffeine",
-          "shuffle": "Shuffle wallpaper"
+          "shuffle": "Shuffle wallpaper",
+          "color_picker": "Color picker",
+          "clipboard": "Clipboard"
         },
         "style": {
           "title": "Style",
@@ -703,6 +749,14 @@
         "select_dir": "Select directory...",
         "select_wallpaper": "Select wallpaper",
         "select": "Wallpaper",
+        "carousel": {
+          "title": "Wallpaper carousel",
+          "desc": "Show a random wallpaper from the directory on a schedule, going through every wallpaper before any repeats",
+          "interval": {
+            "title": "Change interval",
+            "desc": "Seconds between wallpaper changes, from 10 seconds up to a week"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Transition",
@@ -730,6 +784,31 @@
           "paint": {
             "name": "Paint",
             "desc": "Paint the new wallpaper in, cell by cell, from colonies that grow across the screen"
+          },
+          "wave": {
+            "name": "Fluid wave",
+            "desc": "Sweep a curved liquid wave across the screen",
+            "direction_desc": "Edge or corner the wave sweeps from"
+          },
+          "blinds": {
+            "name": "Venetian blinds",
+            "desc": "Open parallel slats across the screen in a staggered wave",
+            "orientation_desc": "Axis the blinds open along"
+          },
+          "clock": {
+            "name": "Clock sweep",
+            "desc": "Sweep clockwise around a point like a radar beam",
+            "origin_desc": "Where the sweep pivots from"
+          },
+          "hex": {
+            "name": "Hex grid",
+            "desc": "Reveal the new wallpaper through a rippling honeycomb of hexagons",
+            "size_title": "Hex size",
+            "size_desc": "Size of each hexagon tile in the grid"
+          },
+          "ink": {
+            "name": "Ink bleed",
+            "desc": "Bloom organically across the screen like watercolor ink"
           },
           "orientation": {
             "title": "Orientation",
@@ -973,6 +1052,9 @@
       "orientation": {
         "horizontal": "Horizontal",
         "vertical": "Vertical"
+      },
+      "keyboard_layout": {
+        "title": "Show on keyboard layout"
       }
     },
     "common": {
@@ -1018,6 +1100,10 @@
       "background": {
         "title": "Draw a background behind apps",
         "desc": "Show the dock panel behind app icons"
+      },
+      "icons_only": {
+        "title": "Icons only",
+        "desc": "Hide the box behind each app and show only its icon"
       },
       "transparency": {
         "title": "Dock transparency",
@@ -1104,6 +1190,7 @@
     "search": {
       "placeholder": "Search settings...",
       "prompt": "Type to search settings...",
+      "indexing": "Indexing settings...",
       "no_results": "No settings found",
       "results": "Search results"
     },
@@ -1254,7 +1341,10 @@
     "tab_emojis": "Emojis",
     "placeholder_emojis": "Search emojis by name or keyword...",
     "search_run": "Search {provider}",
-    "search_hint": "Type to search with {provider}"
+    "search_hint": "Type to search with {provider}",
+    "tab_windows": "Windows",
+    "placeholder_windows": "Search open windows...",
+    "window_workspace": "Workspace {ws}"
   },
   "calendar": {
     "loading": "Loading...",
@@ -1602,7 +1692,11 @@
       "ocr_missing_body": "Open Screenshot settings to install a language.",
       "ocr_uncertain_title": "Text copied, but it may be inaccurate",
       "ocr_language_hint": "The text may be in a language that isn't installed. Add languages in Screenshot settings.",
-      "ocr_open_settings": "Open settings"
+      "ocr_open_settings": "Open settings",
+      "color_copied_title": "Color copied"
+    },
+    "color_picker": {
+      "copied": "Copied"
     }
   },
   "start": {
@@ -1611,7 +1705,7 @@
     "welcome": "Welcome",
     "tagline": "A desktop shell built for",
     "you": "You",
-    "start_preview": "Start preview"
+    "hold_to_start": "Hold to get started"
   },
   "syspanel": {
     "user": {
@@ -1778,6 +1872,7 @@
       "no_results": "Nothing found"
     },
     "types": {
+      "snake": "Snake",
       "clock": "Clock",
       "music": "Music",
       "weather": "Weather",
@@ -1810,7 +1905,8 @@
       "lumen": "Lumen",
       "lyrics": "Lyrics",
       "simpleLyrics": "Simple Lyrics",
-      "circle": "Circle"
+      "circle": "Circle",
+      "graph": "Graph"
     },
     "presets": {
       "minimal": {
@@ -1841,13 +1937,17 @@
       "no_contributions": "No contributions found"
     },
     "settings": {
+      "snakeLength": "Length",
+      "snakeSpeed": "Speed",
       "lyricsLines": "Lines",
       "lyricsAlignment": "Alignment",
       "usageStyle": "Style",
       "lineThickness": "Thickness",
       "visualizerStyle": "Visualizer style",
       "hideText": "Hide text",
-      "textContent": "Text"
+      "textContent": "Text",
+      "updateRate": "Updates per minute",
+      "perMinute": "/min"
     },
     "align": {
       "left": "Left",
@@ -1863,6 +1963,10 @@
     },
     "text": {
       "placeholder": "Enter text"
+    },
+    "usageGraph": {
+      "average": "Avg",
+      "peak": "Peak"
     }
   },
   "cli": {
@@ -1925,7 +2029,8 @@
       "reboot": "Reboot the system",
       "poweroff": "Power off the system",
       "redactor": "Open or toggle the desktop widget layout editor",
-      "lock_redactor": "Toggle, open or close the lock screen layout editor"
+      "lock_redactor": "Toggle, open or close the lock screen layout editor",
+      "colorpicker": "Pick a color from the screen and copy it to the clipboard"
     },
     "usage_label": "Usage:",
     "config_desc": "Read and change settings (get, set, dump, path, edit)",
@@ -1971,11 +2076,15 @@
   },
   "installer": {
     "auth": {
-      "error_failed": "Authentication failed."
+      "error_failed": "Authentication failed.",
+      "title": "Administrator privileges required",
+      "prompt": "Enter your sudo password to continue",
+      "verifying": "Verifying credentials...",
+      "hint": "Press Enter to authenticate or Esc to go back"
     },
     "os": {
       "error_root": "Error: Do not run this script directly with root/sudo. Run as normal user.",
-      "error_unsupported": "Unsupported OS ({os}). Serpantinum strictly supports arch linux and derivatives.",
+      "error_unsupported": "Unsupported OS ({os}). Serpantinum supports Arch Linux, Fedora, Void Linux, Gentoo, and their derivatives.",
       "error_not_found": "Cannot detect OS. /etc/os-release not found.",
       "unknown_cpu": "Unknown CPU",
       "unknown_gpu": "Unknown / virtual machine",
@@ -2021,6 +2130,12 @@
       "menu_reinstall": "Reinstall",
       "menu_install": "Install",
       "menu_exit": "Exit",
+      "menu_uninstall": "Uninstall",
+      "uninstall_title": "Are you sure you want to uninstall Serpantinum?",
+      "uninstall_removes": "This removes the shell, serpantinum-core, serpantinum-audio, serpantinum-gamma, the SDDM theme and your Serpantinum settings, state and cache, and resets themed apps, Qt and SDDM to their system defaults.",
+      "uninstall_keeps": "Ski, compositors, compositor configs, wallpapers and system packages are left untouched.",
+      "uninstall_cancel": "No, go back",
+      "uninstall_confirm": "Yes, uninstall Serpantinum",
       "error_no_compositor": "You must choose at least one supported compositor before proceeding.",
       "tagline": "A desktop shell built for you",
       "support_creator": "Support the creator:",
@@ -2028,13 +2143,112 @@
       "installed_success": "✔ Serpantinum {ver} ({commit}) installed successfully.",
       "failed_packages": "The following packages encountered errors during installation:",
       "restart_prompt": "Restart your compositor or run 'serpantinumd start' to begin.",
-      "ask_reboot": "Do you want to restart? [y/n] "
+      "ask_reboot": "Do you want to restart? [y/n] ",
+      "section_system": "System",
+      "section_links": "Links",
+      "section_config": "Configuration",
+      "section_actions": "Actions",
+      "mode_fresh": "Fresh install",
+      "mode_current": "Update",
+      "mode_legacy": "Legacy migration",
+      "status_enabled": "Enabled",
+      "status_disabled": "Disabled",
+      "status_yes": "Yes",
+      "status_no": "No",
+      "status_wayland": "Wayland",
+      "status_x11": "X11 / default",
+      "status_full_pack": "Full pack",
+      "status_random_pack": "3 random",
+      "status_none_selected": "None selected",
+      "status_missing_count": "{missing} missing",
+      "status_all_installed": "All installed",
+      "action_inspect": "Inspect",
+      "action_configure": "Configure",
+      "action_toggle": "Toggle",
+      "pkg_title": "Package installation overview",
+      "pkg_tab_all": "All",
+      "pkg_tab_missing": "Missing",
+      "pkg_tab_installed": "Installed",
+      "pkg_search_placeholder": "Press / to filter packages",
+      "pkg_search_empty": "No packages match your filter",
+      "pkg_badge_installed": "Installed",
+      "pkg_badge_missing": "Will install",
+      "pkg_summary": "{total} total · {installed} installed · {missing} to install",
+      "compositors_subtitle": "{count} selected",
+      "compositors_hint": "Space or Enter to toggle · Esc when finished",
+      "sddm_hint": "Left/Right or Enter to toggle · Esc when finished",
+      "preview_badge": "Preview · no changes",
+      "preview_state_hint": "Cycle mode",
+      "preview_reboot_notice": "Preview mode: system restart skipped.",
+      "hint_navigate": "Navigate",
+      "hint_switch": "Switch / toggle",
+      "hint_select": "Select",
+      "hint_quit": "Quit",
+      "hint_back": "Back",
+      "hint_search": "Search",
+      "hint_filter": "Filter",
+      "hint_toggle_log": "Toggle log",
+      "hint_scroll": "Scroll",
+      "progress_installing": "Installing Serpantinum",
+      "progress_updating": "Updating Serpantinum",
+      "progress_reinstalling": "Reinstalling Serpantinum",
+      "progress_uninstalling": "Uninstalling Serpantinum",
+      "progress_step_of": "Step {current} of {total}",
+      "progress_steps_title": "Installation steps",
+      "progress_output_title": "Live output",
+      "progress_waiting_input": "Input required — type response and press Enter",
+      "progress_skipped": "Skipped",
+      "progress_failed_title": "Step failed",
+      "progress_retry": "Retry step",
+      "progress_continue": "Continue anyway",
+      "progress_abort": "Exit installer",
+      "progress_log_saved": "Full log saved to {path}",
+      "complete_title_install": "Installation complete",
+      "complete_title_update": "Update complete",
+      "complete_title_reinstall": "Reinstallation complete",
+      "complete_title_uninstall": "Uninstallation complete",
+      "complete_summary": "Summary",
+      "complete_version": "Version",
+      "complete_compositors": "Compositors",
+      "complete_sddm": "SDDM",
+      "complete_wallpapers": "Wallpapers",
+      "complete_duration": "Elapsed time",
+      "btn_restart": "Restart now",
+      "btn_exit": "Exit to shell",
+      "btn_return_menu": "Back to menu",
+      "terminal_too_small": "Terminal window is too small. Resize to at least {cols}×{rows}.",
+      "social": "Social:",
+      "compositors_row": "Target compositors",
+      "packages_row": "Package overview",
+      "pkg_count_short": "{count} pkgs",
+      "hint_fast_forward": "Fast-forward",
+      "preview_mode_switched": "Preview mode: {mode}"
+    },
+    "steps": {
+      "prepare": "Prepare telemetry and environment",
+      "migrate": "Migrate legacy configuration",
+      "backup": "Back up existing compositor configs",
+      "deps": "Install system packages and fonts",
+      "ski": "Install Ski file manager",
+      "audio": "Install Serpantinum audio engine",
+      "gamma": "Install Serpantinum blue light filter",
+      "core": "Install Serpantinum core services",
+      "deploy": "Deploy shell and compositor configs",
+      "sddm": "Configure SDDM display manager",
+      "wallpapers": "Install wallpaper pack",
+      "config": "Initialize settings and services",
+      "finalize": "Save version state and finish",
+      "uninstall_stop": "Stop Serpantinum and daemons",
+      "uninstall_reset": "Reset app themes and Qt defaults",
+      "uninstall_remove": "Remove Serpantinum files and configs"
     },
     "deps": {
       "syncing": "Synchronizing and updating system packages (pacman -syyu)...",
+      "syncing_portage": "Synchronizing Portage tree...",
       "enabling_copr": "Enabling COPR repository {repo}...",
       "enabling_terra": "Enabling the Terra repository...",
       "enabling_repo": "Enabling repository {repo}...",
+      "enabling_overlay": "Enabling Gentoo overlay {repo}...",
       "all_installed": "-> All packages are already installed! Skipping package download phase.",
       "missing_count": "-> Found {count} missing packages to install.",
       "installing_title": "Installing system packages and dependencies...",
@@ -2088,6 +2302,12 @@
       "download_failed": "Could not download the Serpantinum core services, skipping. You can install them later from github.com/ilyamiro/serpantinum-core.",
       "checksum_failed": "The core services download failed its checksum check, skipping.",
       "unsupported_arch": "Prebuilt core services packages exist only for x86_64, skipping."
+    },
+    "uninstall": {
+      "stopping": "Stopping Serpantinum and its daemons...",
+      "resetting": "Resetting app themes to system defaults...",
+      "removing": "Removing Serpantinum files...",
+      "done": "Serpantinum has been uninstalled. Remove its autostart line from your compositor config if you no longer need it."
     }
   },
   "datetime": {
@@ -2233,5 +2453,8 @@
       "today": "Fog today. High {max}, low {min}.",
       "tomorrow": "Fog tomorrow. High {max}, low {min}."
     }
+  },
+  "osd": {
+    "keyboard_layout": "Keyboard layout"
   }
 }

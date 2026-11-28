@@ -22,7 +22,7 @@ It is a small daemon, and the same binary is its command line client. They talk 
 The backend is picked on its own:
 
 - **Hyprland**: its `hyprland-ctm-control-v1` color matrix, when the compositor offers it. Hyprland no longer gives gamma ramps to clients. A matrix is linear, so only temperature and brightness take effect there. Gamma and inversion are accepted but have no effect.
-- **Sway, Niri, Mango and other wlroots-style compositors**: the `wlr-gamma-control-unstable-v1` protocol, where all four settings work.
+- **Sway, Niri, Mango, Umbriel and other wlroots-style compositors**: the `wlr-gamma-control-unstable-v1` protocol, where all four settings work.
 
 GNOME and KDE support neither.
 

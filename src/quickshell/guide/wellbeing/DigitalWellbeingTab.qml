@@ -37,8 +37,6 @@ WellbeingState {
     }
 
     Loader {
-        anchors.fill: parent
-        z: 50
         active: tabRoot.deferredStage >= 3
         sourceComponent: WellbeingAppPicker { tab: tabRoot }
     }

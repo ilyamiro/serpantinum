@@ -89,6 +89,34 @@ function createShader(gl: WebGLRenderingContext, type: number, source: string): 
   return shader;
 }
 
+function parseCssColor(value: string, fallback: [number, number, number, number]): [number, number, number, number] {
+  const trimmed = value.trim();
+  if (trimmed.startsWith('#')) {
+    let hex = trimmed.slice(1);
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    }
+    if (hex.length >= 6) {
+      const r = parseInt(hex.slice(0, 2), 16);
+      const g = parseInt(hex.slice(2, 4), 16);
+      const b = parseInt(hex.slice(4, 6), 16);
+      if (!Number.isNaN(r) && !Number.isNaN(g) && !Number.isNaN(b)) {
+        return [r / 255, g / 255, b / 255, 1.0];
+      }
+    }
+  }
+  const rgbMatch = trimmed.match(/rgba?\((\d+)[,\s]+(\d+)[,\s]+(\d+)/);
+  if (rgbMatch) {
+    return [
+      Number(rgbMatch[1]) / 255,
+      Number(rgbMatch[2]) / 255,
+      Number(rgbMatch[3]) / 255,
+      1.0,
+    ];
+  }
+  return fallback;
+}
+
 let preloadedImg: HTMLImageElement | null = null;
 
 export default function AnimatedLogo(): React.JSX.Element {
@@ -119,20 +147,29 @@ export default function AnimatedLogo(): React.JSX.Element {
     }
 
     const getColors = () => {
+      const style = getComputedStyle(document.documentElement);
       const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-      if (isDark) {
-        return {
-          base: [203 / 255, 166 / 255, 247 / 255, 1.0],
-          bg: [205 / 255, 214 / 255, 244 / 255, 1.0],
-        };
-      }
+      const fallbackBase: [number, number, number, number] = isDark
+        ? [216 / 255, 199 / 255, 112 / 255, 1.0]
+        : [107 / 255, 94 / 255, 16 / 255, 1.0];
+      const fallbackBg: [number, number, number, number] = isDark
+        ? [232 / 255, 226 / 255, 212 / 255, 1.0]
+        : [30 / 255, 28 / 255, 19 / 255, 1.0];
       return {
-        base: [124 / 255, 68 / 255, 158 / 255, 1.0],
-        bg: [76 / 255, 79 / 255, 105 / 255, 1.0],
+        base: parseCssColor(style.getPropertyValue('--ifm-color-primary'), fallbackBase),
+        bg: parseCssColor(style.getPropertyValue('--ifm-font-color-base'), fallbackBg),
       };
     };
 
-    let colors = getColors();
+    const initialColors = getColors();
+    let colors = {
+      base: [...initialColors.base],
+      bg: [...initialColors.bg],
+    };
+    let targetColors = {
+      base: [...initialColors.base],
+      bg: [...initialColors.bg],
+    };
     let isVisible = true;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let renderFrame: ((now: number) => void) | null = null;
@@ -151,15 +188,29 @@ export default function AnimatedLogo(): React.JSX.Element {
       }
     };
 
+    let colorSyncFrame = 0;
     const observer = new MutationObserver(() => {
-      colors = getColors();
-      if (reducedMotion && renderFrame) {
-        renderFrame(performance.now());
-      }
+      if (colorSyncFrame !== 0) return;
+      colorSyncFrame = requestAnimationFrame(() => {
+        colorSyncFrame = 0;
+        if (destroyed) return;
+        targetColors = getColors();
+        if (reducedMotion) {
+          colors = {
+            base: [...targetColors.base],
+            bg: [...targetColors.bg],
+          };
+          if (renderFrame) {
+            renderFrame(performance.now());
+          }
+        } else {
+          scheduleFrame();
+        }
+      });
     });
     observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-theme'],
+      attributeFilter: ['data-theme', 'data-preview-theme'],
     });
 
     const visibilityObserver =
@@ -187,11 +238,15 @@ export default function AnimatedLogo(): React.JSX.Element {
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
+    let cleanupGl: (() => void) | null = null;
+    let initFrameId = 0;
+    let initTimerId = 0;
+
     const initRenderer = () => {
       if (destroyed) return;
       const rect = container.getBoundingClientRect();
-      const cssWidth = rect.width || 270;
-      const cssHeight = rect.height || 270;
+      const cssWidth = rect.width || 378;
+      const cssHeight = rect.height || 378;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const width = Math.round(cssWidth * dpr);
       const height = Math.round(cssHeight * dpr);
@@ -272,6 +327,18 @@ export default function AnimatedLogo(): React.JSX.Element {
         }
       }
 
+      if (gl) {
+        const glRef = gl;
+        const progRef = program;
+        const texRef = maskTexture;
+        const bufRef = posBuffer;
+        cleanupGl = () => {
+          if (texRef) glRef.deleteTexture(texRef);
+          if (bufRef) glRef.deleteBuffer(bufRef);
+          if (progRef) glRef.deleteProgram(progRef);
+        };
+      }
+
       const ctx2d = !gl ? canvas.getContext('2d') : null;
 
       let startTimestamp = performance.now();
@@ -292,6 +359,24 @@ export default function AnimatedLogo(): React.JSX.Element {
         const easedFill = 1.0 - Math.pow(1.0 - fillT, 3.0);
         const fillLevel = easedFill * 1.15;
         const wavePhase = ((elapsed % phaseDuration) / phaseDuration) * Math.PI * 2.0;
+
+        let colorsChanging = false;
+        for (let i = 0; i < 3; i++) {
+          const dBase = targetColors.base[i] - colors.base[i];
+          if (Math.abs(dBase) > 0.001) {
+            colors.base[i] += dBase * 0.1;
+            colorsChanging = true;
+          } else {
+            colors.base[i] = targetColors.base[i];
+          }
+          const dBg = targetColors.bg[i] - colors.bg[i];
+          if (Math.abs(dBg) > 0.001) {
+            colors.bg[i] += dBg * 0.1;
+            colorsChanging = true;
+          } else {
+            colors.bg[i] = targetColors.bg[i];
+          }
+        }
 
         if (gl && program) {
           gl.viewport(0, 0, width, height);
@@ -365,7 +450,7 @@ export default function AnimatedLogo(): React.JSX.Element {
           ctx2d.globalCompositeOperation = 'source-over';
         }
 
-        if (!reducedMotion && isVisible && !document.hidden) {
+        if (!reducedMotion && isVisible && !document.hidden && (fillT < 1.0 || colorsChanging)) {
           animStateRef.current.animId = requestAnimationFrame(render);
         }
       };
@@ -378,20 +463,35 @@ export default function AnimatedLogo(): React.JSX.Element {
       }
     };
 
+    const scheduleInit = () => {
+      if (destroyed) return;
+      initFrameId = requestAnimationFrame(() => {
+        initFrameId = 0;
+        initTimerId = window.setTimeout(() => {
+          initTimerId = 0;
+          initRenderer();
+        }, 0);
+      });
+    };
+
     if (img.complete && img.naturalWidth > 0) {
-      initRenderer();
+      scheduleInit();
     } else {
       img.onload = () => {
-        initRenderer();
+        scheduleInit();
       };
     }
 
     return () => {
       destroyed = true;
+      if (colorSyncFrame !== 0) cancelAnimationFrame(colorSyncFrame);
+      if (initFrameId !== 0) cancelAnimationFrame(initFrameId);
+      if (initTimerId !== 0) clearTimeout(initTimerId);
       observer.disconnect();
       visibilityObserver?.disconnect();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       stopFrame();
+      cleanupGl?.();
     };
   }, [logoUrl]);
 
@@ -401,7 +501,7 @@ export default function AnimatedLogo(): React.JSX.Element {
       className={styles.logoContainer}
       onClick={() => animStateRef.current.restart()}
       title="Serpantinum">
-      <canvas ref={canvasRef} className={styles.canvas} width={270} height={270} />
+      <canvas ref={canvasRef} className={styles.canvas} width={378} height={378} />
     </div>
   );
 }

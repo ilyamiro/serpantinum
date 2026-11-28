@@ -6,40 +6,32 @@ import QtQuick.Shapes
 import QtQuick.Effects
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import Quickshell.Io
 import "../"
 import "../reusables"
 
-PanelWindow {
+ShellOverlayWindow {
     id: clipboardWindow
 
     screen: ClipboardController.screen
 
     WlrLayershell.namespace: "qs-clipboard"
-    WlrLayershell.layer: WlrLayer.Overlay
-    focusable: clipboardWindow.isVisible
-    exclusionMode: ExclusionMode.Ignore
-    color: "transparent"
+    overlayOpen: ClipboardController.isVisible
+    carveBarHole: true
+    barHoleThickness: SurfaceRegistry.barThickness
+    dismissOnOutsideClick: true
+    focusTarget: searchInput
+    focusRetryInterval: 80
+    maxFocusRetries: 3
 
-    mask: Region { item: topBarHole; intersection: Intersection.Xor }
-
-    anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
-    }
-
-    function s(val) {
-        return (typeof Scaler !== "undefined" && Scaler.s) ? Scaler.s(val) : val;
-    }
+    onOutsideClicked: closeClipboard()
+    onEscapeDismissed: closeClipboard()
 
     function closeClipboard() {
         ClipboardController.hide();
     }
 
-    property bool isVisible: ClipboardController.isVisible
+    readonly property bool isVisible: ClipboardController.isVisible
     property int configRevision: 0
     property bool isDirty: true
 
@@ -51,25 +43,9 @@ PanelWindow {
         }
     }
 
-    property var rawBarSettings: {
-        let dummy = configRevision;
-        return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : ({});
-    }
-    property string barPosition: (rawBarSettings && rawBarSettings.position !== undefined) ? rawBarSettings.position : "top"
-    property bool barAutohide: (rawBarSettings && rawBarSettings.autohide !== undefined) ? Boolean(rawBarSettings.autohide) : false
+    readonly property string barPosition: SurfaceRegistry.barPosition
 
-    readonly property bool isFullscreenActive: {
-        try {
-            if (typeof Hyprland !== "undefined" && Hyprland.focusedWorkspace) {
-                return Boolean(Hyprland.focusedWorkspace.hasFullscreen || (Hyprland.activeToplevel && Hyprland.activeToplevel.fullscreen));
-            }
-        } catch (e) {}
-        return false;
-    }
-
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive
-
-    property string attachEdge: {
+    readonly property string attachEdge: {
         if (barPosition === "bottom") return "top";
         if (barPosition === "left") return "right";
         if (barPosition === "right") return "left";
@@ -77,7 +53,7 @@ PanelWindow {
     }
 
     onBarPositionChanged: {
-        ClipboardController.hide();
+        if (mountedReady) ClipboardController.hide();
     }
 
     property bool isSideAttached: attachEdge === "left" || attachEdge === "right"
@@ -473,54 +449,6 @@ PanelWindow {
         copyClip(item.id, item.pinned);
     }
 
-    Item {
-        id: topBarHole
-
-        property real thicknessRatio: {
-            let h = (clipboardWindow.rawBarSettings && clipboardWindow.rawBarSettings.height !== undefined) ? Number(clipboardWindow.rawBarSettings.height) : 40;
-            if (isNaN(h)) h = 40;
-            return Math.max(28, Math.min(48, h)) / 40;
-        }
-        property int barThickness: Math.round(48 * thicknessRatio)
-        property string bp: clipboardWindow.barPosition
-        property bool activeBar: !clipboardWindow.isBarEffectivelyHidden
-
-        x: {
-            if (!activeBar) return 0;
-            if (bp === "left") return 0;
-            if (bp === "right") return clipboardWindow.width - barThickness;
-            return 0;
-        }
-
-        y: {
-            if (!activeBar) return 0;
-            if (bp === "top") return 0;
-            if (bp === "bottom") return clipboardWindow.height - barThickness;
-            return 0;
-        }
-
-        width: {
-            if (!activeBar) return 0;
-            if (bp === "left" || bp === "right") return barThickness;
-            return clipboardWindow.width;
-        }
-
-        height: {
-            if (!activeBar) return 0;
-            if (bp === "top" || bp === "bottom") return barThickness;
-            return clipboardWindow.height;
-        }
-    }
-
-    Timer {
-        id: focusTimer
-        interval: 80
-        repeat: false
-        onTriggered: {
-            clipboardWindow.grabInputFocus();
-        }
-    }
-
     Timer {
         id: keyboardNavTimer
         interval: 500
@@ -530,7 +458,7 @@ PanelWindow {
         }
     }
 
-    onIsVisibleChanged: {
+    function applyVisibleState() {
         if (isVisible) {
             searchInput.clear();
             filterDebounceTimer.stop();
@@ -540,20 +468,22 @@ PanelWindow {
             } else {
                 executeClipFilter("");
             }
-            focusTimer.restart();
+            clipboardWindow.acquireFocus();
         } else {
             clipList.resetScroll();
             clipboardWindow.expandedClipId = "";
             filterDebounceTimer.stop();
-            focusTimer.stop();
+            clipboardWindow.stopFocusAcquire();
             keyboardNavTimer.stop();
         }
     }
 
-    MouseArea {
-        anchors.fill: parent
-        enabled: clipboardWindow.isVisible
-        onClicked: closeClipboard()
+    onIsVisibleChanged: {
+        if (mountedReady) applyVisibleState();
+    }
+
+    onMountedReadyChanged: {
+        if (mountedReady && clipboardWindow.isVisible) clipboardWindow.applyVisibleState();
     }
 
     AttachedSurface {
@@ -574,7 +504,7 @@ PanelWindow {
 
         SpringProgress {
             id: clipboardReveal
-            open: clipboardWindow.isVisible
+            open: clipboardWindow.mountedReady && clipboardWindow.isVisible
             openDuration: 520
             closeDuration: 200
         }

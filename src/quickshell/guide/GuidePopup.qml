@@ -8,6 +8,7 @@ import Quickshell.Io
 import "../"
 import "../reusables"
 import "../reusables/buttons"
+import "GuideSearch.js" as GuideSearch
 
 Item {
     id: root
@@ -15,10 +16,13 @@ Item {
     focus: true
 
     readonly property bool isGuidePopup: true
+    property int openModalCount: 0
+    readonly property bool handlesEscape: searchActive || openModalCount > 0 || focusInContent()
     readonly property bool compact: width < s(780)
 
     signal requestLoad(int order)
     signal releaseTab(int order)
+    signal dismissRequested()
 
     property int settledSlot: -1
     property var slotLoaded: ({})
@@ -79,7 +83,7 @@ Item {
     property int searchLoadCursor: 0
     property bool searchIndexReady: false
     property string searchCacheSaved: ""
-    readonly property string searchCacheStamp: Updater.packageVersion + "|" + I18n.currentLang
+    readonly property string searchCacheStamp: Updater.packageVersion + "|" + I18n.currentLang + "|v2"
 
     onSearchCacheStampChanged: {
         if (!searchIndexReady && searchCacheFile.loaded) loadSearchCache(searchCacheFile.text());
@@ -103,17 +107,26 @@ Item {
         return n + Math.max(0, sub);
     }
 
-    function searchHaystack(item) {
-        if (item.hay === undefined) {
-            item.hay = [
-                item.title, resolveI18nText(item.title),
-                item.desc, resolveI18nText(item.desc),
-                item.section, resolveI18nText(item.section),
-                resolveTabTitle(item.tab), resolveSubtabTitle(item.tab, item.subtab),
-                item.tab, item.subtab, item.keywords
-            ].join("\n").toLowerCase();
+    function preparedSearchEntry(item) {
+        if (item._search === undefined) {
+            item._search = GuideSearch.prepareEntry(
+                resolveI18nText(item.title),
+                resolveI18nText(item.desc),
+                resolveI18nText(item.section),
+                resolveTabTitle(item.tab),
+                resolveSubtabTitle(item.tab, item.subtab),
+                item.keywords,
+                item.tab,
+                item.subtab,
+                item.id
+            );
         }
-        return item.hay;
+        return item._search;
+    }
+
+    function highlightSearchText(text, isSelected) {
+        if (isSelected) return GuideSearch.escapeHtml(text);
+        return GuideSearch.highlightMatch(text, searchQuery, ThemeBackend.mauve);
     }
 
     function searchItemTitle(item) {
@@ -123,7 +136,7 @@ Item {
 
     function clearSearchHaystacks() {
         for (let k in searchIndexMap) {
-            delete searchIndexMap[k].hay;
+            delete searchIndexMap[k]._search;
         }
     }
 
@@ -290,7 +303,7 @@ Item {
     }
 
     function scheduleSearchRebuild() {
-        if (searchIndexReady) searchRebuildTimer.restart();
+        if (searchIndexReady || searchActive) searchRebuildTimer.restart();
     }
 
     function rebuildSearchIndex() {
@@ -367,28 +380,27 @@ Item {
     }
 
     readonly property var filteredSearchResults: {
-        let q = searchQuery.trim().toLowerCase();
-        if (q === "" || !searchIndexReady) return [];
+        let q = searchQuery.trim();
+        if (q === "") return [];
+        let tokens = GuideSearch.tokenize(q);
+        if (tokens.length === 0) return [];
         let hits = [];
         for (let i = 0; i < searchIndex.length; i++) {
             let item = searchIndex[i];
-            if (searchHaystack(item).indexOf(q) === -1) continue;
-            let title = String(resolveI18nText(item.title)).toLowerCase();
-            let at = title.indexOf(q);
-            hits.push({ item: item, rank: title === q ? 0 : (at === 0 ? 1 : (at > 0 ? 2 : 3)) });
+            let score = GuideSearch.scoreEntry(preparedSearchEntry(item), q, tokens);
+            if (score < 0) continue;
+            hits.push({ item: item, score: score });
         }
-        if (hits.length > 60) {
-            hits.sort((a, b) => a.rank - b.rank);
-            hits = hits.slice(0, 60);
-        }
-        return hits.map(h => h.item);
+        hits.sort((a, b) => b.score - a.score);
+        if (hits.length > 60) hits = hits.slice(0, 60);
+        return hits;
     }
 
-    function sortBySection(items) {
-        return items
-            .map((item, i) => ({ item: item, i: i, section: String(resolveI18nText(item.section)).toLowerCase() }))
-            .sort((a, b) => a.section < b.section ? -1 : (a.section > b.section ? 1 : a.i - b.i))
-            .map(e => e.item);
+    function sortScoredItems(hits) {
+        return hits
+            .slice()
+            .sort((a, b) => b.score - a.score)
+            .map(h => h.item);
     }
 
     readonly property var groupedSearchResults: {
@@ -398,7 +410,8 @@ Item {
         let tabGroupsMap = {};
 
         for (let i = 0; i < results.length; i++) {
-            let item = results[i];
+            let hit = results[i];
+            let item = hit.item;
             let tIdx = item.tabIndex >= 0 ? item.tabIndex : 9999;
             let tModel = item.tabIndex >= 0 ? tabsModel[item.tabIndex] : null;
 
@@ -408,12 +421,14 @@ Item {
                     tabIndex: tIdx,
                     title: tModel ? tabTitle(tModel) : I18n.t("guide.tabs.general"),
                     icon: tModel ? (tModel.icon || "󰒓") : "󰒓",
-                    directItems: [],
+                    bestScore: hit.score,
+                    directHits: [],
                     subgroupsMap: {}
                 };
             }
 
             let tg = tabGroupsMap[tIdx];
+            if (hit.score > tg.bestScore) tg.bestScore = hit.score;
             let sIdx = item.subIndex;
             if (tModel && sIdx >= 0) {
                 let stModel = tModel.subtabs[sIdx];
@@ -423,31 +438,46 @@ Item {
                         subIndex: sIdx,
                         title: tabTitle(stModel),
                         icon: stModel.icon || "󰒓",
-                        items: []
+                        bestScore: hit.score,
+                        hits: []
                     };
                 }
-                tg.subgroupsMap[sIdx].items.push(item);
+                if (hit.score > tg.subgroupsMap[sIdx].bestScore) tg.subgroupsMap[sIdx].bestScore = hit.score;
+                tg.subgroupsMap[sIdx].hits.push(hit);
             } else {
-                tg.directItems.push(item);
+                tg.directHits.push(hit);
             }
         }
 
         let sortedGroups = Object.values(tabGroupsMap).map(tg => {
             let subList = Object.values(tg.subgroupsMap);
-            subList.sort((a, b) => a.subIndex - b.subIndex);
-            subList.forEach(sg => { sg.items = sortBySection(sg.items); });
+            subList.sort((a, b) => (b.bestScore - a.bestScore) || (a.subIndex - b.subIndex));
+            let subgroups = subList.map(sg => ({
+                subKey: sg.subKey,
+                subIndex: sg.subIndex,
+                title: sg.title,
+                icon: sg.icon,
+                items: sortScoredItems(sg.hits)
+            }));
             return {
                 tabKey: tg.tabKey,
                 tabIndex: tg.tabIndex,
                 title: tg.title,
                 icon: tg.icon,
-                directItems: sortBySection(tg.directItems),
-                subgroups: subList
+                bestScore: tg.bestScore,
+                directItems: sortScoredItems(tg.directHits),
+                subgroups: subgroups
             };
         });
 
-        sortedGroups.sort((a, b) => a.tabIndex - b.tabIndex);
+        sortedGroups.sort((a, b) => (b.bestScore - a.bestScore) || (a.tabIndex - b.tabIndex));
         return sortedGroups;
+    }
+
+    onFlatSearchResultsChanged: {
+        if (!searchActive) return;
+        if (flatSearchResults.length === 0) searchSelectedIndex = -1;
+        else if (searchSelectedIndex < 0 || searchSelectedIndex >= flatSearchResults.length) searchSelectedIndex = 0;
     }
 
     readonly property var flatSearchResults: {
@@ -672,11 +702,38 @@ Item {
     }
 
     function dismissHost() {
+        root.dismissRequested();
         if (typeof masterWindow !== "undefined" && masterWindow.switchWidget) {
             masterWindow.switchWidget("hidden", "");
-        } else {
-            Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "close"]);
+        } else if (typeof ShellRouter !== "undefined" && typeof ShellRouter.close === "function") {
+            ShellRouter.close("guide");
         }
+    }
+
+    function activate(arg) {
+        if (arg !== undefined && arg !== null && String(arg) !== "") {
+            gotoTab(arg);
+        }
+    }
+
+    function handleEscape() {
+        if (root.openModalCount > 0) {
+            return true;
+        }
+        if (root.searchActive) {
+            if (root.searchQuery !== "") {
+                root.searchQuery = "";
+                if (contentArea.searchInput) contentArea.searchInput.text = "";
+            } else {
+                root.closeSearch();
+            }
+            return true;
+        }
+        if (root.focusInContent()) {
+            root.forceActiveFocus();
+            return true;
+        }
+        return false;
     }
 
     function s(val) {
@@ -773,7 +830,13 @@ Item {
 
     function focusInContent() {
         let f = root.Window.window ? root.Window.window.activeFocusItem : null;
-        return !!f && f !== root;
+        if (!f || f === root) return false;
+        let p = f.parent;
+        while (p) {
+            if (p === root) return true;
+            p = p.parent;
+        }
+        return false;
     }
 
     function moveFocus(forward) {
@@ -800,14 +863,12 @@ Item {
     }
 
     function activeFlickable() {
-        let queue = [contentArea];
-        while (queue.length > 0) {
-            let it = queue.shift();
-            if (it.visible === false) continue;
-            if (it !== contentArea && it.contentY !== undefined && it.contentHeight !== undefined && it.contentItem !== undefined) return it;
-            for (let i = 0; i < it.children.length; i++) queue.push(it.children[i]);
-        }
-        return null;
+        let tab = activeTabItem();
+        return (tab && tab.primaryFlickable) ? tab.primaryFlickable : null;
+    }
+
+    function activeTabItem() {
+        return contentArea ? contentArea.currentActiveItem() : null;
     }
 
     function scrollPage(kind) {
@@ -947,6 +1008,7 @@ Item {
             introContent = 0.0;
             introTabs = 0.0;
             searchActive = false;
+            openModalCount = 0;
             searchQuery = "";
             searchSelectedIndex = -1;
             if (contentArea.searchInput) contentArea.searchInput.text = "";
@@ -994,16 +1056,7 @@ Item {
     Keys.onPressed: (event) => {
         let plain = !(event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier));
         if (event.key === Qt.Key_Escape) {
-            if (root.searchActive) {
-                if (root.searchQuery !== "") {
-                    root.searchQuery = "";
-                    if (contentArea.searchInput) contentArea.searchInput.text = "";
-                } else {
-                    root.closeSearch();
-                }
-            } else if (root.focusInContent()) {
-                root.forceActiveFocus();
-            } else {
+            if (!root.handleEscape()) {
                 root.dismissHost();
             }
             event.accepted = true;
@@ -1016,7 +1069,10 @@ Item {
             event.accepted = true;
         } else if ((event.key === Qt.Key_Left || event.key === Qt.Key_Right) && plain) {
             let dir = (event.key === Qt.Key_Right) !== I18n.rtl ? 1 : -1;
-            if (!root.searchActive && !root.focusInContent()) { if (dir > 0) root.nextTab(); else root.prevTab(); }
+            if (!root.searchActive && !root.focusInContent()) {
+                let tab = root.activeTabItem();
+                if (tab && typeof tab.handleHorizontalKey === "function") tab.handleHorizontalKey(dir);
+            }
             event.accepted = !root.searchActive;
         } else if ((event.key === Qt.Key_Return || event.key === Qt.Key_Enter) && root.searchActive) {
             root.activateSelectedSearch();

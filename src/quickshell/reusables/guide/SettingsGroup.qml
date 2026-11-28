@@ -25,7 +25,7 @@ Item {
 
     function s(val) {
         let dummy = effectiveRootObj;
-        return (dummy && typeof dummy.s === "function") ? dummy.s(val) : val;
+        return (dummy && typeof dummy.s === "function") ? dummy.s(val) : Scaler.s(val);
     }
 
     property bool expanded: true
@@ -46,7 +46,16 @@ Item {
     property string searchTab: ""
     property string searchSubTab: ""
     property string searchKeywords: ""
-    property bool searchable: false
+    property string section: ""
+    property bool searchable: true
+    property bool hiddenByConfig: false
+    property string unavailableReason: ""
+
+    signal highlighted()
+
+    function triggerHighlightAnimation() {
+        headerRow.triggerHighlightAnimation();
+    }
 
     property string icon: ""
     property int iconSize: 32
@@ -86,11 +95,15 @@ Item {
         anchors.right: parent.right
 
         rootObj: root.rootObj
-        settingId: ""
-        searchTab: ""
-        searchSubTab: ""
-        searchKeywords: ""
-        searchable: false
+        settingId: root.settingId
+        searchTab: root.searchTab
+        searchSubTab: root.searchSubTab
+        searchKeywords: root.searchKeywords
+        section: root.section
+        searchable: root.searchable
+        hiddenByConfig: root.hiddenByConfig
+        unavailableReason: root.unavailableReason
+        onHighlightTriggered: root.highlighted()
 
         icon: root.icon
         iconSize: root.iconSize

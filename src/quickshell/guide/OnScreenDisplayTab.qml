@@ -12,33 +12,30 @@ GuideTab {
     property bool gridEnabled: false
     property bool showBarBox: true
 
-    property var defaultOsdSettings: ({
-        "horizontalPosition": 50,
-        "verticalPosition": 90,
-        "orientation": "horizontal",
-        "showCapsLock": true,
-        "showNumLock": true,
-        "showAirplane": true,
-        "attachToBar": true
-    })
-
-    property var osdSettings: {
-        let s = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings["osd"] : undefined;
-        if (s !== undefined && s !== null) return s;
-        if (typeof Config !== "undefined" && typeof Config.getSetting === "function") {
-            return Config.getSetting("osd", osdTabRoot.defaultOsdSettings);
-        }
-        return osdTabRoot.defaultOsdSettings;
+    ConfigSection {
+        id: osdCfg
+        section: "osd"
+        defaults: ({
+            "horizontalPosition": 50,
+            "verticalPosition": 90,
+            "orientation": "horizontal",
+            "showCapsLock": true,
+            "showNumLock": true,
+            "showAirplane": true,
+            "showKeyboardLayout": false,
+            "attachToBar": true
+        })
     }
 
-    property int horizontalPosition: osdSettings && osdSettings.horizontalPosition !== undefined ? osdSettings.horizontalPosition : 50
-    property int verticalPosition: osdSettings && osdSettings.verticalPosition !== undefined ? osdSettings.verticalPosition : 90
-    property string orientation: osdSettings && osdSettings.orientation !== undefined ? osdSettings.orientation : "horizontal"
+    readonly property int horizontalPosition: Number(osdCfg.values.horizontalPosition !== undefined ? osdCfg.values.horizontalPosition : 50)
+    readonly property int verticalPosition: Number(osdCfg.values.verticalPosition !== undefined ? osdCfg.values.verticalPosition : 90)
+    readonly property string orientation: String(osdCfg.values.orientation !== undefined ? osdCfg.values.orientation : "horizontal")
     readonly property bool isVertical: orientation === "vertical"
-    property bool showCapsLock: osdSettings && osdSettings.showCapsLock !== undefined ? osdSettings.showCapsLock : true
-    property bool showNumLock: osdSettings && osdSettings.showNumLock !== undefined ? osdSettings.showNumLock : true
-    property bool showAirplane: osdSettings && osdSettings.showAirplane !== undefined ? osdSettings.showAirplane : true
-    property bool attachToBar: osdSettings && osdSettings.attachToBar !== undefined ? osdSettings.attachToBar : true
+    readonly property bool showCapsLock: Boolean(osdCfg.values.showCapsLock !== undefined ? osdCfg.values.showCapsLock : true)
+    readonly property bool showNumLock: Boolean(osdCfg.values.showNumLock !== undefined ? osdCfg.values.showNumLock : true)
+    readonly property bool showAirplane: Boolean(osdCfg.values.showAirplane !== undefined ? osdCfg.values.showAirplane : true)
+    readonly property bool showKeyboardLayout: Boolean(osdCfg.values.showKeyboardLayout !== undefined ? osdCfg.values.showKeyboardLayout : false)
+    readonly property bool attachToBar: Boolean(osdCfg.values.attachToBar !== undefined ? osdCfg.values.attachToBar : true)
 
     readonly property bool isCustomPos: {
         let h = horizontalPosition;
@@ -60,13 +57,12 @@ GuideTab {
     }
 
     function applyPosition(h, v) {
-        osdTabRoot.horizontalPosition = h;
-        osdTabRoot.verticalPosition = v;
         if (screenSelector) {
             screenSelector.horizontalPosition = h;
             screenSelector.verticalPosition = v;
         }
-        debounceTimer.restart();
+        osdCfg.setDebounced("horizontalPosition", h, 100);
+        osdCfg.setDebounced("verticalPosition", v, 100);
     }
 
     function setPosFromIndex(index) {
@@ -78,83 +74,27 @@ GuideTab {
         else if (index === 5) applyPosition(90, 10);
     }
 
-    function syncSettings() {
-        let s = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
-            ? Config.getSetting("osd", osdTabRoot.defaultOsdSettings)
-            : osdTabRoot.defaultOsdSettings;
-        osdTabRoot.osdSettings = s;
-        osdTabRoot.horizontalPosition = s.horizontalPosition !== undefined ? s.horizontalPosition : 50;
-        osdTabRoot.verticalPosition = s.verticalPosition !== undefined ? s.verticalPosition : 90;
-        osdTabRoot.orientation = s.orientation !== undefined ? s.orientation : "horizontal";
-        if (screenSelector) {
-            screenSelector.horizontalPosition = osdTabRoot.horizontalPosition;
-            screenSelector.verticalPosition = osdTabRoot.verticalPosition;
-        }
-        osdTabRoot.showCapsLock = s.showCapsLock !== undefined ? s.showCapsLock : true;
-        osdTabRoot.showNumLock = s.showNumLock !== undefined ? s.showNumLock : true;
-        osdTabRoot.showAirplane = s.showAirplane !== undefined ? s.showAirplane : true;
-        osdTabRoot.attachToBar = s.attachToBar !== undefined ? s.attachToBar : true;
-    }
-
     function updateOsdSetting(key, value) {
-        let current = JSON.parse(JSON.stringify(Config.getSetting("osd", defaultOsdSettings) || defaultOsdSettings));
-        current[key] = value;
-        Config.setSetting("osd", current);
-        osdTabRoot.osdSettings = current;
-    }
-
-    Timer {
-        id: debounceTimer
-        interval: 100
-        repeat: false
-        onTriggered: {
-            let current = JSON.parse(JSON.stringify(Config.getSetting("osd", defaultOsdSettings) || defaultOsdSettings));
-            current.horizontalPosition = osdTabRoot.horizontalPosition;
-            current.verticalPosition = osdTabRoot.verticalPosition;
-            Config.setSetting("osd", current);
-            osdTabRoot.osdSettings = current;
-        }
+        osdCfg.set(key, value);
     }
 
     onVisibleChanged: {
-        if (visible) {
-            syncSettings();
-        } else {
+        if (!visible) {
+            osdCfg.flush();
             selectorOpen = false;
             if (posDropdown.isOpen) posDropdown.closePopup();
         }
     }
 
-    Component.onCompleted: {
-        syncSettings();
-    }
-
-    Connections {
-        target: typeof Config !== "undefined" ? Config : null
-        function onSettingsLoaded() {
-            osdTabRoot.syncSettings();
-        }
-    }
-
-    Flickable {
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(8)
-        contentHeight: settingsCol.implicitHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-
-        ColumnLayout {
-            id: settingsCol
-            width: parent.width
-            spacing: rootObj.s(6)
+    GuideScrollView {
+        rootObj: osdTabRoot.rootObj
 
             SettingsBlob {
                 SettingsRow {
                     id: posSettingsRow
                     rootObj: osdTabRoot.rootObj
+                    settingId: "osd_position"
+                    searchKeywords: "osd on-screen display position placement orientation horizontal vertical volume brightness"
                     icon: "󰍹"
                     title: I18n.t("guide.osd.position.title", "Screen position")
                     titleBold: true
@@ -217,12 +157,12 @@ GuideTab {
                         Layout.preferredWidth: rootObj.s(180)
                         Layout.preferredHeight: rootObj.s(32)
                         options: [
-                            I18n.t("guide.osd.position.bottom_center", "Bottom Center"),
-                            I18n.t("guide.osd.position.bottom_left", "Bottom Left"),
-                            I18n.t("guide.osd.position.bottom_right", "Bottom Right"),
-                            I18n.t("guide.osd.position.top_center", "Top Center"),
-                            I18n.t("guide.osd.position.top_left", "Top Left"),
-                            I18n.t("guide.osd.position.top_right", "Top Right")
+                            I18n.t("guide.osd.position.bottom_center", "Bottom center"),
+                            I18n.t("guide.osd.position.bottom_left", "Bottom left"),
+                            I18n.t("guide.osd.position.bottom_right", "Bottom right"),
+                            I18n.t("guide.osd.position.top_center", "Top center"),
+                            I18n.t("guide.osd.position.top_left", "Top left"),
+                            I18n.t("guide.osd.position.top_right", "Top right")
                         ]
                         currentIndex: {
                             if (osdTabRoot.isCustomPos) return -1;
@@ -364,7 +304,6 @@ GuideTab {
                                             activeTextColor: ThemeBackend.crust
                                             onValueChanged: function(index, value) {
                                                 let orient = index === 1 ? "vertical" : "horizontal";
-                                                osdTabRoot.orientation = orient;
                                                 osdTabRoot.updateOsdSetting("orientation", orient);
                                             }
                                         }
@@ -408,20 +347,14 @@ GuideTab {
                                         dragHeight: osdTabRoot.isVertical ? rootObj.s(173) : rootObj.s(43)
 
                                         onPositionChanged: (hPos, vPos) => {
-                                            osdTabRoot.horizontalPosition = hPos;
-                                            osdTabRoot.verticalPosition = vPos;
                                             posDropdown.currentIndex = -1;
-                                            debounceTimer.restart();
+                                            osdCfg.setDebounced("horizontalPosition", hPos, 100);
+                                            osdCfg.setDebounced("verticalPosition", vPos, 100);
                                         }
 
                                         onDragFinished: {
-                                            debounceTimer.stop();
                                             posDropdown.currentIndex = -1;
-                                            let current = JSON.parse(JSON.stringify(Config.getSetting("osd", defaultOsdSettings) || defaultOsdSettings));
-                                            current.horizontalPosition = osdTabRoot.horizontalPosition;
-                                            current.verticalPosition = osdTabRoot.verticalPosition;
-                                            Config.setSetting("osd", current);
-                                            osdTabRoot.osdSettings = current;
+                                            osdCfg.flush();
                                         }
 
                                         Rectangle {
@@ -547,6 +480,8 @@ GuideTab {
 
                 SettingsRow {
                     rootObj: osdTabRoot.rootObj
+                    settingId: "osd_attach_bar"
+                    searchKeywords: "osd attach snap bar solid fill popup"
                     icon: "󱂬"
                     title: I18n.t("guide.osd.attach_bar.title", "Attach to the bar in solid/fill style")
                     description: I18n.t("guide.osd.attach_bar.desc", "Snap OSD popups to the status bar in solid or fill mode. When disabled, the OSD always stays in the configured position.")
@@ -560,16 +495,17 @@ GuideTab {
                         handleColor: ThemeBackend.crust
                         handleOffColor: ThemeBackend.text
                         onToggled: function(c) {
-                            osdTabRoot.attachToBar = c;
                             osdTabRoot.updateOsdSetting("attachToBar", c);
                         }
                     }
                 }
             }
 
-            RowLayout {
+            GridLayout {
                 Layout.fillWidth: true
-                spacing: rootObj.s(10)
+                columns: 2
+                columnSpacing: rootObj.s(6)
+                rowSpacing: rootObj.s(6)
 
                 SettingsBlob {
                     Layout.fillWidth: true
@@ -579,6 +515,8 @@ GuideTab {
 
                     SettingsRow {
                         rootObj: osdTabRoot.rootObj
+                        settingId: "osd_capslock"
+                        searchKeywords: "osd caps lock keyboard indicator popup"
                         icon: "󰘲"
                         title: I18n.t("guide.osd.capslock.title", "Show on Caps Lock")
                         titlePixelSize: 12
@@ -609,7 +547,6 @@ GuideTab {
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
                             onToggled: function(c) {
-                                osdTabRoot.showCapsLock = c;
                                 osdTabRoot.updateOsdSetting("showCapsLock", c);
                             }
                         }
@@ -624,6 +561,8 @@ GuideTab {
 
                     SettingsRow {
                         rootObj: osdTabRoot.rootObj
+                        settingId: "osd_numlock"
+                        searchKeywords: "osd num lock numpad keyboard indicator popup"
                         icon: "󰎤"
                         title: I18n.t("guide.osd.numlock.title", "Show on Num Lock")
                         titlePixelSize: 12
@@ -654,7 +593,6 @@ GuideTab {
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
                             onToggled: function(c) {
-                                osdTabRoot.showNumLock = c;
                                 osdTabRoot.updateOsdSetting("showNumLock", c);
                             }
                         }
@@ -669,8 +607,10 @@ GuideTab {
 
                     SettingsRow {
                         rootObj: osdTabRoot.rootObj
+                        settingId: "osd_airplane"
+                        searchKeywords: "osd airplane flight mode rfkill wifi wireless indicator popup"
                         icon: "󰀝"
-                        title: I18n.t("guide.osd.airplane.title", "Show on Airplane Mode")
+                        title: I18n.t("guide.osd.airplane.title", "Show on airplane mode")
                         titlePixelSize: 12
                         wrapText: true
                         stackBelowWidth: 0
@@ -699,8 +639,53 @@ GuideTab {
                             handleColor: ThemeBackend.crust
                             handleOffColor: ThemeBackend.text
                             onToggled: function(c) {
-                                osdTabRoot.showAirplane = c;
                                 osdTabRoot.updateOsdSetting("showAirplane", c);
+                            }
+                        }
+                    }
+                }
+
+                SettingsBlob {
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 1
+                    Layout.alignment: Qt.AlignTop
+                    baseColor: osdTabRoot.isVertical ? Qt.alpha(ThemeBackend.surface0, 0.18) : Qt.alpha(ThemeBackend.surface0, 0.4)
+
+                    SettingsRow {
+                        rootObj: osdTabRoot.rootObj
+                        settingId: "osd_keyboard_layout"
+                        searchKeywords: "osd keyboard layout language switch input xkb indicator popup"
+                        icon: "󰌌"
+                        title: I18n.t("guide.osd.keyboard_layout.title", "Show on keyboard layout")
+                        titlePixelSize: 12
+                        wrapText: true
+                        stackBelowWidth: 0
+                        titleColor: osdTabRoot.isVertical ? ThemeBackend.subtext0 : ThemeBackend.text
+                        opacity: osdTabRoot.isVertical ? 0.6 : 1.0
+                        Behavior on opacity { NumberAnimation { duration: 250 } }
+                        spacing: rootObj.s(10)
+
+                        Text {
+                            visible: osdTabRoot.isVertical
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            text: I18n.t("guide.common.unavailable", "Unavailable")
+                            font.family: ThemeBackend.fontFamily
+                            font.pixelSize: rootObj.s(11)
+                            font.bold: true
+                            color: ThemeBackend.subtext0
+                        }
+
+                        Toggle {
+                            visible: !osdTabRoot.isVertical
+                            enabled: !osdTabRoot.isVertical
+                            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                            checked: osdTabRoot.showKeyboardLayout
+                            accentColor: ThemeBackend.mauve
+                            baseColor: ThemeBackend.surface1
+                            handleColor: ThemeBackend.crust
+                            handleOffColor: ThemeBackend.text
+                            onToggled: function(c) {
+                                osdTabRoot.updateOsdSetting("showKeyboardLayout", c);
                             }
                         }
                     }
@@ -734,4 +719,3 @@ GuideTab {
             }
         }
     }
-}

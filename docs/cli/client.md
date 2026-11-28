@@ -163,6 +163,7 @@ Captures screen images, records video, or decodes QR codes:
 - `serpantinum screenshot --edit`: Open screenshot in Satty image editor.
 - `serpantinum screenshot --record`: Toggle screen video recording (start or stop).
 - `serpantinum screenshot --scan-qr`: Scan selected region for QR codes.
+- `serpantinum screenshot --color-picker`: Open the screen color picker directly.
 - `serpantinum screenshot --geometry <X,Y WxH>`: Set capture crop region.
 - `serpantinum screenshot --monitor <name>`: Set target monitor output.
 - `serpantinum screenshot --backend <gpu-screen-recorder|wf-recorder>`: Set recording backend.
@@ -171,6 +172,13 @@ Captures screen images, records video, or decodes QR codes:
 - `serpantinum screenshot --mic-vol <0.0-1.0>`: Set microphone audio volume multiplier.
 - `serpantinum screenshot --mic-mute <true|false>`: Mute microphone audio in recording.
 - `serpantinum screenshot --mic-dev <name>`: Set microphone input device name.
+
+### `colorpicker`
+
+Opens the screen color picker directly on the focused monitor:
+
+- `serpantinum colorpicker`: Pick a pixel color and copy it to the clipboard.
+- `serpantinum colorpicker --monitor <name>`: Open the color picker on a specific monitor output.
 
 ### `volume`
 

@@ -10,6 +10,8 @@ SettingsBlob {
 
     SettingsRow {
         rootObj: section.tab.rootObj
+        settingId: "general_quickactions"
+        searchKeywords: "quick actions quickactions floating overlay calculator notes timer draw converter edge"
         icon: "󱓞"
         title: I18n.t("guide.general.quickactions.title") || "Quickactions"
         description: I18n.t("guide.general.quickactions.desc") || "Enable floating quickactions overlay"
@@ -21,8 +23,7 @@ SettingsBlob {
             handleColor: ThemeBackend.crust
             handleOffColor: ThemeBackend.text
             onToggled: function(c) {
-                section.tab.quickactions = c;
-                section.tab.updateGeneralSettings();
+                section.tab.setGeneralSetting("quickactions", c);
             }
         }
     }

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+declare -F qs_ensure_cache >/dev/null && return 0
+
 if [ -z "${SERPANTINUM_DIR:-}" ]; then
     SCRIPT_DIR="$(dirname "$(realpath "${BASH_SOURCE[0]}")")"
     export SERPANTINUM_DIR="$(dirname "$SCRIPT_DIR")"
@@ -49,9 +51,9 @@ qs_ensure_cache "focustime"
 if [ -z "${SERPANTINUM_INSTALLER:-}" ]; then
     ver=""
     if [ -f "$SERPANTINUM_DIR/version.txt" ]; then
-        ver="$(cat "$SERPANTINUM_DIR/version.txt" 2>/dev/null | xargs)"
+        read -r ver < "$SERPANTINUM_DIR/version.txt" 2>/dev/null
     elif [ -f "$(dirname "$SERPANTINUM_DIR")/version.txt" ]; then
-        ver="$(cat "$(dirname "$SERPANTINUM_DIR")/version.txt" 2>/dev/null | xargs)"
+        read -r ver < "$(dirname "$SERPANTINUM_DIR")/version.txt" 2>/dev/null
     fi
     if [ ! -f "$QS_STATE_DIR/version" ]; then
         [ -z "$ver" ] && ver="${SERPANTINUM_VERSION:-2.0.0}"

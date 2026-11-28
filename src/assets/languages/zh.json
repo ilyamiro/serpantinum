@@ -115,6 +115,23 @@
         "title": "右键点击关闭",
         "desc": "右键点击通知即可关闭"
       },
+      "timeout_low": {
+        "title": "低优先级超时",
+        "desc": "低优先级通知在屏幕上停留的时间"
+      },
+      "timeout_normal": {
+        "title": "普通超时",
+        "desc": "普通通知在屏幕上停留的时间"
+      },
+      "timeout_critical": {
+        "title": "紧急超时",
+        "desc": "紧急通知在屏幕上停留的时间"
+      },
+      "override_timeouts": {
+        "title": "覆盖应用超时",
+        "desc": "默认情况下，仅当应用未设置自己的超时时才使用上面的值。开启后将始终使用这些值"
+      },
+      "timeout_never": "从不",
       "test": "测试通知",
       "test_desc": "这是一条测试通知"
     },
@@ -218,6 +235,10 @@
       "quickactions": {
         "title": "快捷操作",
         "desc": "启用悬浮快捷操作面板"
+      },
+      "daily_ping": {
+        "title": "每日 ping",
+        "desc": "每天发送一次空请求以统计活跃用户。不附带任何数据"
       },
       "location": {
         "title": "地理位置",
@@ -364,8 +385,12 @@
             "name": {
               "pills": "胶囊",
               "numbers": "数字",
-              "pacman": "吃豆人"
-            }
+              "pacman": "吃豆人",
+              "morph": "变形",
+              "trace": "轨迹"
+            },
+            "morph": "富有表现力的变形图形",
+            "trace": "带流动脉冲的连接节点"
           },
           "name": "工作区"
         },
@@ -384,7 +409,8 @@
             "name": {
               "classic": "经典",
               "material": "Material",
-              "badge": "点阵"
+              "badge": "点阵",
+              "pill": "胶囊"
             }
           }
         },
@@ -401,6 +427,10 @@
         "bottom": "底部",
         "left": "左侧",
         "right": "右侧"
+      },
+      "monitors": {
+        "title": "显示器",
+        "desc": "选择显示状态栏的显示器"
       },
       "width": {
         "title": "顶栏宽度",
@@ -504,8 +534,12 @@
         "style": {
           "title": "圆环样式",
           "desc": "进度环的视觉外观",
-          "wave": "波浪",
-          "circle": "圆环"
+          "wave": "充满液态波浪的圆环",
+          "circle": "简洁的进度圆环",
+          "name": {
+            "wave": "波浪",
+            "circle": "圆环"
+          }
         },
         "items": {
           "title": "统计",
@@ -642,6 +676,16 @@
         "preview": {
           "title": "歌曲标题",
           "author": "Song author"
+        },
+        "style": {
+          "title": "媒体样式",
+          "desc": "选择媒体模块的视觉外观",
+          "name": {
+            "classic": "经典",
+            "ambient": "氛围"
+          },
+          "classic": "纯色背景上的专辑缩略图",
+          "ambient": "控制按钮后方的模糊专辑封面"
         }
       },
       "thickness": {
@@ -656,7 +700,9 @@
           "launcher": "启动器",
           "night_light": "夜间模式",
           "caffeine": "咖啡因",
-          "shuffle": "随机壁纸"
+          "shuffle": "随机壁纸",
+          "color_picker": "取色器",
+          "clipboard": "剪贴板"
         },
         "style": {
           "title": "样式",
@@ -691,6 +737,14 @@
         "select_dir": "选择目录...",
         "select_wallpaper": "选择壁纸",
         "select": "壁纸",
+        "carousel": {
+          "title": "壁纸轮播",
+          "desc": "按计划从目录中随机显示壁纸，所有壁纸都显示一遍后才会重复",
+          "interval": {
+            "title": "切换间隔",
+            "desc": "壁纸切换之间的秒数，从 10 秒到一周"
+          }
+        },
         "transition": {
           "mode": {
             "title": "过渡效果",
@@ -718,6 +772,31 @@
           "paint": {
             "name": "绘染",
             "desc": "从在屏幕上蔓延的菌落开始，逐格绘出新壁纸"
+          },
+          "wave": {
+            "name": "流体波浪",
+            "desc": "以弯曲的液体波浪扫过整个屏幕",
+            "direction_desc": "波浪扫过的起始边缘或角落"
+          },
+          "blinds": {
+            "name": "百叶窗",
+            "desc": "以错落的波纹节奏展开平行条纹",
+            "orientation_desc": "百叶窗展开的轴向"
+          },
+          "clock": {
+            "name": "时钟扫描",
+            "desc": "像雷达波束一样绕一点顺时针扫过屏幕",
+            "origin_desc": "扫描旋转的中心点"
+          },
+          "hex": {
+            "name": "六边形网格",
+            "desc": "通过荡漾的蜂巢六边形展现新壁纸",
+            "size_title": "六边形大小",
+            "size_desc": "网格中每个六边形单元的尺寸"
+          },
+          "ink": {
+            "name": "墨水晕染",
+            "desc": "如水彩墨水般在屏幕上自然晕开"
           },
           "orientation": {
             "title": "方向",
@@ -973,6 +1052,9 @@
       "orientation": {
         "horizontal": "水平",
         "vertical": "垂直"
+      },
+      "keyboard_layout": {
+        "title": "切换键盘布局时显示"
       }
     },
     "common": {
@@ -1254,7 +1336,10 @@
     "tab_emojis": "表情符号",
     "placeholder_emojis": "按名称或关键字搜索表情符号...",
     "search_run": "使用 {provider} 搜索",
-    "search_hint": "输入内容以使用 {provider} 搜索"
+    "search_hint": "输入内容以使用 {provider} 搜索",
+    "tab_windows": "窗口",
+    "placeholder_windows": "搜索已打开的窗口...",
+    "window_workspace": "工作区 {ws}"
   },
   "calendar": {
     "loading": "正在加载...",
@@ -1602,7 +1687,11 @@
       "ocr_missing_body": "打开截图设置以安装语言。",
       "ocr_uncertain_title": "文本已复制，但可能不准确",
       "ocr_language_hint": "文本可能使用了未安装的语言。请在截图设置中添加语言。",
-      "ocr_open_settings": "打开设置"
+      "ocr_open_settings": "打开设置",
+      "color_copied_title": "颜色已复制"
+    },
+    "color_picker": {
+      "copied": "已复制"
     }
   },
   "start": {
@@ -1611,7 +1700,7 @@
     "welcome": "欢迎",
     "tagline": "专为您打造的桌面 Shell",
     "you": "你",
-    "start_preview": "开始预览"
+    "hold_to_start": "长按开始"
   },
   "syspanel": {
     "user": {
@@ -1778,6 +1867,7 @@
       "no_results": "未找到任何内容"
     },
     "types": {
+      "snake": "蛇",
       "clock": "时钟",
       "music": "音乐",
       "weather": "天气",
@@ -1810,7 +1900,8 @@
       "lumen": "Lumen",
       "lyrics": "歌词",
       "simpleLyrics": "简易歌词",
-      "circle": "圆形"
+      "circle": "圆形",
+      "graph": "图表"
     },
     "presets": {
       "minimal": {
@@ -1841,13 +1932,17 @@
       "no_contributions": "未找到贡献记录"
     },
     "settings": {
+      "snakeLength": "长度",
+      "snakeSpeed": "速度",
       "lyricsLines": "行数",
       "lyricsAlignment": "对齐方式",
       "textContent": "文本",
       "hideText": "隐藏文本",
       "lineThickness": "粗细",
       "usageStyle": "样式",
-      "visualizerStyle": "可视化器样式"
+      "visualizerStyle": "可视化器样式",
+      "updateRate": "每分钟更新次数",
+      "perMinute": "/分"
     },
     "align": {
       "left": "靠左",
@@ -1863,6 +1958,10 @@
     "style": {
       "circle": "圆形",
       "wave": "波形"
+    },
+    "usageGraph": {
+      "average": "平均",
+      "peak": "峰值"
     }
   },
   "cli": {
@@ -1925,7 +2024,8 @@
       "reboot": "重启系统",
       "poweroff": "关闭系统",
       "redactor": "打开或切换桌面小部件布局编辑器",
-      "lock_redactor": "切换、打开或关闭锁屏布局编辑器"
+      "lock_redactor": "切换、打开或关闭锁屏布局编辑器",
+      "colorpicker": "从屏幕拾取颜色并复制到剪贴板"
     },
     "usage_label": "用法:",
     "config_desc": "读取和更改设置 (get, set, dump, path, edit)",
@@ -1971,11 +2071,15 @@
   },
   "installer": {
     "auth": {
-      "error_failed": "身份验证失败。"
+      "error_failed": "身份验证失败。",
+      "title": "需要管理员权限",
+      "prompt": "请输入 sudo 密码以继续",
+      "verifying": "正在验证凭据...",
+      "hint": "按 Enter 进行验证，或按 Esc 返回"
     },
     "os": {
       "error_root": "错误：请勿直接使用 root/sudo 运行此脚本。请以普通用户身份运行。",
-      "error_unsupported": "不支持的操作系统 ({os})。Serpantinum 仅支持 Arch Linux 及其衍生发行版。",
+      "error_unsupported": "不支持的操作系统 ({os})。Serpantinum 支持 Arch Linux、Fedora、Void Linux、Gentoo 及其衍生发行版。",
       "error_not_found": "无法检测操作系统。未找到 /etc/os-release。",
       "unknown_cpu": "未知 CPU",
       "unknown_gpu": "未知显卡 / 虚拟机",
@@ -2021,6 +2125,12 @@
       "menu_reinstall": "重新安装",
       "menu_install": "安装",
       "menu_exit": "退出",
+      "menu_uninstall": "卸载",
+      "uninstall_title": "确定要卸载 Serpantinum 吗？",
+      "uninstall_removes": "这将删除 Shell、serpantinum-core, serpantinum-audio, serpantinum-gamma、SDDM 主题以及 Serpantinum 的设置、状态和缓存，并将已主题化的应用、Qt 和 SDDM 恢复为系统默认外观。",
+      "uninstall_keeps": "Ski、合成器及其配置、壁纸和系统软件包将保持不变。",
+      "uninstall_cancel": "不，返回",
+      "uninstall_confirm": "是，卸载 Serpantinum",
       "error_no_compositor": "继续前必须至少选择一个受支持的合成器。",
       "tagline": "专为您打造的桌面 Shell",
       "support_creator": "支持创作者：",
@@ -2028,7 +2138,86 @@
       "installed_success": "✔ Serpantinum {ver} ({commit}) 安装成功。",
       "failed_packages": "以下软件包在安装过程中遇到错误：",
       "restart_prompt": "重启您的合成器或运行 'serpantinumd start' 即可开始。",
-      "ask_reboot": "是否立即重启？[y/n] "
+      "ask_reboot": "是否立即重启？[y/n] ",
+      "section_system": "系统",
+      "section_links": "链接",
+      "section_config": "配置",
+      "section_actions": "操作",
+      "mode_fresh": "全新安装",
+      "mode_current": "更新",
+      "mode_legacy": "旧版迁移",
+      "status_enabled": "已启用",
+      "status_disabled": "已禁用",
+      "status_yes": "是",
+      "status_no": "否",
+      "status_wayland": "Wayland",
+      "status_x11": "X11 / 默认",
+      "status_full_pack": "完整包",
+      "status_random_pack": "随机 3 张",
+      "status_none_selected": "尚未选择",
+      "status_missing_count": "缺失 {missing} 个",
+      "status_all_installed": "全部已安装",
+      "action_inspect": "查看",
+      "action_configure": "配置",
+      "action_toggle": "切换",
+      "pkg_title": "软件包安装概览",
+      "pkg_tab_all": "全部",
+      "pkg_tab_missing": "缺失",
+      "pkg_tab_installed": "已安装",
+      "pkg_search_placeholder": "按 / 筛选软件包",
+      "pkg_search_empty": "没有匹配筛选条件的软件包",
+      "pkg_badge_installed": "已安装",
+      "pkg_badge_missing": "将安装",
+      "pkg_summary": "共 {total} 个 · 已安装 {installed} 个 · 待安装 {missing} 个",
+      "compositors_subtitle": "已选择 {count} 个",
+      "compositors_hint": "按空格或 Enter 切换 · 完成后按 Esc",
+      "sddm_hint": "按左右方向键或 Enter 切换 · 完成后按 Esc",
+      "preview_badge": "预览 · 不做更改",
+      "preview_state_hint": "切换模式",
+      "preview_reboot_notice": "预览模式：已跳过系统重启。",
+      "hint_navigate": "导航",
+      "hint_switch": "切换 / 开关",
+      "hint_select": "选择",
+      "hint_quit": "退出",
+      "hint_back": "返回",
+      "hint_search": "搜索",
+      "hint_filter": "筛选",
+      "hint_toggle_log": "切换日志",
+      "hint_scroll": "滚动",
+      "progress_installing": "正在安装 Serpantinum",
+      "progress_updating": "正在更新 Serpantinum",
+      "progress_reinstalling": "正在重新安装 Serpantinum",
+      "progress_uninstalling": "正在卸载 Serpantinum",
+      "progress_step_of": "第 {current} / {total} 步",
+      "progress_steps_title": "安装步骤",
+      "progress_output_title": "实时输出",
+      "progress_waiting_input": "需要输入 — 请输入响应并按 Enter",
+      "progress_skipped": "已跳过",
+      "progress_failed_title": "步骤失败",
+      "progress_retry": "重试此步骤",
+      "progress_continue": "仍然继续",
+      "progress_abort": "退出安装程序",
+      "progress_log_saved": "完整日志已保存至 {path}",
+      "complete_title_install": "安装完成",
+      "complete_title_update": "更新完成",
+      "complete_title_reinstall": "重新安装完成",
+      "complete_title_uninstall": "卸载完成",
+      "complete_summary": "摘要",
+      "complete_version": "版本",
+      "complete_compositors": "合成器",
+      "complete_sddm": "SDDM",
+      "complete_wallpapers": "壁纸",
+      "complete_duration": "耗时",
+      "btn_restart": "立即重启",
+      "btn_exit": "退出到 Shell",
+      "btn_return_menu": "返回菜单",
+      "terminal_too_small": "终端窗口过小。请至少调整为 {cols}×{rows}。",
+      "social": "社交链接：",
+      "compositors_row": "目标合成器",
+      "packages_row": "软件包概览",
+      "pkg_count_short": "{count} 个包",
+      "hint_fast_forward": "快进",
+      "preview_mode_switched": "预览模式：{mode}"
     },
     "deps": {
       "syncing": "正在同步并更新系统软件包 (pacman -Syyu)...",
@@ -2088,6 +2277,30 @@
       "installing": "正在安装文件管理器 Ski...",
       "unsupported_arch": "预编译的 Ski 包仅提供 x86_64 版本，已跳过。",
       "up_to_date": "-> Ski {version} 已安装。"
+    },
+    "uninstall": {
+      "stopping": "正在停止 Serpantinum 及其服务...",
+      "resetting": "正在将应用主题恢复为系统默认...",
+      "removing": "正在删除 Serpantinum 文件...",
+      "done": "Serpantinum 已卸载。如果不再需要，请从合成器配置中删除其自动启动行。"
+    },
+    "steps": {
+      "prepare": "准备遥测与环境",
+      "migrate": "迁移旧版配置",
+      "backup": "备份现有合成器配置",
+      "deps": "安装系统软件包与字体",
+      "ski": "安装 Ski 文件管理器",
+      "audio": "安装 Serpantinum 音频引擎",
+      "gamma": "安装 Serpantinum 蓝光过滤器",
+      "core": "安装 Serpantinum 核心服务",
+      "deploy": "部署 Shell 与合成器配置",
+      "sddm": "配置 SDDM 显示管理器",
+      "wallpapers": "安装壁纸包",
+      "config": "初始化设置与服务",
+      "finalize": "保存版本状态并完成",
+      "uninstall_stop": "停止 Serpantinum 及其后台服务",
+      "uninstall_reset": "重置应用主题与 Qt 默认设置",
+      "uninstall_remove": "删除 Serpantinum 文件与配置"
     }
   },
   "datetime": {
@@ -2233,5 +2446,8 @@
   },
   "common": {
     "select": "选择..."
+  },
+  "osd": {
+    "keyboard_layout": "键盘布局"
   }
 }

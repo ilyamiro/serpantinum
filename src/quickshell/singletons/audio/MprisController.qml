@@ -14,7 +14,7 @@ Singleton {
         for (let i = 0; i < players.length; i++) {
             states.push(players[i].isPlaying);
             states.push(players[i].canControl);
-            states.push(players[i].busName);
+            states.push(players[i].dbusName);
         }
         return states;
     }
@@ -24,10 +24,10 @@ Singleton {
     readonly property MprisPlayer activePlayer: {
         let _ = _playerWatch;
         try {
-            let players = Mpris.players.values.filter(p => p).sort((a, b) => (a.busName || "").localeCompare(b.busName || ""));
+            let players = Mpris.players.values.filter(p => p).sort((a, b) => (a.dbusName || "").localeCompare(b.dbusName || ""));
             let playing = players.find(p => p.isPlaying);
             if (playing) return playing;
-            let last = root.lastPlayingBus !== "" ? players.find(p => p.busName === root.lastPlayingBus) : null;
+            let last = root.lastPlayingBus !== "" ? players.find(p => p.dbusName === root.lastPlayingBus) : null;
             if (last) return last;
             let loaded = players.find(p => p.playbackState !== MprisPlaybackState.Stopped && p.trackTitle !== "");
             if (loaded) return loaded;
@@ -39,7 +39,73 @@ Singleton {
         }
     }
 
-    readonly property string activePlayerId: activePlayer ? (activePlayer.busName || activePlayer.identity || "") : ""
+    readonly property var players: {
+        let _ = _playerWatch;
+        if (!Mpris.players || !Mpris.players.values) return [];
+        let list = [];
+        let vals = Mpris.players.values;
+        for (let i = 0; i < vals.length; i++) {
+            if (vals[i]) list.push(vals[i]);
+        }
+        return list;
+    }
+
+    property var manualPlayer: null
+
+    readonly property var targetPlayer: {
+        let list = root.players;
+        if (root.manualPlayer) {
+            for (let i = 0; i < list.length; i++) {
+                if (list[i] === root.manualPlayer) return root.manualPlayer;
+            }
+        }
+        return root.activePlayer || (list.length > 0 ? list[0] : null);
+    }
+
+    readonly property var playerOptions: {
+        let list = root.players;
+        let names = [];
+        let counts = {};
+        for (let i = 0; i < list.length; i++) {
+            let base = list[i].identity || list[i].desktopEntry || ("Player " + (i + 1));
+            counts[base] = (counts[base] || 0) + 1;
+        }
+        for (let i = 0; i < list.length; i++) {
+            let p = list[i];
+            let base = p.identity || p.desktopEntry || ("Player " + (i + 1));
+            if (counts[base] > 1 && p.trackTitle) {
+                names.push(base + " (" + p.trackTitle + ")");
+            } else {
+                names.push(base);
+            }
+        }
+        return names;
+    }
+
+    readonly property int currentPlayerIndex: {
+        if (!root.targetPlayer) return 0;
+        let list = root.players;
+        for (let i = 0; i < list.length; i++) {
+            if (list[i] === root.targetPlayer) return i;
+        }
+        return 0;
+    }
+
+    function selectPlayerByIndex(idx) {
+        let list = root.players;
+        if (idx >= 0 && idx < list.length) {
+            root.manualPlayer = list[idx];
+        }
+    }
+
+    function formatTime(seconds) {
+        let sec = Math.max(0, Math.floor(Number(seconds) || 0));
+        let m = Math.floor(sec / 60);
+        let s = sec % 60;
+        return (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+    }
+
+    readonly property string activePlayerId: activePlayer ? (activePlayer.dbusName || activePlayer.identity || "") : ""
     readonly property bool hasActivePlayer: activePlayer !== null
     readonly property bool isPlaying: {
         try {
@@ -86,10 +152,11 @@ Singleton {
     property string deviceIcon: "󰓃"
     property string deviceName: "Speaker"
     property bool fetchPending: false
+    property string fetchArtUrl: ""
 
     onActivePlayerChanged: {
         if (root.activePlayer && root.activePlayer.isPlaying) {
-            root.lastPlayingBus = root.activePlayer.busName || "";
+            root.lastPlayingBus = root.activePlayer.dbusName || "";
         }
         if (root.activePlayer) {
             root.livePosition = root.activePlayer.position;
@@ -149,14 +216,17 @@ Singleton {
             "bash",
             Caching.qsDir + "/media/art_fetch.sh",
             root.activePlayerId,
-            root.currentArtUrl,
+            root.fetchArtUrl.startsWith("data:") ? "data:stdin" : root.fetchArtUrl,
             root.trackTitle,
             root.trackArtist
         ]
+        onStarted: {
+            if (stdinEnabled && root.fetchArtUrl.startsWith("data:")) write(root.fetchArtUrl + "\n");
+        }
         onExited: {
             if (root.fetchPending) {
                 root.fetchPending = false;
-                artFetchProc.running = true;
+                root.startArtFetch();
             }
         }
         stdout: StdioCollector {
@@ -214,6 +284,12 @@ Singleton {
             return;
         }
         root.fetchPending = false;
+        root.startArtFetch();
+    }
+
+    function startArtFetch() {
+        root.fetchArtUrl = root.currentArtUrl;
+        artFetchProc.stdinEnabled = root.fetchArtUrl.startsWith("data:");
         artFetchProc.running = true;
     }
 

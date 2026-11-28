@@ -10,55 +10,22 @@ import "../../../reusables"
 import "../../../"
 import "../../"
 
-BarFaceBase {
+BarPillFaceBase {
     id: root
 
-    property string btStyle: {
-        if (widget && widget !== root && widget.btStyle !== undefined) return widget.btStyle;
-        if (module && module.btStyle !== undefined) return module.btStyle;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            let bs = Config.rawSettings.bar;
-            if (bs.btStyle) return bs.btStyle;
-            if (bs.bt && bs.bt.style) return bs.bt.style;
-        }
-        return "button";
-    }
+    property string btStyle: String(readSetting("btStyle", "bt.style", "button"))
+    property bool showIcon: Boolean(readSetting("btShowIcon", "bt.showIcon", true))
+    property bool showName: Boolean(readSetting("btShowName", "bt.showName", true))
 
-    property bool showIcon: {
-        if (widget && widget !== root && widget.btShowIcon !== undefined) return widget.btShowIcon;
-        if (widget && widget !== root && widget.showIcon !== undefined) return widget.showIcon;
-        if (module && module.btShowIcon !== undefined) return module.btShowIcon;
-        if (module && module.showIcon !== undefined) return module.showIcon;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            let bs = Config.rawSettings.bar;
-            if (bs.btShowIcon !== undefined) return Boolean(bs.btShowIcon);
-            if (bs.bt && bs.bt.showIcon !== undefined) return Boolean(bs.bt.showIcon);
-        }
-        return true;
-    }
-
-    property bool showName: {
-        if (widget && widget !== root && widget.btShowName !== undefined) return widget.btShowName;
-        if (widget && widget !== root && widget.showName !== undefined) return widget.showName;
-        if (module && module.btShowName !== undefined) return module.btShowName;
-        if (module && module.showName !== undefined) return module.showName;
-        let dummy = configRevision;
-        if (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) {
-            let bs = Config.rawSettings.bar;
-            if (bs.btShowName !== undefined) return Boolean(bs.btShowName);
-            if (bs.bt && bs.bt.showName !== undefined) return Boolean(bs.bt.showName);
-        }
-        return true;
-    }
+    pillStyle: btStyle
+    pillVisibleCondition: !isDesktop
+    pillSourceComponent: root.isVertical ? sideButtonComponent : topButtonComponent
 
     readonly property bool isDesktop: !SystemInfo.hasBatSupply
     property string btStatus: isPreview ? "On" : "Off"
     property string btIcon: isPreview ? "🎧" : "󰂲"
     property string btDevice: isPreview ? "Headphones" : "Off"
     property bool isBtOn: isPreview ? true : (btStatus.toLowerCase() === "enabled" || btStatus.toLowerCase() === "on")
-    property bool showLayout: (!barWindow || isPreview) ? true : ((!module || module.moduleActive) && barWindow.isStartupReady && barWindow.isDataReady)
     readonly property var btPill: pillLoader.item
     property bool isConnected: isPreview ? true : false
 
@@ -178,95 +145,34 @@ BarFaceBase {
         }
     }
 
-    readonly property real pillLength: pillLoader.item ? (isVertical ? pillLoader.item.height : pillLoader.item.width) : 0
-    readonly property real textLength: isVertical ? textLayout.implicitHeight : textLayout.implicitWidth
+    onTextClicked: root.togglePanel("network", "bt")
 
-    property real targetLength: {
-        if (module && !module.moduleActive) return 0;
-        if (root.isDesktop) return 0;
-        if (root.btStyle === "text") {
-            return (textLength > 0) ? (textLength + s(root.isCompact ? (isVertical ? 14 : 12) : 16)) : 0;
-        }
-        return (pillLength > 0) ? (pillLength + s(root.isCompact ? 8 : 10)) : 0;
-    }
-    property bool isFaceVisible: showLayout && !isDesktop && targetLength > 0
-
-    function syncImplicitSize() {
-        let cross = module ? module.thickness : (parent ? (isVertical ? parent.width : parent.height) : 0);
-        implicitWidth = isVertical ? cross : targetLength;
-        implicitHeight = isVertical ? targetLength : cross;
-    }
-
-    onTargetLengthChanged: syncImplicitSize()
-    onIsVerticalChanged: syncImplicitSize()
-    onModuleChanged: syncImplicitSize()
-    onParentChanged: syncImplicitSize()
-
-    Timer {
-        running: true
-        interval: 0
-        onTriggered: root.syncImplicitSize()
-    }
-
-    transform: Translate {
-        x: (root.isVertical || root.showLayout) ? 0 : s(60)
-        Behavior on x { NumberAnimation { duration: 800; easing.type: Easing.OutQuint } }
-    }
-
-    MouseArea {
-        id: textMouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        enabled: root.btStyle === "text" && !root.isPreview
-        onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle network bt"])
-    }
-
-    AxisFlow {
-        id: textLayout
-        vertical: root.isVertical
-        horizontalItemAlignment: Grid.AlignHCenter
-        verticalItemAlignment: Grid.AlignVCenter
-        visible: root.btStyle === "text"
-        anchors.centerIn: parent
-        spacing: root.isVertical ? s(root.isCompact ? 2 : 3) : s(root.isCompact ? 5 : 6)
-        opacity: root.showLayout ? 1.0 : 0.0
-        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
-
-        Item {
-            visible: root.showIcon
-            width: root.isVertical ? textIcon.implicitWidth : s(root.isCompact ? 18 : 20)
-            height: root.isVertical ? textIcon.implicitHeight : width
-
-            Text {
-                id: textIcon
-                anchors.centerIn: parent
-                text: root.btIcon
-                font.family: ThemeBackend.iconFont
-                font.pixelSize: s(root.isCompact ? 14 : 15)
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.mauve, 1.15) : (root.isBtOn ? ThemeBackend.mauve : ThemeBackend.subtext0)
-                Behavior on color { ColorAnimation { duration: 150 } }
-            }
-        }
+    Item {
+        visible: root.showIcon
+        width: root.isVertical ? textIcon.implicitWidth : s(root.isCompact ? 18 : 20)
+        height: root.isVertical ? textIcon.implicitHeight : width
 
         Text {
-            visible: root.showName
-            text: root.isVertical ? (root.btDevice.length > 6 ? (root.btDevice.substring(0, 5) + "…") : root.btDevice) : root.btDevice
-            font.family: ThemeBackend.fontFamily
-            font.pixelSize: root.isVertical ? s(root.isCompact ? 9 : 10) : s(root.isCompact ? 11 : 12)
-            font.bold: true
-            color: textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
+            id: textIcon
+            anchors.centerIn: parent
+            text: root.btIcon
+            font.family: ThemeBackend.iconFont
+            font.pixelSize: s(root.isCompact ? 14 : 15)
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: root.textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.mauve, 1.15) : (root.isBtOn ? ThemeBackend.mauve : ThemeBackend.subtext0)
             Behavior on color { ColorAnimation { duration: 150 } }
         }
     }
 
-    Loader {
-        id: pillLoader
-        visible: root.btStyle !== "text"
-        anchors.centerIn: parent
-        sourceComponent: root.isVertical ? sideButtonComponent : topButtonComponent
+    Text {
+        visible: root.showName
+        text: root.isVertical ? (root.btDevice.length > 6 ? (root.btDevice.substring(0, 5) + "…") : root.btDevice) : root.btDevice
+        font.family: ThemeBackend.fontFamily
+        font.pixelSize: root.isVertical ? s(root.isCompact ? 9 : 10) : s(root.isCompact ? 11 : 12)
+        font.bold: true
+        color: root.textMouseArea.containsMouse ? Qt.lighter(ThemeBackend.text, 1.15) : ThemeBackend.text
+        Behavior on color { ColorAnimation { duration: 150 } }
     }
 
     Component {
@@ -297,7 +203,7 @@ BarFaceBase {
             transform: Translate { y: btPill.initAnimTrigger ? 0 : s(15); Behavior on y { NumberAnimation { duration: 620; easing.type: Easing.OutQuint } } }
             Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
 
-            onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle network bt"])
+            onClicked: root.togglePanel("network", "bt")
         }
     }
 
@@ -315,7 +221,7 @@ BarFaceBase {
             textFontSize: s(root.isCompact ? 9 : 10)
             accentColor: root.isBtOn ? (root.isCompact ? Qt.lighter(ThemeBackend.mauve, 1.08) : ThemeBackend.mauve) : (root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0)
             textColor: root.isBtOn ? ThemeBackend.base : (root.isCompact ? Qt.lighter(ThemeBackend.text, 1.05) : ThemeBackend.text)
-            onClicked: if (!root.isPreview) Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle network bt"])
+            onClicked: root.togglePanel("network", "bt")
         }
     }
 }

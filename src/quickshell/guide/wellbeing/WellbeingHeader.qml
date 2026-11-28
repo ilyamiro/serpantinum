@@ -58,8 +58,8 @@ RowLayout {
     }
 
     Image {
-        visible: header.inApp && header.tab.selectedAppIcon !== ""
-        source: (header.tab.selectedAppIcon && header.tab.selectedAppIcon !== "") ? (header.tab.selectedAppIcon.startsWith("/") ? "file://" + header.tab.selectedAppIcon : "image://icon/" + header.tab.selectedAppIcon) : ""
+        visible: header.inApp && header.tab.selectedAppIcon !== "" && status === Image.Ready && !AppMatcher.iconMissing(source)
+        source: AppMatcher.iconSource(header.tab.selectedAppIcon)
         sourceSize: Qt.size(rootObj.s(22), rootObj.s(22))
         Layout.preferredWidth: rootObj.s(22)
         Layout.preferredHeight: rootObj.s(22)

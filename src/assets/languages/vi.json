@@ -115,6 +115,23 @@
         "title": "Đóng bằng chuột phải",
         "desc": "Đóng thông báo bằng cách nhấp chuột phải"
       },
+      "timeout_low": {
+        "title": "Thời gian chờ mức khẩn thấp",
+        "desc": "Thông báo mức khẩn thấp hiển thị trên màn hình bao lâu"
+      },
+      "timeout_normal": {
+        "title": "Thời gian chờ thông thường",
+        "desc": "Thông báo thông thường hiển thị trên màn hình bao lâu"
+      },
+      "timeout_critical": {
+        "title": "Thời gian chờ khẩn cấp",
+        "desc": "Thông báo khẩn cấp hiển thị trên màn hình bao lâu"
+      },
+      "override_timeouts": {
+        "title": "Ghi đè thời gian chờ của ứng dụng",
+        "desc": "Theo mặc định, các giá trị ở trên chỉ được dùng khi ứng dụng không tự đặt thời gian chờ. Bật để luôn dùng chúng"
+      },
+      "timeout_never": "Không bao giờ",
       "test": "Thử nghiệm thông báo",
       "test_desc": "Đây là thông báo thử nghiệm"
     },
@@ -218,6 +235,10 @@
       "quickactions": {
         "title": "Thao tác nhanh",
         "desc": "Bật lớp phủ thao tác nhanh nổi"
+      },
+      "daily_ping": {
+        "title": "Ping hằng ngày",
+        "desc": "Gửi một yêu cầu trống mỗi ngày để đếm số người dùng hoạt động. Không kèm theo dữ liệu nào"
       },
       "location": {
         "title": "Vị trí",
@@ -364,8 +385,12 @@
             "name": {
               "pills": "Dạng viên",
               "numbers": "Số",
-              "pacman": "Pacman"
-            }
+              "pacman": "Pacman",
+              "morph": "Biến hình",
+              "trace": "Dấu vết"
+            },
+            "morph": "Hình dạng biến đổi sống động",
+            "trace": "Các nút nối liền với xung chạy"
           },
           "name": "Không gian làm việc"
         },
@@ -384,7 +409,8 @@
             "name": {
               "classic": "Cổ điển",
               "material": "Material",
-              "badge": "Ma trận điểm"
+              "badge": "Ma trận điểm",
+              "pill": "Viên thuốc"
             }
           }
         },
@@ -401,6 +427,10 @@
         "bottom": "Dưới",
         "left": "Trái",
         "right": "Phải"
+      },
+      "monitors": {
+        "title": "Màn hình",
+        "desc": "Chọn màn hình hiển thị thanh"
       },
       "width": {
         "title": "Chiều rộng thanh tác vụ",
@@ -504,8 +534,12 @@
         "style": {
           "title": "Kiểu vòng tròn",
           "desc": "Giao diện vòng tiến trình",
-          "wave": "Sóng",
-          "circle": "Vòng tròn"
+          "wave": "Vòng tròn chứa đầy sóng chất lỏng",
+          "circle": "Vòng tiến trình gọn gàng",
+          "name": {
+            "wave": "Sóng",
+            "circle": "Vòng tròn"
+          }
         },
         "items": {
           "title": "Chỉ số",
@@ -642,6 +676,16 @@
         "preview": {
           "title": "Tên bài hát",
           "author": "Song author"
+        },
+        "style": {
+          "title": "Kiểu phương tiện",
+          "desc": "Chọn giao diện hiển thị của mô-đun phương tiện",
+          "name": {
+            "classic": "Cổ điển",
+            "ambient": "Ambient"
+          },
+          "classic": "Ảnh thu nhỏ album trên nền trơn",
+          "ambient": "Ảnh bìa album mờ phía sau các nút điều khiển"
         }
       },
       "thickness": {
@@ -656,7 +700,9 @@
           "launcher": "Trình khởi chạy",
           "night_light": "Ánh sáng ban đêm",
           "caffeine": "Caffeine",
-          "shuffle": "Hình nền ngẫu nhiên"
+          "shuffle": "Hình nền ngẫu nhiên",
+          "color_picker": "Bộ chọn màu",
+          "clipboard": "Bộ nhớ tạm"
         },
         "style": {
           "title": "Kiểu dáng",
@@ -691,6 +737,14 @@
         "select_dir": "Chọn thư mục...",
         "select_wallpaper": "Chọn hình nền",
         "select": "Hình nền",
+        "carousel": {
+          "title": "Băng chuyền hình nền",
+          "desc": "Hiển thị hình nền ngẫu nhiên từ thư mục theo lịch, đi qua tất cả trước khi lặp lại",
+          "interval": {
+            "title": "Khoảng thời gian thay đổi",
+            "desc": "Số giây giữa các lần đổi hình nền, từ 10 giây đến một tuần"
+          }
+        },
         "transition": {
           "mode": {
             "title": "Hiệu ứng chuyển",
@@ -718,6 +772,31 @@
           "paint": {
             "name": "Sơn",
             "desc": "Tô hình nền mới từng ô từ những quần thể lan rộng khắp màn hình"
+          },
+          "wave": {
+            "name": "Sóng chất lỏng",
+            "desc": "Quét một làn sóng chất lỏng uốn lượn qua màn hình",
+            "direction_desc": "Cạnh hoặc góc nơi làn sóng bắt đầu"
+          },
+          "blinds": {
+            "name": "Mành sáo",
+            "desc": "Mở các thanh song song qua màn hình theo đợt nối tiếp",
+            "orientation_desc": "Trục mà mành sáo mở dọc theo"
+          },
+          "clock": {
+            "name": "Quét đồng hồ",
+            "desc": "Quét theo chiều kim đồng hồ quanh một điểm như tia radar",
+            "origin_desc": "Điểm tâm xoay của phép quét"
+          },
+          "hex": {
+            "name": "Lưới lục giác",
+            "desc": "Hé lộ hình nền mới qua tổ ong lục giác gợn sóng",
+            "size_title": "Kích thước lục giác",
+            "size_desc": "Kích thước của mỗi ô lục giác trong lưới"
+          },
+          "ink": {
+            "name": "Loang mực",
+            "desc": "Lan tỏa tự nhiên khắp màn hình như mực màu nước"
           },
           "orientation": {
             "title": "Hướng mở",
@@ -973,6 +1052,9 @@
       "orientation": {
         "horizontal": "Ngang",
         "vertical": "Dọc"
+      },
+      "keyboard_layout": {
+        "title": "Hiện khi đổi bố cục bàn phím"
       }
     },
     "common": {
@@ -1254,7 +1336,10 @@
     "tab_emojis": "Biểu tượng cảm xúc",
     "placeholder_emojis": "Tìm kiếm biểu tượng cảm xúc hoặc nhập từ khóa...",
     "search_run": "Tìm kiếm với {provider}",
-    "search_hint": "Nhập để tìm kiếm với {provider}"
+    "search_hint": "Nhập để tìm kiếm với {provider}",
+    "tab_windows": "Cửa sổ",
+    "placeholder_windows": "Tìm cửa sổ đang mở...",
+    "window_workspace": "Không gian làm việc {ws}"
   },
   "calendar": {
     "loading": "Đang tải...",
@@ -1602,7 +1687,11 @@
       "ocr_missing_body": "Mở cài đặt ảnh chụp màn hình để cài đặt một ngôn ngữ.",
       "ocr_uncertain_title": "Đã sao chép văn bản, nhưng có thể không chính xác",
       "ocr_language_hint": "Văn bản có thể thuộc ngôn ngữ chưa được cài đặt. Hãy thêm ngôn ngữ trong cài đặt ảnh chụp màn hình.",
-      "ocr_open_settings": "Mở cài đặt"
+      "ocr_open_settings": "Mở cài đặt",
+      "color_copied_title": "Đã sao chép màu"
+    },
+    "color_picker": {
+      "copied": "Đã sao chép"
     }
   },
   "start": {
@@ -1611,7 +1700,7 @@
     "welcome": "Chào mừng",
     "tagline": "Một desktop shell được xây dựng cho",
     "you": "Bạn",
-    "start_preview": "Bắt đầu xem trước"
+    "hold_to_start": "Nhấn giữ để bắt đầu"
   },
   "syspanel": {
     "user": {
@@ -1778,6 +1867,7 @@
       "no_results": "Không tìm thấy gì"
     },
     "types": {
+      "snake": "Rắn",
       "clock": "Đồng hồ",
       "music": "Nhạc",
       "weather": "Thời tiết",
@@ -1810,7 +1900,8 @@
       "lumen": "Lumen",
       "lyrics": "Lời bài hát",
       "simpleLyrics": "Lời bài hát đơn giản",
-      "circle": "Hình tròn"
+      "circle": "Hình tròn",
+      "graph": "Biểu đồ"
     },
     "presets": {
       "minimal": {
@@ -1841,13 +1932,17 @@
       "no_contributions": "Không tìm thấy đóng góp nào"
     },
     "settings": {
+      "snakeLength": "Độ dài",
+      "snakeSpeed": "Tốc độ",
       "lyricsLines": "Dòng",
       "lyricsAlignment": "Căn chỉnh",
       "textContent": "Văn bản",
       "hideText": "Ẩn văn bản",
       "lineThickness": "Độ dày",
       "usageStyle": "Kiểu",
-      "visualizerStyle": "Kiểu trình hiển thị"
+      "visualizerStyle": "Kiểu trình hiển thị",
+      "updateRate": "Số lần cập nhật mỗi phút",
+      "perMinute": "/phút"
     },
     "align": {
       "left": "Trái",
@@ -1863,6 +1958,10 @@
     "style": {
       "circle": "Hình tròn",
       "wave": "Sóng"
+    },
+    "usageGraph": {
+      "average": "TB",
+      "peak": "Đỉnh"
     }
   },
   "cli": {
@@ -1925,7 +2024,8 @@
       "reboot": "Khởi động lại hệ thống",
       "poweroff": "Tắt hệ thống",
       "redactor": "Mở hoặc bật/tắt trình chỉnh sửa bố cục widget màn hình nền",
-      "lock_redactor": "Bật/tắt, mở hoặc đóng trình chỉnh sửa bố cục màn hình khóa"
+      "lock_redactor": "Bật/tắt, mở hoặc đóng trình chỉnh sửa bố cục màn hình khóa",
+      "colorpicker": "Chọn màu từ màn hình và sao chép vào khay nhớ tạm"
     },
     "usage_label": "Cách dùng:",
     "config_desc": "Đọc và thay đổi cài đặt (get, set, dump, path, edit)",
@@ -1971,11 +2071,15 @@
   },
   "installer": {
     "auth": {
-      "error_failed": "Xác thực thất bại."
+      "error_failed": "Xác thực thất bại.",
+      "title": "Cần quyền quản trị",
+      "prompt": "Nhập mật khẩu sudo để tiếp tục",
+      "verifying": "Đang xác minh thông tin đăng nhập...",
+      "hint": "Nhấn Enter để xác thực hoặc Esc để quay lại"
     },
     "os": {
       "error_root": "Lỗi: Không chạy trực tiếp tập lệnh này bằng root/sudo. Hãy chạy với tư cách người dùng thường.",
-      "error_unsupported": "Hệ điều hành không được hỗ trợ ({os}). Serpantinum chỉ hỗ trợ Arch Linux và các bản phân phối dựa trên Arch.",
+      "error_unsupported": "Hệ điều hành không được hỗ trợ ({os}). Serpantinum hỗ trợ Arch Linux, Fedora, Void Linux, Gentoo và các bản phân phối phái sinh của chúng.",
       "error_not_found": "Không thể nhận diện hệ điều hành. Không tìm thấy /etc/os-release.",
       "unknown_cpu": "CPU không rõ",
       "unknown_gpu": "Không rõ / Máy ảo",
@@ -2021,6 +2125,12 @@
       "menu_reinstall": "Cài đặt lại",
       "menu_install": "Cài đặt",
       "menu_exit": "Thoát",
+      "menu_uninstall": "Gỡ cài đặt",
+      "uninstall_title": "Bạn có chắc chắn muốn gỡ cài đặt Serpantinum không?",
+      "uninstall_removes": "Thao tác này sẽ xóa shell, serpantinum-core, serpantinum-audio, serpantinum-gamma, giao diện SDDM cùng cài đặt, trạng thái và bộ nhớ đệm của Serpantinum, đồng thời đưa các ứng dụng đã áp chủ đề, Qt và SDDM về mặc định hệ thống.",
+      "uninstall_keeps": "Ski, các compositor, cấu hình của chúng, hình nền và các gói hệ thống sẽ được giữ nguyên.",
+      "uninstall_cancel": "Không, quay lại",
+      "uninstall_confirm": "Có, gỡ cài đặt Serpantinum",
       "error_no_compositor": "Bạn phải chọn ít nhất một compositor được hỗ trợ trước khi tiếp tục.",
       "tagline": "Một desktop shell được xây dựng cho bạn",
       "support_creator": "Ủng hộ tác giả:",
@@ -2028,7 +2138,86 @@
       "installed_success": "✔ Đã cài đặt thành công Serpantinum {ver} ({commit}).",
       "failed_packages": "Các gói sau đã gặp lỗi trong quá trình cài đặt:",
       "restart_prompt": "Hãy khởi động lại compositor hoặc chạy 'serpantinumd start' để bắt đầu.",
-      "ask_reboot": "Bạn có muốn khởi động lại không? [y/n] "
+      "ask_reboot": "Bạn có muốn khởi động lại không? [y/n] ",
+      "section_system": "Hệ thống",
+      "section_links": "Liên kết",
+      "section_config": "Cấu hình",
+      "section_actions": "Thao tác",
+      "mode_fresh": "Cài đặt mới",
+      "mode_current": "Cập nhật",
+      "mode_legacy": "Di chuyển bản cũ",
+      "status_enabled": "Đã bật",
+      "status_disabled": "Đã tắt",
+      "status_yes": "Có",
+      "status_no": "Không",
+      "status_wayland": "Wayland",
+      "status_x11": "X11 / mặc định",
+      "status_full_pack": "Trọn bộ",
+      "status_random_pack": "3 ngẫu nhiên",
+      "status_none_selected": "Chưa chọn",
+      "status_missing_count": "Thiếu {missing}",
+      "status_all_installed": "Đã cài tất cả",
+      "action_inspect": "Xem",
+      "action_configure": "Cấu hình",
+      "action_toggle": "Bật/tắt",
+      "pkg_title": "Tổng quan cài đặt gói",
+      "pkg_tab_all": "Tất cả",
+      "pkg_tab_missing": "Còn thiếu",
+      "pkg_tab_installed": "Đã cài đặt",
+      "pkg_search_placeholder": "Nhấn / để lọc gói",
+      "pkg_search_empty": "Không có gói nào khớp với bộ lọc",
+      "pkg_badge_installed": "Đã cài đặt",
+      "pkg_badge_missing": "Sẽ cài đặt",
+      "pkg_summary": "Tổng {total} · {installed} đã cài · {missing} sẽ cài",
+      "compositors_subtitle": "Đã chọn {count}",
+      "compositors_hint": "Space hoặc Enter để chọn/bỏ · Esc khi xong",
+      "sddm_hint": "Trái/Phải hoặc Enter để bật/tắt · Esc khi xong",
+      "preview_badge": "Xem trước · không thay đổi",
+      "preview_state_hint": "Đổi chế độ",
+      "preview_reboot_notice": "Chế độ xem trước: đã bỏ qua khởi động lại hệ thống.",
+      "hint_navigate": "Điều hướng",
+      "hint_switch": "Chuyển / bật tắt",
+      "hint_select": "Chọn",
+      "hint_quit": "Thoát",
+      "hint_back": "Quay lại",
+      "hint_search": "Tìm kiếm",
+      "hint_filter": "Lọc",
+      "hint_toggle_log": "Ẩn/hiện nhật ký",
+      "hint_scroll": "Cuộn",
+      "progress_installing": "Đang cài đặt Serpantinum",
+      "progress_updating": "Đang cập nhật Serpantinum",
+      "progress_reinstalling": "Đang cài đặt lại Serpantinum",
+      "progress_uninstalling": "Đang gỡ cài đặt Serpantinum",
+      "progress_step_of": "Bước {current} / {total}",
+      "progress_steps_title": "Các bước cài đặt",
+      "progress_output_title": "Đầu ra trực tiếp",
+      "progress_waiting_input": "Cần nhập liệu — gõ câu trả lời và nhấn Enter",
+      "progress_skipped": "Đã bỏ qua",
+      "progress_failed_title": "Bước thất bại",
+      "progress_retry": "Thử lại bước này",
+      "progress_continue": "Vẫn tiếp tục",
+      "progress_abort": "Thoát trình cài đặt",
+      "progress_log_saved": "Đã lưu toàn bộ nhật ký tại {path}",
+      "complete_title_install": "Cài đặt hoàn tất",
+      "complete_title_update": "Cập nhật hoàn tất",
+      "complete_title_reinstall": "Cài đặt lại hoàn tất",
+      "complete_title_uninstall": "Gỡ cài đặt hoàn tất",
+      "complete_summary": "Tóm tắt",
+      "complete_version": "Phiên bản",
+      "complete_compositors": "Compositor",
+      "complete_sddm": "SDDM",
+      "complete_wallpapers": "Hình nền",
+      "complete_duration": "Thời gian thực hiện",
+      "btn_restart": "Khởi động lại ngay",
+      "btn_exit": "Thoát ra shell",
+      "btn_return_menu": "Quay lại menu",
+      "terminal_too_small": "Cửa sổ terminal quá nhỏ. Hãy đổi kích thước tối thiểu {cols}×{rows}.",
+      "social": "Mạng xã hội:",
+      "compositors_row": "Compositor đích",
+      "packages_row": "Tổng quan gói",
+      "pkg_count_short": "{count} gói",
+      "hint_fast_forward": "Tua nhanh",
+      "preview_mode_switched": "Chế độ xem trước: {mode}"
     },
     "deps": {
       "syncing": "Đang đồng bộ hóa và cập nhật các gói hệ thống (pacman -syyu)...",
@@ -2088,6 +2277,30 @@
       "installing": "Đang cài đặt trình quản lý tệp Ski...",
       "unsupported_arch": "Gói dựng sẵn của Ski chỉ có cho x86_64, bỏ qua.",
       "up_to_date": "-> Ski {version} đã được cài đặt."
+    },
+    "uninstall": {
+      "stopping": "Đang dừng Serpantinum và các dịch vụ của nó...",
+      "resetting": "Đang đặt lại chủ đề ứng dụng về mặc định hệ thống...",
+      "removing": "Đang xóa các tệp của Serpantinum...",
+      "done": "Đã gỡ cài đặt Serpantinum. Hãy xóa dòng tự khởi động khỏi cấu hình compositor nếu bạn không còn cần đến nữa."
+    },
+    "steps": {
+      "prepare": "Chuẩn bị dữ liệu chẩn đoán và môi trường",
+      "migrate": "Di chuyển cấu hình cũ",
+      "backup": "Sao lưu cấu hình compositor hiện có",
+      "deps": "Cài đặt gói hệ thống và phông chữ",
+      "ski": "Cài đặt trình quản lý tệp Ski",
+      "audio": "Cài đặt công cụ âm thanh Serpantinum",
+      "gamma": "Cài đặt bộ lọc ánh sáng xanh Serpantinum",
+      "core": "Cài đặt các dịch vụ lõi Serpantinum",
+      "deploy": "Triển khai cấu hình shell và compositor",
+      "sddm": "Cấu hình trình quản lý hiển thị SDDM",
+      "wallpapers": "Cài đặt gói hình nền",
+      "config": "Khởi tạo cài đặt và dịch vụ",
+      "finalize": "Lưu trạng thái phiên bản và hoàn tất",
+      "uninstall_stop": "Dừng Serpantinum và các tiến trình nền",
+      "uninstall_reset": "Đặt lại chủ đề ứng dụng và mặc định Qt",
+      "uninstall_remove": "Xóa tệp và cấu hình của Serpantinum"
     }
   },
   "datetime": {
@@ -2233,5 +2446,8 @@
   },
   "common": {
     "select": "Chọn..."
+  },
+  "osd": {
+    "keyboard_layout": "Bố cục bàn phím"
   }
 }

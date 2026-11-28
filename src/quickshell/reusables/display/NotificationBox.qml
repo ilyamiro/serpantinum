@@ -251,7 +251,7 @@ Item {
                         size: root.emptyGraphicSize
                         cornerRadius: root.s(0)
                         imageRadius: root.s(0)
-                        source: Caching.serpantinumDir ? ("file://" + Caching.serpantinumDir + "/assets/pushy.gif") : Qt.resolvedUrl("../../assets/pushy.gif")
+                        source: Caching.serpantinumDir ? ("file://" + Caching.serpantinumDir + "/assets/pushy.gif") : Qt.resolvedUrl("../../../assets/pushy.gif")
                         isGif: true
                         playing: true
                         fillMode: Image.PreserveAspectFit
@@ -313,17 +313,13 @@ Item {
                     property string currentItemsJson: typeof itemsJson !== "undefined" ? itemsJson : "[]"
 
                     property string customType: {
-                        let appn = "";
-                        if (memberList && memberList.length > 0 && memberList[0] && memberList[0].appName) {
-                            appn = memberList[0].appName;
-                        } else if (typeof displayName !== "undefined" && displayName) {
-                            appn = displayName;
-                        }
-                        let app = (appn || "").toLowerCase().trim();
-                        if (app === "weather") return "weather";
-                        if (app === I18n.t("sysnotif.battery.app_name", "System").toLowerCase().trim() || (memberList && memberList.length > 0 && memberList[0] && /battery-kind-/.test(String(memberList[0].image)))) return "system";
-                        if (app === "screenshot" || app === "screen recorder") return "screenshot";
-                        if (app === "update" || app === "updater" || app === "serpantinum updater") return "update";
+                        let first = (memberList && memberList.length > 0 && memberList[0]) ? memberList[0] : null;
+                        let candidate = first || { appName: (typeof displayName !== "undefined" ? displayName : ""), image: "" };
+                        let resolved = NotificationManager.resolveType(candidate, "../../notifications/types/");
+                        if (resolved.id === "battery") return "system";
+                        if (resolved.id !== "default") return resolved.id;
+                        let appn = (first && first.appName) ? first.appName : (typeof displayName !== "undefined" ? displayName : "");
+                        if (String(appn || "").toLowerCase().trim() === I18n.t("sysnotif.battery.app_name", "System").toLowerCase().trim()) return "system";
                         return "default";
                     }
 
@@ -459,13 +455,8 @@ Item {
                         source: {
                             if (!isSingle) return "";
                             let nData = memberList.length > 0 ? memberList[0] : null;
-                            let appn = nData ? (nData.appName || "") : (displayName || "");
-                            let app = appn.toLowerCase().trim();
-                            if (app === "weather" || /weather-kind-/.test(String(nData ? nData.image : ""))) return "../../notifications/types/Weather.qml";
-                            if (/battery-kind-/.test(String(nData ? nData.image : ""))) return "../../notifications/types/Battery.qml";
-                            if (app === "screenshot" || app === "screen recorder") return "../../notifications/types/Screenshot.qml";
-                            if (app === "update" || app === "updater" || app === "serpantinum updater") return "../../notifications/types/Update.qml";
-                            return "../../notifications/types/Default.qml";
+                            let candidate = nData || { appName: displayName || "", image: "" };
+                            return NotificationManager.resolveType(candidate, "../../notifications/types/").componentUrl;
                         }
                         onLoaded: {
                             if (item) {
@@ -759,13 +750,11 @@ Item {
                                                                 ic = first.appIcon || first.icon || first.iconPath || "";
                                                             }
                                                         }
-                                                        if (!ic) return "";
-                                                        if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                                                        return ic.startsWith("/") ? "file://" + ic : "image://icon/" + ic;
+                                                        return AppMatcher.iconSource(ic);
                                                     }
                                                     sourceSize: Qt.size(48, 48)
                                                     fillMode: Image.PreserveAspectFit
-                                                    visible: groupWrapper.customType === "default" && status === Image.Ready && source !== ""
+                                                    visible: groupWrapper.customType === "default" && status === Image.Ready && source !== "" && !AppMatcher.iconMissing(source)
                                                 }
 
                                                 Text {
@@ -994,13 +983,10 @@ Item {
 
                                                 source: {
                                                     if (!memberData) return "";
-                                                    let appn = memberData.appName || displayName || "";
-                                                    let app = appn.toLowerCase().trim();
-                                                    if (app === "weather" || /weather-kind-/.test(String(memberData.image))) return "../../notifications/types/Weather.qml";
-                                                    if (/battery-kind-/.test(String(memberData.image))) return "../../notifications/types/Battery.qml";
-                                                    if (app === "screenshot" || app === "screen recorder") return "../../notifications/types/Screenshot.qml";
-                                                    if (app === "update" || app === "updater" || app === "serpantinum updater") return "../../notifications/types/Update.qml";
-                                                    return "../../notifications/types/Default.qml";
+                                                    return NotificationManager.resolveType({
+                                                        appName: memberData.appName || displayName || "",
+                                                        image: memberData.image || memberData.imagePath || ""
+                                                    }, "../../notifications/types/").componentUrl;
                                                 }
 
                                                 onLoaded: {

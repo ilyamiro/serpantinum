@@ -77,7 +77,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
-| `display.monitors.<name>.enabled` | `boolean` | `true` | Output power state toggled via compositor IPC (Hyprland, Sway, Niri, Mango). |
+| `display.monitors.<name>.enabled` | `boolean` | `true` | Output power state toggled via compositor IPC (Hyprland, Sway, Niri, Mango, Umbriel). |
 | `display.monitors.<name>.powerEnabled` | `boolean` | `true` | Whether the monitor output is powered on. |
 | `display.monitors.<name>.scale` | `number` | `1.0` | Output scaling factor (e.g., `1.0`, `1.25`, `1.5`, `2.0`). |
 | `display.monitors.<name>.auto` | `boolean` | `false` | Automatically calculates night-light color temperature from local sunrise and sunset. |
@@ -94,6 +94,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | Key | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `bar.position` | `string` | `"top"` | Screen edge where the bar attaches: `"top"`, `"bottom"`, `"left"`, or `"right"`. |
+| `bar.monitors` | `array \| null` | `null` | Monitor output names on which to display the bar (e.g., `["DP-1"]`). `null` or unset displays the bar on all monitors; `[]` hides it on all monitors. |
 | `bar.width` | `number` | `100` | Bar length percentage (`10` to `100`). Values below 100 render a floating dock-style bar, or in `"fill"` style a bar that rounds down into the screen edge. |
 | `bar.opacity` | `number` | `100` | Background opacity percentage (`0` to `100`). |
 | `bar.style` | `string` | `"modular"` | Visual bar style: `"modular"`, `"fill"`, or `"solid"`. |
@@ -121,7 +122,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `bar.visBarCount` | `number` | `16` | Number of spectrum frequency bars rendered (`4` to `32`). |
 | `bar.visAlignment` | `string` | `"center"` | Visualizer spectrum alignment: `"center"`, `"top"`, `"bottom"`, `"left"`, or `"right"`. |
 | `bar.visContinuous` | `boolean` | `false` | Renders a continuous waveform line instead of discrete frequency bars. |
-| `bar.sysmonStyle` | `string` | `"wave"` | Resource monitor style: `"wave"`, `"circle"`, or `"bars"`. |
+| `bar.sysmonStyle` | `string` | `"wave"` | Resource monitor style: `"wave"` or `"circle"`. |
 | `bar.sysmonStats` | `array` | `["cpu", "ram", "temp"]` | Monitored resource metrics: subset of `["cpu", "ram", "temp", "disk"]`. |
 | `bar.batStyle` | `string` | `"classic"` | Battery module visual style: `"classic"`, `"minimal"`, `"text"`, or `"button"`. |
 | `bar.batShowPercent` | `boolean` | `true` | Displays numeric percentage charge level. |
@@ -142,6 +143,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `bar.mediaShowIcon` | `boolean` | `true` | Displays album art or music icon. |
 | `bar.mediaShowControls` | `boolean` | `true` | Displays previous, play and next buttons. |
 | `bar.mediaHideWhenIdle` | `boolean` | `false` | Hides the media module while nothing is playing. |
+| `bar.mediaStyle` | `string` | `"classic"` | Media module visual style: `"classic"` or `"ambient"`. |
 
 ### Launcher
 
@@ -166,6 +168,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `dock.elementSize` | `number` | `44` | Base icon size in pixels (`24` to `96`). |
 | `dock.hoverScale` | `number` | `120` | Hover zoom factor percentage (`100` to `200`). |
 | `dock.cascadeScale` | `boolean` | `false` | Applies parabolic wave magnification to neighboring icons on hover. |
+| `dock.iconsOnly` | `boolean` | `false` | Hides the box behind each app, leaving only the icon. |
 | `dock.autohide` | `boolean` | `false` | Hides the dock until hovered. |
 | `dock.smartAutohide` | `boolean` | `true` | Automatically hides the dock only when a window overlaps its area (intellihide). |
 | `dock.autohideTimeout` | `number` | `1000` | Delay in milliseconds before hiding. |
@@ -188,6 +191,7 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `osd.showCapsLock` | `boolean` | `true` | Displays popout banner when toggling CapsLock. |
 | `osd.showNumLock` | `boolean` | `true` | Displays popout banner when toggling NumLock. |
 | `osd.showAirplane` | `boolean` | `true` | Displays popout banner when toggling Airplane mode. |
+| `osd.showKeyboardLayout` | `boolean` | `false` | Displays popout banner when switching keyboard layout. |
 | `osd.attachToBar` | `boolean` | `true` | Automatically offsets position relative to status bar when placed near the same edge. |
 
 ### Notifications
@@ -201,6 +205,10 @@ The configuration file is located at `~/.config/serpantinum/settings.json` (or `
 | `notifications.sound` | `boolean` | `true` | Plays an audio chime when notifications arrive. |
 | `notifications.soundFile` | `string` | `""` | Absolute path to custom notification sound file (`.wav` or `.ogg`). |
 | `notifications.showEmptyGraphic` | `boolean` | `true` | Displays decorative art in notification center when no notifications remain. |
+| `notifications.timeoutLow` | `number` | `5` | Seconds a low urgency popup stays on screen when the app does not request a timeout. `0` keeps it until dismissed. |
+| `notifications.timeoutNormal` | `number` | `5` | Seconds a normal urgency popup stays on screen when the app does not request a timeout. `0` keeps it until dismissed. |
+| `notifications.timeoutCritical` | `number` | `15` | Seconds a critical urgency popup stays on screen when the app does not request a timeout. `0` keeps it until dismissed. |
+| `notifications.overrideAppTimeouts` | `boolean` | `false` | Ignores the timeout requested by the app and always uses the per-urgency timeouts above. |
 
 ### Idle
 

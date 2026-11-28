@@ -3,7 +3,7 @@
     "language": "en",
     "avatarPath": "",
     "muteSfx": false,
-    "weatherInterval": 15,
+    "weatherInterval": 30,
     "weatherUnit": "metric"
   },
   "syspanel": {
@@ -147,6 +147,7 @@
     "maxElements": 7,
     "hoverScale": 120,
     "cascadeScale": false,
+    "iconsOnly": false,
     "focusRunning": true,
     "showRunningIndicators": true,
     "showRunningApps": false,

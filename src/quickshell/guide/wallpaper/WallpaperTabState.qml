@@ -6,11 +6,10 @@ import "../../"
 
 GuideTab {
     id: wallpaperTabRoot
-    subTabIndex: 1
 
     property alias wallpaperDirScanner: wallpaperDirScanner
 
-    property string currentWallpaperDir: Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "") || Quickshell.env("WALLPAPER_DIR") || (Quickshell.env("HOME") + "/Pictures/Wallpapers")
+    property string currentWallpaperDir: Wallpaper.wallpaperDir
     property var availableWallpaperDirs: []
 
     property alias currentWallpaperPath: currentWallpaper.path
@@ -79,9 +78,8 @@ GuideTab {
         target: Config
         function onSettingsLoaded() {
             wallpaperTabRoot.transition = Wallpaper.transitionSettings();
-            let wpDir = Config.getSetting("wallpaperDir", "") || Config.getSetting("wallpaper_dir", "");
-            if (wpDir && wpDir !== "") {
-                wallpaperTabRoot.currentWallpaperDir = wpDir;
+            if (Wallpaper.wallpaperDir) {
+                wallpaperTabRoot.currentWallpaperDir = Wallpaper.wallpaperDir;
             }
         }
     }

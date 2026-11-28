@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../../"
+import "../../reusables"
 
 Flickable {
     id: dailyViewWrapper
@@ -42,11 +43,8 @@ Flickable {
         onTriggered: contentYBehavior.enabled = false
     }
 
-    ScrollBar.vertical: ScrollBar {
-        active: dailyViewWrapper.moving
-        width: rootObj.s(4)
-        policy: ScrollBar.AsNeeded
-        contentItem: Rectangle { implicitWidth: rootObj.s(4); radius: rootObj.s(2); color: ThemeBackend.surface2 }
+    ScrollBar.vertical: StyledScrollBar {
+        rootObj: dailyViewWrapper.rootObj
     }
 
     ColumnLayout {

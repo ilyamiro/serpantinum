@@ -19,76 +19,20 @@ Item {
     property real highlightFlash: 0.0
     property int handledHighlightToken: -1
 
-    function resolveTabInfo() {
-        let p = wpPreviewContainer.parent;
-        let targetTabIdx = -1;
-        let targetSubTabIdx = -1;
-        while (p) {
-            if (targetSubTabIdx === -1 && p.subTabIndex !== undefined) targetSubTabIdx = p.subTabIndex;
-            if (targetTabIdx === -1 && p.tabIndex !== undefined) targetTabIdx = p.tabIndex;
-            p = p.parent;
-        }
-        let r = wpPreviewContainer.tab.rootObj;
-        let tab = "";
-        let subtab = "";
-        if (r && r.tabsModel && targetTabIdx >= 0 && targetTabIdx < r.tabsModel.length) {
-            let tModel = r.tabsModel[targetTabIdx];
-            tab = tModel.key || tModel.id || "";
-            if (tModel.subtabs && targetSubTabIdx >= 0 && targetSubTabIdx < tModel.subtabs.length) {
-                subtab = tModel.subtabs[targetSubTabIdx].key || tModel.subtabs[targetSubTabIdx].id || "";
-            }
-        }
-        return { tab: tab, subtab: subtab };
-    }
-
-    function registerWithSearch() {
-        let r = wpPreviewContainer.tab.rootObj;
-        if (!r || typeof r.registerSearchItem !== "function") return;
-        let info = resolveTabInfo();
-        r.registerSearchItem({
-            id: "wallpaper",
-            title: I18n.t("guide.theme.wallpaper.select") || "Wallpaper",
-            desc: I18n.t("guide.theme.wallpaper.desc") || "Select and preview current wallpaper",
-            tab: info.tab,
-            subtab: info.subtab,
-            icon: "󰸉",
-            keywords: "wallpaper background image video select screen current desktop",
-            target: wpPreviewContainer,
-            unavailable: false
-        });
-    }
-
-    function unregisterFromSearch() {
-        let r = wpPreviewContainer.tab.rootObj;
-        if (!r || typeof r.unregisterSearchItem !== "function") return;
-        r.unregisterSearchItem("wallpaper");
-    }
-
-    function ensureVisibleInFlickable() {
-        let p = wpPreviewContainer.parent;
-        let flick = null;
-        while (p) {
-            if (p.contentY !== undefined && p.contentHeight !== undefined) {
-                flick = p;
-                break;
-            }
-            p = p.parent;
-        }
-        if (flick) {
-            let targetPos = wpPreviewContainer.mapToItem(flick.contentItem, 0, 0);
-            if (targetPos) {
-                let viewTop = flick.contentY;
-                let viewBottom = flick.contentY + flick.height;
-                if (targetPos.y < viewTop || targetPos.y + wpPreviewContainer.height > viewBottom) {
-                    flick.contentY = Math.max(0, Math.min(targetPos.y - flick.height / 2 + wpPreviewContainer.height / 2, flick.contentHeight - flick.height));
-                }
-            }
-        }
+    GuideSearchAnchor {
+        id: wpSearchAnchor
+        targetItem: wpPreviewContainer
+        rootObj: wpPreviewContainer.tab.rootObj
+        settingId: "wallpaper"
+        title: I18n.t("guide.theme.wallpaper.select", "Wallpaper")
+        description: I18n.t("guide.theme.wallpaper.desc", "Select and preview current wallpaper")
+        icon: "󰸉"
+        searchKeywords: "wallpaper background image video select screen current desktop"
     }
 
     function triggerHighlightAnimation() {
         highlightAnimation.restart();
-        wpPreviewContainer.ensureVisibleInFlickable();
+        wpSearchAnchor.ensureVisibleInFlickable();
         ensureVisibleTimer.restart();
     }
 
@@ -112,24 +56,16 @@ Item {
     }
 
     onVisibleChanged: {
-        searchRegTimer.restart();
         if (visible) {
             wpPreviewContainer.checkHighlight();
         }
     }
 
     Timer {
-        id: searchRegTimer
-        interval: 10
-        repeat: false
-        onTriggered: wpPreviewContainer.registerWithSearch()
-    }
-
-    Timer {
         id: ensureVisibleTimer
         interval: 320
         repeat: false
-        onTriggered: wpPreviewContainer.ensureVisibleInFlickable()
+        onTriggered: wpSearchAnchor.ensureVisibleInFlickable()
     }
 
     Timer {
@@ -147,14 +83,7 @@ Item {
         NumberAnimation { target: wpPreviewContainer; property: "highlightFlash"; from: 1.0; to: 0.0; duration: 900; easing.type: Easing.InOutSine }
     }
 
-    Component.onCompleted: {
-        searchRegTimer.restart();
-        checkHighlight();
-    }
-
-    Component.onDestruction: {
-        unregisterFromSearch();
-    }
+    Component.onCompleted: checkHighlight()
 
     Rectangle {
         id: wpCardMask
@@ -260,9 +189,7 @@ Item {
             accentColor: ThemeBackend.mauve
             textColor: ThemeBackend.base
             contentAlignment: Qt.AlignHCenter
-            onClicked: {
-                Quickshell.execDetached(["bash", Caching.serpantinumDir + "/scripts/qs_manager.sh", "toggle", "wallpaper"]);
-            }
+            onClicked: ShellRouter.toggle("wallpaper")
         }
 
         Item { Layout.fillWidth: true }
@@ -288,7 +215,7 @@ Item {
 
                 Text {
                     text: {
-                        if (!wpPreviewContainer.tab.currentWallpaperPath) return "No Wallpaper Selected";
+                        if (!wpPreviewContainer.tab.currentWallpaperPath) return I18n.t("guide.theme.wallpaper.none", "No wallpaper selected");
                         let fn = wpPreviewContainer.tab.currentWallpaperPath.split("/").pop();
                         return fn || wpPreviewContainer.tab.currentWallpaperPath;
                     }

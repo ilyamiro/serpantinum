@@ -15,7 +15,7 @@ SettingsRow {
     icon: "󰒝"
     title: I18n.t("guide.theme.wallpaper.transition.mode.title", "Transition")
     description: I18n.t("guide.theme.wallpaper.transition.mode.desc_" + row.mode)
-    searchKeywords: "wallpaper transition animation effect random custom set fade wipe circle swipe paint"
+    searchKeywords: "wallpaper transition animation effect random custom set fade wipe circle swipe paint wave blinds clock hex ink"
 
     Switch {
         Layout.alignment: Qt.AlignRight | Qt.AlignVCenter

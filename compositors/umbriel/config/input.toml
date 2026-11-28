@@ -1,0 +1,9 @@
+[input.keyboard]
+layout = "us"
+options = "grp:alt_shift_toggle"
+
+[input.touchpad]
+tap = true
+natural_scroll = true
+accel_profile = "flat"
+click_method = "clickfinger"

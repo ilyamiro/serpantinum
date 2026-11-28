@@ -5,50 +5,63 @@ import QtQuick.Controls
 import QtQuick.Shapes
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import Quickshell.Io
 import "../"
 import "../reusables"
 import "../WindowRegistry.js" as WindowRegistry
 import "./SearchProviders.js" as SearchProviders
 
-PanelWindow {
+ShellOverlayWindow {
     id: launcherWindow
 
     screen: LauncherController.screen
 
     WlrLayershell.namespace: "qs-applauncher"
-    WlrLayershell.layer: WlrLayer.Overlay
-    focusable: launcherWindow.isVisible
-    exclusionMode: ExclusionMode.Ignore
-    color: "transparent"
+    overlayOpen: LauncherController.isVisible
+    carveBarHole: true
+    barHoleThickness: SurfaceRegistry.barInset
+    dismissOnOutsideClick: true
+    focusTarget: searchInput
+    focusRetryInterval: 60
+    maxFocusRetries: 4
 
-    mask: Region { item: topBarHole; intersection: Intersection.Xor }
-
-    anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
-    }
-
-    function s(val) {
-        return (typeof Scaler !== "undefined" && Scaler.s) ? Scaler.s(val) : val;
-    }
+    onOutsideClicked: closeLauncher()
+    onEscapeDismissed: closeLauncher()
 
     function closeLauncher() {
         LauncherController.hide();
     }
 
-    property bool isVisible: LauncherController.isVisible
+    readonly property bool isVisible: LauncherController.isVisible
     property int configRevision: 0
     property bool appsLoaded: false
     property real introItems: 0.0
     property int currentTabIndex: 0
 
-    property string tabAppsTitle: (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_applications", "Applications") : "Applications"
-    property string tabFilesTitle: (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_files", "Files") : "Files"
-    property string tabEmojisTitle: (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_emojis", "Emojis") : "Emojis"
+    readonly property var tabs: [
+        { id: "apps", labelKey: "applauncher.tab_applications", fallback: "Applications", placeholderKey: "applauncher.placeholder", placeholderFallback: "Start with > for a command...", debounce: 80, run: q => launcherWindow.executeFilter(q) },
+        { id: "files", labelKey: "applauncher.tab_files", fallback: "Files", placeholderKey: "applauncher.placeholder_files", placeholderFallback: "Search files or enter path...", debounce: 80, run: q => launcherWindow.executeFileSearch(q) },
+        { id: "emojis", labelKey: "applauncher.tab_emojis", fallback: "Emojis", placeholderKey: "applauncher.placeholder_emojis", placeholderFallback: "Search emojis by name or keyword...", debounce: 60, run: q => launcherWindow.executeEmojiFilter(q) },
+        { id: "windows", labelKey: "applauncher.tab_windows", fallback: "Windows", placeholderKey: "applauncher.placeholder_windows", placeholderFallback: "Search open windows...", debounce: 60, run: q => launcherWindow.executeWindowFilter(q) }
+    ]
+
+    readonly property var activeTab: tabs[currentTabIndex] || tabs[0]
+    readonly property var tabTitles: {
+        let _lang = (typeof I18n !== "undefined") ? I18n.currentLang : "";
+        return tabs.map(t => (typeof I18n !== "undefined") ? I18n.t(t.labelKey, t.fallback) : t.fallback);
+    }
+
+    function runCurrentTabFilter(query) {
+        let tab = tabs[currentTabIndex] || tabs[0];
+        if (tab && typeof tab.run === "function") tab.run(query);
+    }
+
+    function scheduleCurrentTabFilter(query) {
+        launcherWindow.pendingQuery = query;
+        let tab = tabs[currentTabIndex] || tabs[0];
+        filterDebounceTimer.interval = tab ? tab.debounce : 80;
+        filterDebounceTimer.restart();
+    }
 
     function saveLastTab() {
         if (lastTabWatcher.path !== "") {
@@ -61,13 +74,11 @@ PanelWindow {
         if (tabSwitch.currentIndex !== currentTabIndex) {
             tabSwitch.currentIndex = currentTabIndex;
         }
-        if (currentTabIndex === 0) {
-            executeFilter(searchInput.text);
-        } else if (currentTabIndex === 1) {
-            executeFileSearch(searchInput.text);
-        } else {
-            executeEmojiFilter(searchInput.text);
+        if (currentTabIndex !== 2 && emojiBatchAnim.running) {
+            emojiBatchAnim.running = false;
+            lastEmojiQuery = "\0";
         }
+        runCurrentTabFilter(searchInput.text);
         launcherWindow.grabInputFocus();
     }
 
@@ -81,7 +92,7 @@ PanelWindow {
                 let val = text().trim();
                 if (val !== "") {
                     let idx = parseInt(val);
-                    if (!isNaN(idx) && (idx >= 0 && idx <= 2)) {
+                    if (!isNaN(idx) && (idx >= 0 && idx <= 3)) {
                         launcherWindow.currentTabIndex = idx;
                         tabSwitch.currentIndex = idx;
                     }
@@ -135,12 +146,9 @@ PanelWindow {
         }
         loadApps();
         appsLoaded = true;
-        if (currentTabIndex === 0) {
-            executeFilter("");
-        } else if (currentTabIndex === 1) {
-            executeFileSearch("");
-        } else {
-            executeEmojiFilter("");
+        runCurrentTabFilter("");
+        if (currentTabIndex !== 2) {
+            emojiPreloadTimer.start();
         }
     }
 
@@ -155,18 +163,9 @@ PanelWindow {
     Connections {
         target: (typeof I18n !== "undefined") ? I18n : null
         function onLanguageChanged() {
-            launcherWindow.tabAppsTitle = (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_applications", "Applications") : "Applications";
-            launcherWindow.tabFilesTitle = (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_files", "Files") : "Files";
-            launcherWindow.tabEmojisTitle = (typeof I18n !== "undefined") ? I18n.t("applauncher.tab_emojis", "Emojis") : "Emojis";
             if (launcherWindow.isVisible) {
                 launcherWindow.loadApps();
-                if (launcherWindow.currentTabIndex === 0) {
-                    launcherWindow.executeFilter(searchInput.text);
-                } else if (launcherWindow.currentTabIndex === 1) {
-                    launcherWindow.executeFileSearch(searchInput.text);
-                } else {
-                    launcherWindow.executeEmojiFilter(searchInput.text);
-                }
+                launcherWindow.runCurrentTabFilter(searchInput.text);
             } else {
                 launcherWindow.appsLoaded = false;
             }
@@ -239,70 +238,14 @@ PanelWindow {
         }
     }
 
-    property var rawBarSettings: {
-        let dummy = configRevision;
-        return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : ({});
-    }
+    readonly property string barStyle: SurfaceRegistry.barStyle
+    readonly property string barPosition: SurfaceRegistry.barPosition
+    readonly property bool barAutohide: SurfaceRegistry.barAutohide
+    readonly property real barHeight: Math.round(s(SurfaceRegistry.barRawHeight))
+    readonly property real barInset: SurfaceRegistry.barInset
 
-    property string barStyle: {
-        let dummy = configRevision;
-        if (typeof Config === "undefined" || !Config.rawSettings || !Config.rawSettings.bar) return "modular";
-        let s = Config.rawSettings.bar.style;
-        if (typeof s === "string") return s;
-        if (s && typeof s === "object") {
-            if (s.fill || s.mode === "fill") return "fill";
-            if (s.solid || s.mode === "solid") return "solid";
-        }
-        return "modular";
-    }
-
-    property string barPosition: {
-        let dummy = configRevision;
-        if (typeof Config === "undefined" || !Config.rawSettings || !Config.rawSettings.bar) return "top";
-        return Config.rawSettings.bar.position || "top";
-    }
-
-    property bool barAutohide: (rawBarSettings && rawBarSettings.autohide !== undefined) ? Boolean(rawBarSettings.autohide) : false
-
-    readonly property bool isOsdFullscreen: (typeof OsdController !== "undefined") ? Boolean(OsdController.isFullscreen) : false
-
-    readonly property bool isToplevelFullscreen: {
-        try {
-            if (typeof ToplevelManager !== "undefined" && ToplevelManager.activeToplevel && ToplevelManager.activeToplevel.fullscreen) {
-                let atl = ToplevelManager.activeToplevel;
-                if (atl.screens && atl.screens.length > 0) {
-                    return atl.screens.indexOf(launcherWindow.screen) !== -1;
-                }
-                return true;
-            }
-        } catch (e) {}
-        return false;
-    }
-
-    readonly property bool isHyprlandFullscreen: {
-        try {
-            if (typeof Hyprland !== "undefined" && Hyprland.focusedWorkspace) {
-                return Boolean(Hyprland.focusedWorkspace.hasFullscreen || (Hyprland.activeToplevel && Hyprland.activeToplevel.fullscreen));
-            }
-        } catch (e) {}
-        return false;
-    }
-
-    readonly property bool isFullscreenActive: isOsdFullscreen || isToplevelFullscreen || isHyprlandFullscreen
-
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive
-
-    property real barHeight: {
-        let dummy = configRevision;
-        let v = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.height !== undefined) ? Number(Config.rawSettings.bar.height) : 40;
-        if (isNaN(v)) v = 40;
-        return Math.round(s(Math.max(28, Math.min(48, v))));
-    }
-
-    property real barInset: barHeight + (barStyle === "solid" && !barAutohide ? Math.round(s(4)) : 0)
-
-    property bool isBarAttachable: barStyle === "solid" || barStyle === "fill"
-    property bool barMatchesLauncher: isBarAttachable && (attachEdge === barPosition) && !isBarEffectivelyHidden
+    readonly property bool isBarAttachable: SurfaceRegistry.isSolidBar || SurfaceRegistry.isFillBar
+    readonly property bool barMatchesLauncher: isBarAttachable && (attachEdge === barPosition) && !isBarEffectivelyHidden
 
     property string attachEdge: launcherPosition
     property bool isSideAttached: attachEdge === "left" || attachEdge === "right"
@@ -329,7 +272,7 @@ PanelWindow {
     property real targetLauncherHeight: {
         let headerH = s(36) + s(28) + s(8) + s(28);
         if (currentTabIndex === 2) {
-            let totalRows = Math.ceil(emojiModel.count / 5);
+            let totalRows = Math.ceil(emojiTargetCount / 5);
             if (totalRows <= 0) {
                 return headerH;
             }
@@ -357,11 +300,20 @@ PanelWindow {
     property bool isKeyboardNav: false
     property string pendingQuery: ""
 
+    function makeItem(kind, name, description, icon, fontIcon, score, payload) {
+        return {
+            kind: kind,
+            payload: payload || "",
+            name: name || "",
+            description: description || "",
+            icon: icon || "",
+            fontIcon: fontIcon || "",
+            score: score || 0
+        };
+    }
+
     function grabInputFocus() {
-        searchInput.forceActiveFocus();
-        if (typeof searchInput.forceInputFocus === "function") {
-            searchInput.forceInputFocus();
-        }
+        launcherWindow.acquireFocus();
     }
 
     Process {
@@ -401,25 +353,15 @@ PanelWindow {
                         let items = [];
                         for (let i = 0; i < parsed.length; i++) {
                             let p = parsed[i];
-                            items.push({
-                                name: p.name,
-                                description: p.path,
-                                desktop_id: "",
-                                icon: "",
-                                fontIcon: launcherWindow.getFileFontIcon(p.name, p.isDir),
-                                score: 0,
-                                isCommand: false,
-                                command: "",
-                                isCalc: false,
-                                isSearch: false,
-                                searchUrl: "",
-                                calcResult: "",
-                                isWidget: false,
-                                widgetTarget: "",
-                                isFile: true,
-                                filePath: p.path,
-                                isDir: p.isDir
-                            });
+                            items.push(launcherWindow.makeItem(
+                                "file",
+                                p.name,
+                                p.path,
+                                "",
+                                launcherWindow.getFileFontIcon(p.name, p.isDir),
+                                0,
+                                p.path
+                            ));
                         }
                         if (launcherWindow.currentTabIndex === 1) {
                             launcherWindow.applyModelItems(items);
@@ -446,33 +388,6 @@ PanelWindow {
     }
 
     Timer {
-        id: focusTimer
-        interval: 30
-        repeat: false
-        onTriggered: {
-            launcherWindow.grabInputFocus();
-        }
-    }
-
-    Timer {
-        id: focusRetryTimer
-        interval: 120
-        repeat: false
-        onTriggered: {
-            launcherWindow.grabInputFocus();
-        }
-    }
-
-    Timer {
-        id: focusFinalTimer
-        interval: 250
-        repeat: false
-        onTriggered: {
-            launcherWindow.grabInputFocus();
-        }
-    }
-
-    Timer {
         id: keyboardNavTimer
         interval: 500
         repeat: false
@@ -486,25 +401,7 @@ PanelWindow {
         interval: 80
         repeat: false
         onTriggered: {
-            executeFilter(launcherWindow.pendingQuery);
-        }
-    }
-
-    Timer {
-        id: fileDebounceTimer
-        interval: 80
-        repeat: false
-        onTriggered: {
-            executeFileSearch(launcherWindow.pendingQuery);
-        }
-    }
-
-    Timer {
-        id: emojiDebounceTimer
-        interval: 60
-        repeat: false
-        onTriggered: {
-            executeEmojiFilter(launcherWindow.pendingQuery);
+            launcherWindow.runCurrentTabFilter(launcherWindow.pendingQuery);
         }
     }
 
@@ -518,40 +415,25 @@ PanelWindow {
             }
             if (searchInput.text !== "") {
                 searchInput.clear();
-                filterDebounceTimer.stop();
-                fileDebounceTimer.stop();
-                emojiDebounceTimer.stop();
-            } else {
-                filterDebounceTimer.stop();
-                fileDebounceTimer.stop();
-                emojiDebounceTimer.stop();
             }
-            if (launcherWindow.currentTabIndex === 0) {
-                executeFilter("");
-            } else if (launcherWindow.currentTabIndex === 1) {
-                executeFileSearch("");
-            } else {
-                executeEmojiFilter("");
-            }
+            filterDebounceTimer.stop();
+            runCurrentTabFilter("");
             if (launcherWindow.smartRanking && !rankFetcher.running) {
                 rankFetcher.running = true;
             }
-            launcherWindow.grabInputFocus();
-            focusTimer.restart();
-            focusRetryTimer.restart();
-            focusFinalTimer.restart();
+            launcherWindow.acquireFocus();
         } else {
+            if (emojiBatchAnim.running) {
+                emojiBatchAnim.running = false;
+                lastEmojiQuery = "\0";
+            }
             itemsIntroSequence.stop();
             introItems = 0.0;
             launcherWindow.appsLoaded = false;
             appList.resetScroll();
             emojiGrid.resetScroll();
             filterDebounceTimer.stop();
-            fileDebounceTimer.stop();
-            emojiDebounceTimer.stop();
-            focusTimer.stop();
-            focusRetryTimer.stop();
-            focusFinalTimer.stop();
+            launcherWindow.stopFocusAcquire();
             keyboardNavTimer.stop();
             if (fileSearchProcess.running) {
                 fileSearchProcess.running = false;
@@ -662,24 +544,14 @@ PanelWindow {
                 }
 
                 arr.push({
+                    kind: "app",
+                    payload: e.id,
                     name: e.name,
                     description: e.comment || "",
                     searchTerms: [e.genericName || ""].concat(e.keywords || []).join(" ").toLowerCase(),
-                    desktop_id: e.id,
                     icon: e.icon || "",
                     fontIcon: "",
-                    score: score,
-                    isCommand: false,
-                    command: "",
-                    isCalc: false,
-                    isSearch: false,
-                    searchUrl: "",
-                    calcResult: "",
-                    isWidget: false,
-                    widgetTarget: "",
-                    isFile: false,
-                    filePath: "",
-                    isDir: false
+                    score: score
                 });
             }
         }
@@ -695,23 +567,14 @@ PanelWindow {
                 wScore = (usageRanks.launch && (usageRanks.launch[w.id] || usageRanks.launch[w.name] || usageRanks.launch["qs-widget-" + w.id])) || 0;
             }
             arr.push({
+                kind: "widget",
+                payload: w.id,
                 name: w.name,
                 description: w.description || "",
-                desktop_id: "qs-widget-" + w.id,
+                searchTerms: "",
                 icon: w.icon || "",
                 fontIcon: w.fontIcon || "",
-                score: wScore,
-                isCommand: false,
-                command: "",
-                isCalc: false,
-                isSearch: false,
-                searchUrl: "",
-                calcResult: "",
-                isWidget: true,
-                widgetTarget: w.id,
-                isFile: false,
-                filePath: "",
-                isDir: false
+                score: wScore
             });
         }
 
@@ -742,31 +605,64 @@ PanelWindow {
         id: emojiModel
     }
 
-    function filterApps(query) {
-        launcherWindow.pendingQuery = query;
-        filterDebounceTimer.restart();
-    }
-
-    function filterFiles(query) {
-        launcherWindow.pendingQuery = query;
-        fileDebounceTimer.restart();
-    }
-
-    function filterEmojis(query) {
-        launcherWindow.pendingQuery = query;
-        emojiDebounceTimer.restart();
-    }
-
     property var emojiSearch: null
+    property var emojiSearchComponent: null
+    property bool emojiFilterPending: false
+    property var pendingEmojiResults: []
+    property int pendingEmojiCursor: 0
+    property int emojiTargetCount: 0
+    property string lastEmojiQuery: "\0"
+
+    Timer {
+        id: emojiPreloadTimer
+        interval: 1200
+        repeat: false
+        onTriggered: launcherWindow.preloadEmojiSearch()
+    }
+
+    FrameAnimation {
+        id: emojiBatchAnim
+        running: false
+        onTriggered: launcherWindow.pumpEmojiBatch()
+    }
+
+    function preloadEmojiSearch() {
+        if (emojiSearch || emojiSearchComponent) return;
+        let comp = Qt.createComponent(Qt.resolvedUrl("EmojiSearch.qml"), Component.Asynchronous);
+        emojiSearchComponent = comp;
+        if (comp.status === Component.Ready) {
+            finishEmojiSearchLoad();
+        } else if (comp.status === Component.Loading) {
+            comp.statusChanged.connect(finishEmojiSearchLoad);
+        } else {
+            console.warn("Failed to load emoji search:", comp.errorString());
+            emojiSearchComponent = null;
+        }
+    }
+
+    function finishEmojiSearchLoad() {
+        let comp = emojiSearchComponent;
+        if (!comp) return;
+        if (comp.status === Component.Ready) {
+            if (!emojiSearch) {
+                emojiSearch = comp.createObject(launcherWindow);
+            }
+            if (emojiFilterPending) {
+                emojiFilterPending = false;
+                if (launcherWindow.currentTabIndex === 2) {
+                    executeEmojiFilter(searchInput.text);
+                }
+            }
+        } else if (comp.status === Component.Error) {
+            console.warn("Failed to load emoji search:", comp.errorString());
+            emojiSearchComponent = null;
+            emojiFilterPending = false;
+        }
+    }
 
     function ensureEmojiSearch() {
         if (!emojiSearch) {
-            let component = Qt.createComponent(Qt.resolvedUrl("EmojiSearch.qml"));
-            if (component.status === Component.Ready) {
-                emojiSearch = component.createObject(launcherWindow);
-            } else {
-                console.warn("Failed to load emoji search:", component.errorString());
-            }
+            preloadEmojiSearch();
         }
         return emojiSearch;
     }
@@ -775,40 +671,90 @@ PanelWindow {
         launcherWindow.isKeyboardNav = false;
         if (keyboardNavTimer.running) keyboardNavTimer.stop();
 
+        let normalizedQuery = query ? query.trim() : "";
         let search = ensureEmojiSearch();
-        let results = search ? search.search(query ? query.trim() : "", 150) : [];
-        applyEmojiModelItems(results);
+        if (!search) {
+            emojiFilterPending = true;
+            return;
+        }
+
+        if (normalizedQuery === lastEmojiQuery && !emojiBatchAnim.running && emojiModel.count === emojiTargetCount) {
+            emojiGrid.resetScroll();
+            emojiGrid.currentIndex = emojiModel.count > 0 ? 0 : -1;
+            return;
+        }
+
+        let results = search.search(normalizedQuery, 150);
+        applyEmojiModelItems(results, normalizedQuery);
     }
 
-    function applyEmojiModelItems(filtered) {
-        let minCount = Math.min(emojiModel.count, filtered.length);
-        for (let i = 0; i < minCount; i++) {
-            let cur = emojiModel.get(i);
-            let target = filtered[i];
-            if (cur.emoji !== target.emoji || cur.name !== target.name || cur.category !== target.category) {
-                emojiModel.set(i, {
+    function pumpEmojiBatch() {
+        let list = pendingEmojiResults;
+        let total = list.length;
+        let cursor = pendingEmojiCursor;
+        if (cursor >= total) {
+            emojiBatchAnim.running = false;
+            return;
+        }
+
+        let visibleBudget = (customItemCount + 2) * 5;
+        let chunkSize = cursor < visibleBudget ? 10 : 30;
+        let end = Math.min(total, cursor + chunkSize);
+
+        for (let i = cursor; i < end; i++) {
+            let target = list[i];
+            if (i < emojiModel.count) {
+                let cur = emojiModel.get(i);
+                if (cur.emoji !== target.emoji || cur.name !== target.name) {
+                    emojiModel.set(i, {
+                        emoji: target.emoji,
+                        name: target.name
+                    });
+                }
+            } else {
+                emojiModel.append({
                     emoji: target.emoji,
-                    name: target.name,
-                    category: target.category,
-                    keywordsText: target.keywords ? target.keywords.join(", ") : ""
+                    name: target.name
                 });
             }
         }
 
+        pendingEmojiCursor = end;
+        if (pendingEmojiCursor >= total) {
+            emojiBatchAnim.running = false;
+        }
+    }
+
+    function applyEmojiModelItems(filtered, normalizedQuery) {
+        emojiBatchAnim.running = false;
+        pendingEmojiResults = filtered;
+        pendingEmojiCursor = 0;
+        emojiTargetCount = filtered.length;
+        lastEmojiQuery = normalizedQuery;
+
         if (emojiModel.count > filtered.length) {
-            for (let i = emojiModel.count - 1; i >= filtered.length; i--) {
-                emojiModel.remove(i);
-            }
-        } else if (emojiModel.count < filtered.length) {
-            for (let i = emojiModel.count; i < filtered.length; i++) {
-                let target = filtered[i];
-                emojiModel.append({
+            emojiModel.remove(filtered.length, emojiModel.count - filtered.length);
+        }
+
+        let visibleCount = customItemCount * 5;
+        let immediateExisting = Math.min(emojiModel.count, Math.min(filtered.length, visibleCount));
+        for (let i = 0; i < immediateExisting; i++) {
+            let cur = emojiModel.get(i);
+            let target = filtered[i];
+            if (cur.emoji !== target.emoji || cur.name !== target.name) {
+                emojiModel.set(i, {
                     emoji: target.emoji,
-                    name: target.name,
-                    category: target.category,
-                    keywordsText: target.keywords ? target.keywords.join(", ") : ""
+                    name: target.name
                 });
             }
+        }
+        pendingEmojiCursor = immediateExisting;
+
+        if (pendingEmojiCursor < filtered.length && pendingEmojiCursor < 10) {
+            pumpEmojiBatch();
+        }
+        if (pendingEmojiCursor < filtered.length) {
+            emojiBatchAnim.running = true;
         }
 
         emojiGrid.resetScroll();
@@ -829,6 +775,78 @@ PanelWindow {
         fileSearchProcess.running = true;
     }
 
+    readonly property bool windowsTabActive: isVisible && currentTabIndex === 3
+
+    SubscriptionGate {
+        target: WindowTracker
+        wanted: launcherWindow.windowsTabActive
+    }
+
+    Connections {
+        target: WindowTracker
+        function onUpdated() {
+            if (!launcherWindow.windowsTabActive) return;
+            let cur = (appList.currentIndex >= 0 && appList.currentIndex < appModel.count) ? appModel.get(appList.currentIndex) : null;
+            let selected = (cur && cur.kind === "window") ? cur.payload : "";
+            launcherWindow.executeWindowFilter(searchInput.text);
+            if (selected === "") return;
+            for (let i = 0; i < appModel.count; i++) {
+                let it = appModel.get(i);
+                if (it && it.kind === "window" && it.payload === selected) {
+                    appList.currentIndex = i;
+                    break;
+                }
+            }
+        }
+    }
+
+    function executeWindowFilter(query) {
+        launcherWindow.isKeyboardNav = false;
+        if (keyboardNavTimer.running) keyboardNavTimer.stop();
+
+        let q = query ? query.toLowerCase().trim() : "";
+        let wins = WindowTracker.windows.slice();
+        wins.sort(function(a, b) {
+            if (a.output !== b.output) return String(a.output).localeCompare(String(b.output));
+            if (a.workspace !== b.workspace) return a.workspace - b.workspace;
+            return a.seq - b.seq;
+        });
+
+        let items = [];
+        for (let i = 0; i < wins.length; i++) {
+            let w = wins[i];
+            let entry = w.desktopId ? (DesktopEntries.byId(w.desktopId) || DesktopEntries.byId(w.desktopId.replace(/\.desktop$/, ""))) : null;
+            let appName = (entry && entry.name) ? entry.name : (w.appId || "");
+            let title = w.title || appName;
+
+            if (q.length > 0) {
+                let hay = (title + " " + appName + " " + (w.appId || "") + " " + (w.workspaceLabel || "")).toLowerCase();
+                if (!hay.includes(q) && !isSubsequence(q, title.toLowerCase())) continue;
+            }
+
+            let parts = [];
+            if (appName && appName !== title) parts.push(appName);
+            if (w.workspaceLabel) {
+                parts.push(typeof I18n !== "undefined" ? I18n.t("applauncher.window_workspace", { ws: w.workspaceLabel }) : ("Workspace " + w.workspaceLabel));
+            }
+            if (w.output) parts.push(w.output);
+
+            let icon = (entry && entry.icon) ? entry.icon : w.appId;
+
+            items.push(launcherWindow.makeItem(
+                "window",
+                title,
+                parts.join(" · "),
+                icon,
+                icon ? "" : "󰖯",
+                0,
+                w.id
+            ));
+        }
+
+        applyModelItems(items);
+    }
+
     function isSubsequence(sub, str) {
         let i = 0;
         let j = 0;
@@ -846,23 +864,13 @@ PanelWindow {
         for (let i = 0; i < minCount; i++) {
             let cur = appModel.get(i);
             let target = filtered[i];
-            if (cur.name !== target.name
-                || cur.desktop_id !== target.desktop_id
+            if (cur.kind !== target.kind
+                || cur.payload !== target.payload
+                || cur.name !== target.name
                 || cur.description !== target.description
                 || cur.icon !== target.icon
                 || cur.fontIcon !== target.fontIcon
-                || cur.score !== target.score
-                || cur.command !== target.command
-                || cur.calcResult !== target.calcResult
-                || cur.isCommand !== target.isCommand
-                || cur.isCalc !== target.isCalc
-                || cur.isSearch !== target.isSearch
-                || cur.searchUrl !== target.searchUrl
-                || cur.isWidget !== target.isWidget
-                || cur.widgetTarget !== target.widgetTarget
-                || cur.isFile !== target.isFile
-                || cur.filePath !== target.filePath
-                || cur.isDir !== target.isDir) {
+                || cur.score !== target.score) {
                 appModel.set(i, target);
             }
         }
@@ -897,97 +905,57 @@ PanelWindow {
         if (rawTrimmed.startsWith(">")) {
             let cmd = rawTrimmed.substring(1).trim();
             if (cmd.length > 0) {
-                filtered.push({
-                    name: "> " + cmd,
-                    description: typeof I18n !== "undefined" ? I18n.t("applauncher.command_run", { cmd: cmd }) : ("Execute command: " + cmd),
-                    desktop_id: "",
-                    icon: "",
-                    fontIcon: "󰆍",
-                    score: 10000000,
-                    isCommand: true,
-                    command: cmd,
-                    isCalc: false,
-                    isSearch: false,
-                    searchUrl: "",
-                    calcResult: "",
-                    isWidget: false,
-                    widgetTarget: "",
-                    isFile: false,
-                    filePath: "",
-                    isDir: false
-                });
+                filtered.push(launcherWindow.makeItem(
+                    "command",
+                    "> " + cmd,
+                    typeof I18n !== "undefined" ? I18n.t("applauncher.command_run", { cmd: cmd }) : ("Execute command: " + cmd),
+                    "",
+                    "󰆍",
+                    10000000,
+                    cmd
+                ));
             } else {
-                filtered.push({
-                    name: "> ...",
-                    description: typeof I18n !== "undefined" ? I18n.t("applauncher.command_hint") : "Type a command to execute",
-                    desktop_id: "",
-                    icon: "",
-                    fontIcon: "󰆍",
-                    score: 10000000,
-                    isCommand: false,
-                    command: "",
-                    isCalc: false,
-                    isSearch: false,
-                    searchUrl: "",
-                    calcResult: "",
-                    isWidget: false,
-                    widgetTarget: "",
-                    isFile: false,
-                    filePath: "",
-                    isDir: false
-                });
+                filtered.push(launcherWindow.makeItem(
+                    "hint",
+                    "> ...",
+                    typeof I18n !== "undefined" ? I18n.t("applauncher.command_hint") : "Type a command to execute",
+                    "",
+                    "󰆍",
+                    10000000,
+                    ""
+                ));
             }
         }
 
         if (rawTrimmed.startsWith("?")) {
             let term = rawTrimmed.substring(1).trim();
             let provider = SearchProviders.find(launcherWindow.searchProvider);
-            filtered.push({
-                name: term.length > 0 ? "? " + term : "? ...",
-                description: term.length > 0
+            filtered.push(launcherWindow.makeItem(
+                term.length > 0 ? "search" : "hint",
+                term.length > 0 ? "? " + term : "? ...",
+                term.length > 0
                     ? (typeof I18n !== "undefined" ? I18n.t("applauncher.search_run", { provider: provider.name }) : ("Search " + provider.name))
                     : (typeof I18n !== "undefined" ? I18n.t("applauncher.search_hint", { provider: provider.name }) : "Type to search the web"),
-                desktop_id: "",
-                icon: "",
-                fontIcon: "󰖟",
-                score: 10000000,
-                isCommand: false,
-                command: "",
-                isCalc: false,
-                isSearch: term.length > 0,
-                searchUrl: term.length > 0 ? SearchProviders.urlFor(launcherWindow.searchProvider, term) : "",
-                calcResult: "",
-                isWidget: false,
-                widgetTarget: "",
-                isFile: false,
-                filePath: "",
-                isDir: false
-            });
+                "",
+                "󰖟",
+                10000000,
+                term.length > 0 ? SearchProviders.urlFor(launcherWindow.searchProvider, term) : ""
+            ));
             applyModelItems(filtered);
             return;
         }
 
         let mathResult = evaluateMath(rawTrimmed);
         if (mathResult !== null) {
-            filtered.push({
-                name: rawTrimmed + " = " + mathResult,
-                description: typeof I18n !== "undefined" ? I18n.t("applauncher.calc_result") : "Calculation result (Enter to copy)",
-                desktop_id: "",
-                icon: "",
-                fontIcon: "󰃬",
-                score: 9000000,
-                isCommand: false,
-                command: "",
-                isCalc: true,
-                isSearch: false,
-                searchUrl: "",
-                calcResult: mathResult,
-                isWidget: false,
-                widgetTarget: "",
-                isFile: false,
-                filePath: "",
-                isDir: false
-            });
+            filtered.push(launcherWindow.makeItem(
+                "calc",
+                rawTrimmed + " = " + mathResult,
+                typeof I18n !== "undefined" ? I18n.t("applauncher.calc_result") : "Calculation result (Enter to copy)",
+                "",
+                "󰃬",
+                9000000,
+                mathResult
+            ));
         }
 
         for (let i = 0; i < allApps.length; i++) {
@@ -1024,25 +992,15 @@ PanelWindow {
             }
 
             if (matches) {
-                filtered.push({
-                    name: app.name,
-                    description: app.description,
-                    desktop_id: app.desktop_id,
-                    icon: app.icon,
-                    fontIcon: app.fontIcon || "",
-                    score: app.score + matchQuality,
-                    isCommand: false,
-                    command: "",
-                    isCalc: false,
-                    isSearch: false,
-                    searchUrl: "",
-                    calcResult: "",
-                    isWidget: app.isWidget || false,
-                    widgetTarget: app.widgetTarget || "",
-                    isFile: false,
-                    filePath: "",
-                    isDir: false
-                });
+                filtered.push(launcherWindow.makeItem(
+                    app.kind,
+                    app.name,
+                    app.description,
+                    app.icon,
+                    app.fontIcon || "",
+                    app.score + matchQuality,
+                    app.payload
+                ));
             }
         }
 
@@ -1061,9 +1019,10 @@ PanelWindow {
     function activateIndex(index) {
         if (index < 0 || index >= appModel.count) return;
         let item = appModel.get(index);
-        if (!item) return;
+        if (!item || item.kind === "hint") return;
 
-        if (item.isFile) {
+        switch (item.kind) {
+        case "file": {
             let script = "p=\"$1\"\n"
                 + "if [ -d \"$p\" ]; then\n"
                 + "  xdg-open \"$p\"\n"
@@ -1082,39 +1041,44 @@ PanelWindow {
                 + "else\n"
                 + "  xdg-open \"$(dirname \"$p\")\" >/dev/null 2>&1 &\n"
                 + "fi";
-            Quickshell.execDetached(["bash", "-c", script, "_", item.filePath]);
+            Quickshell.execDetached(["bash", "-c", script, "_", item.payload]);
             closeLauncher();
             return;
         }
-
-        if (item.isSearch) {
-            if (item.searchUrl) Quickshell.execDetached(["xdg-open", item.searchUrl]);
-            closeLauncher();
-            return;
-        }
-
-        if (item.isCommand) {
-            if (item.command && item.command.trim().length > 0) {
-                let term = launcherWindow.terminalCommand ? launcherWindow.terminalCommand.trim() : "";
-                let fullCmd = term !== "" ? (term + " " + item.command) : item.command;
-                Quickshell.execDetached(["bash", "-c", fullCmd]);
+        case "window": {
+            let wins = WindowTracker.windows;
+            for (let i = 0; i < wins.length; i++) {
+                if (wins[i].id === item.payload) {
+                    WindowTracker.focusWindow(wins[i]);
+                    break;
+                }
             }
             closeLauncher();
             return;
         }
-
-        if (item.isCalc) {
-            Quickshell.execDetached(["wl-copy", "--", item.calcResult]);
+        case "search":
+            if (item.payload) Quickshell.execDetached(["xdg-open", item.payload]);
             closeLauncher();
             return;
-        }
-
-        if (item.isWidget) {
-            launchWidget(item.name, item.widgetTarget);
+        case "command":
+            if (item.payload && item.payload.trim().length > 0) {
+                let term = launcherWindow.terminalCommand ? launcherWindow.terminalCommand.trim() : "";
+                let fullCmd = term !== "" ? (term + " " + item.payload) : item.payload;
+                Quickshell.execDetached(["bash", "-c", fullCmd]);
+            }
+            closeLauncher();
+            return;
+        case "calc":
+            Quickshell.execDetached(["wl-copy", "--", item.payload]);
+            closeLauncher();
+            return;
+        case "widget":
+            launchWidget(item.name, item.payload);
+            return;
+        default:
+            launchApp(item.name, item.payload);
             return;
         }
-
-        launchApp(item.name, item.desktop_id);
     }
 
     function activateEmoji(index) {
@@ -1126,18 +1090,20 @@ PanelWindow {
     }
 
     function launchWidget(widgetName, widgetTarget) {
-        if (Caching.qsDir) {
-            Quickshell.execDetached(["bash", Caching.qsDir + "/../scripts/qs_manager.sh", "open", widgetTarget]);
-        } else {
-            Quickshell.execDetached(["qs_manager", "open", widgetTarget]);
+        if (widgetTarget) {
+            Quickshell.execDetached(["serpantinum-core", "launcher", "log", widgetTarget]);
+        }
+        if (widgetName && widgetName !== widgetTarget) {
+            Quickshell.execDetached(["serpantinum-core", "launcher", "log", widgetName]);
         }
         closeLauncher();
+        ShellRouter.open(widgetTarget, "", launcherWindow.screen);
     }
 
     function launchApp(appName, desktopId) {
         let entry = DesktopEntries.byId(desktopId);
         if (entry) {
-            entry.execute();
+            AppMatcher.launch(entry);
         }
         if (Caching.qsDir) {
             Quickshell.execDetached(["serpantinum-core", "launcher", "log", appName]);
@@ -1145,47 +1111,8 @@ PanelWindow {
         closeLauncher();
     }
 
-    Item {
-        id: topBarHole
-
-        property int barThickness: launcherWindow.barInset
-        property string bp: launcherWindow.barPosition
-        property bool activeBar: !launcherWindow.isBarEffectivelyHidden
-
-        x: {
-            if (!activeBar) return 0;
-            if (bp === "left") return 0;
-            if (bp === "right") return launcherWindow.width - barThickness;
-            return 0;
-        }
-
-        y: {
-            if (!activeBar) return 0;
-            if (bp === "top") return 0;
-            if (bp === "bottom") return launcherWindow.height - barThickness;
-            return 0;
-        }
-
-        width: {
-            if (!activeBar) return 0;
-            if (bp === "left" || bp === "right") return barThickness;
-            return launcherWindow.width;
-        }
-
-        height: {
-            if (!activeBar) return 0;
-            if (bp === "top" || bp === "bottom") return barThickness;
-            return launcherWindow.height;
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        enabled: launcherWindow.isVisible
-        onClicked: closeLauncher()
-    }
-
     AttachedSurface {
+        id: launcherSurface
         kind: "launcher"
         visible: container.animProgress > 0.001 && container.width > 0 && container.height > 0
         opacity: container.opacity
@@ -1198,6 +1125,7 @@ PanelWindow {
 
     Item {
         id: container
+        property Item glassBackdropItem: launcherSurface.backdrop
 
         MouseArea {
             anchors.fill: parent
@@ -1300,12 +1228,9 @@ PanelWindow {
                     charSpacing: 1
 
                     placeholderText: {
-                        if (launcherWindow.currentTabIndex === 1) {
-                            return typeof I18n !== "undefined" ? I18n.t("applauncher.placeholder_files", "Search files or enter path...") : "Search files or enter path...";
-                        } else if (launcherWindow.currentTabIndex === 2) {
-                            return typeof I18n !== "undefined" ? I18n.t("applauncher.placeholder_emojis", "Search emojis by name or keyword...") : "Search emojis by name or keyword...";
-                        }
-                        return typeof I18n !== "undefined" ? I18n.t("applauncher.placeholder", "Start with > for a command...") : "Start with > for a command...";
+                        let _lang = (typeof I18n !== "undefined") ? I18n.currentLang : "";
+                        let t = launcherWindow.activeTab;
+                        return typeof I18n !== "undefined" ? I18n.t(t.placeholderKey, t.placeholderFallback) : t.placeholderFallback;
                     }
                     showClearButton: true
 
@@ -1320,31 +1245,19 @@ PanelWindow {
                     }
 
                     onTextEdited: function(newText) {
-                        if (launcherWindow.currentTabIndex === 0) {
-                            filterApps(newText);
-                        } else if (launcherWindow.currentTabIndex === 1) {
-                            filterFiles(newText);
-                        } else {
-                            filterEmojis(newText);
-                        }
+                        launcherWindow.scheduleCurrentTabFilter(newText);
                     }
                     onCleared: {
-                        if (launcherWindow.currentTabIndex === 0) {
-                            filterApps("");
-                        } else if (launcherWindow.currentTabIndex === 1) {
-                            filterFiles("");
-                        } else {
-                            filterEmojis("");
-                        }
+                        launcherWindow.scheduleCurrentTabFilter("");
                     }
 
                     Keys.onTabPressed: function(event) {
-                        launcherWindow.currentTabIndex = (launcherWindow.currentTabIndex + 1) % 3;
+                        launcherWindow.currentTabIndex = (launcherWindow.currentTabIndex + 1) % 4;
                         tabSwitch.currentIndex = launcherWindow.currentTabIndex;
                         event.accepted = true;
                     }
                     Keys.onBacktabPressed: function(event) {
-                        launcherWindow.currentTabIndex = (launcherWindow.currentTabIndex + 2) % 3;
+                        launcherWindow.currentTabIndex = (launcherWindow.currentTabIndex + 3) % 4;
                         tabSwitch.currentIndex = launcherWindow.currentTabIndex;
                         event.accepted = true;
                     }
@@ -1428,7 +1341,7 @@ PanelWindow {
                     accentColor: ThemeBackend.mauve
                     textColor: ThemeBackend.text
                     activeTextColor: ThemeBackend.crust
-                    options: [launcherWindow.tabAppsTitle, launcherWindow.tabFilesTitle, launcherWindow.tabEmojisTitle]
+                    options: launcherWindow.tabTitles
                     currentIndex: launcherWindow.currentTabIndex
                     onValueChanged: function(index, value) {
                         launcherWindow.currentTabIndex = index;
@@ -1772,24 +1685,11 @@ PanelWindow {
                                                 property bool failedLoad: false
                                                 cache: false
 
-                                                visible: (!model.fontIcon || model.fontIcon === "") && source !== "" && status === Image.Ready && !failedLoad
+                                                visible: (!model.fontIcon || model.fontIcon === "") && source !== "" && status === Image.Ready && !failedLoad && !AppMatcher.iconMissing(source)
 
                                                 source: {
                                                     if (model.fontIcon && model.fontIcon !== "") return "";
-                                                    let ic = model.icon || "";
-                                                    if (!ic) return "";
-                                                    if (ic.startsWith("file://") || ic.startsWith("image://") || ic.startsWith("http://") || ic.startsWith("https://")) return ic;
-                                                    if (ic.startsWith("/")) return "file://" + ic;
-
-                                                    let baseName = ic.replace(/\.(png|svg|xpm|ico)$/i, "");
-                                                    if (typeof Quickshell !== "undefined" && typeof Quickshell.iconPath === "function") {
-                                                        let resolved = Quickshell.iconPath(ic) || Quickshell.iconPath(baseName);
-                                                        if (resolved && resolved.length > 0) {
-                                                            return resolved.startsWith("/") ? ("file://" + resolved) : resolved;
-                                                        }
-                                                    }
-
-                                                    return "image://icon/" + baseName;
+                                                    return AppMatcher.iconSource(model.icon);
                                                 }
 
                                                 sourceSize: Qt.size(64, 64)
@@ -1811,8 +1711,8 @@ PanelWindow {
                                                 visible: !delegateIcon.visible
                                                 text: {
                                                     if (model.fontIcon && model.fontIcon !== "") return model.fontIcon;
-                                                    if (model.isCalc) return "󰃬";
-                                                    if (model.isCommand) return "󰆍";
+                                                    if (model.kind === "calc") return "󰃬";
+                                                    if (model.kind === "command") return "󰆍";
                                                     return "󰵆";
                                                 }
                                                 font.family: ThemeBackend.fontFamily
@@ -1890,7 +1790,8 @@ PanelWindow {
                         cellHeight: launcherWindow.s(60)
                         currentIndex: 0
                         boundsBehavior: Flickable.StopAtBounds
-                        cacheBuffer: launcherWindow.s(400)
+                        cacheBuffer: launcherWindow.s(120)
+                        reuseItems: true
                         highlightFollowsCurrentItem: false
 
                         Keys.forwardTo: [searchInput]
@@ -2018,6 +1919,7 @@ PanelWindow {
                                         id: emojiGlass
                                         anchors.fill: parent
                                         radius: parent.radius
+                                        backdropOverride: launcherSurface.backdrop
                                         allowed: !emojiDelegateRoot.lensHandled
                                         forceOpaque: emojiDelegateRoot.isSelected
                                         tintColor: emojiDelegateRoot.isSelected ? ThemeBackend.text : ThemeBackend.surface0
@@ -2031,34 +1933,37 @@ PanelWindow {
                                     }
                                 }
 
-                                ColumnLayout {
-                                    anchors.fill: parent
-                                    anchors.margins: launcherWindow.s(4)
-                                    spacing: launcherWindow.s(1)
+                                Text {
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.top: parent.top
+                                    anchors.bottom: emojiNameText.top
+                                    anchors.topMargin: launcherWindow.s(4)
+                                    anchors.bottomMargin: launcherWindow.s(1)
+                                    text: model.emoji
+                                    font.pixelSize: launcherWindow.s(22)
+                                    horizontalAlignment: Text.AlignHCenter
+                                    verticalAlignment: Text.AlignVCenter
+                                }
 
-                                    Text {
-                                        Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                                        text: model.emoji
-                                        font.pixelSize: launcherWindow.s(22)
-                                        horizontalAlignment: Text.AlignHCenter
-                                        verticalAlignment: Text.AlignVCenter
-                                    }
+                                Text {
+                                    id: emojiNameText
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    anchors.bottom: parent.bottom
+                                    anchors.leftMargin: launcherWindow.s(4)
+                                    anchors.rightMargin: launcherWindow.s(4)
+                                    anchors.bottomMargin: launcherWindow.s(4)
+                                    text: model.name
+                                    font.family: ThemeBackend.fontFamily
+                                    font.pixelSize: launcherWindow.s(9)
+                                    font.weight: emojiDelegateRoot.isSelected ? Font.Bold : Font.Normal
+                                    color: emojiDelegateRoot.isSelected ? ((emojiGlass.active || emojiDelegateRoot.lensHandled) ? ThemeBackend.text : ThemeBackend.crust) : ThemeBackend.subtext0
+                                    elide: Text.ElideRight
+                                    horizontalAlignment: Text.AlignHCenter
+                                    maximumLineCount: 1
 
-                                    Text {
-                                        Layout.fillWidth: true
-                                        Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
-                                        text: model.name
-                                        font.family: ThemeBackend.fontFamily
-                                        font.pixelSize: launcherWindow.s(9)
-                                        font.weight: emojiDelegateRoot.isSelected ? Font.Bold : Font.Normal
-                                        color: emojiDelegateRoot.isSelected ? ((emojiGlass.active || emojiDelegateRoot.lensHandled) ? ThemeBackend.text : ThemeBackend.crust) : ThemeBackend.subtext0
-                                        elide: Text.ElideRight
-                                        horizontalAlignment: Text.AlignHCenter
-                                        maximumLineCount: 1
-
-                                        Behavior on color {
-                                            ColorAnimation { duration: 150; easing.type: Easing.OutCubic }
-                                        }
+                                    Behavior on color {
+                                        ColorAnimation { duration: 150; easing.type: Easing.OutCubic }
                                     }
                                 }
 
@@ -2084,7 +1989,7 @@ PanelWindow {
 
                     Item {
                         anchors.centerIn: parent
-                        visible: launcherWindow.currentTabIndex === 2 && emojiModel.count === 0
+                        visible: launcherWindow.currentTabIndex === 2 && launcherWindow.emojiTargetCount === 0 && !launcherWindow.emojiFilterPending && launcherWindow.emojiSearch !== null
                         width: parent.width
                         height: launcherWindow.s(60)
 

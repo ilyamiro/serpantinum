@@ -34,7 +34,7 @@ Item {
     property Item registeredBackdrop: null
     property Item backdropOverride: null
 
-    readonly property bool active: allowed && tintColor.a > 0.02 && root.visible && ThemeBackend.liquidGlass && backdrop !== null && backdrop.active && width > 0 && height > 0
+    readonly property bool active: completed && allowed && tintColor.a > 0.02 && root.visible && ThemeBackend.liquidGlass && backdrop !== null && backdrop.active && width > 0 && height > 0
 
     function findBackdrop() {
         if (root.backdropOverride) {
@@ -171,31 +171,46 @@ Item {
     property var sig: [0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0]
 
     function refresh(force) {
-        if (!root.active) return;
         const bd = root.backdrop;
+        if (!root.active || !bd) return;
         const p0 = bd.mapFromItem(root, 0, 0);
         const p1 = bd.mapFromItem(root, 1, 0);
         const p2 = bd.mapFromItem(root, 0, 1);
         const s = root.sig;
-        if (!force && p0.x === s[0] && p0.y === s[1] && p1.x === s[2] && p1.y === s[3] && p2.x === s[4] && p2.y === s[5]
-                && root.width === s[6] && root.height === s[7] && bd.width === s[8] && bd.height === s[9]
-                && bd.cursorX === s[10] && bd.cursorY === s[11] && root.pad === s[12]) return;
-        s[0] = p0.x; s[1] = p0.y; s[2] = p1.x; s[3] = p1.y; s[4] = p2.x; s[5] = p2.y;
-        s[6] = root.width; s[7] = root.height; s[8] = bd.width; s[9] = bd.height;
-        s[10] = bd.cursorX; s[11] = bd.cursorY; s[12] = root.pad;
-        const bw = Math.max(1, bd.width);
-        const bh = Math.max(1, bd.height);
-        const angle = Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
-        const t = (((-Math.round(angle / 90)) % 4) + 4) % 4;
-        if (t !== root.turns) root.turns = t;
-        const a = bd.mapFromItem(root, -root.pad, -root.pad);
-        const b = bd.mapFromItem(root, root.width + root.pad, root.height + root.pad);
-        root.sampleRect = Qt.rect(a.x / bw, a.y / bh, (b.x - a.x) / bw, (b.y - a.y) / bh);
-        const fa = bd.mapFromItem(glassFrame, 0, 0);
-        const fb = bd.mapFromItem(glassFrame, glassFrame.width, glassFrame.height);
-        root.frameRect = Qt.rect(Math.min(fa.x, fb.x) / bw, Math.min(fa.y, fb.y) / bh, Math.abs(fb.x - fa.x) / bw, Math.abs(fb.y - fa.y) / bh);
-        const c = glassFrame.mapFromItem(bd, bd.cursorX, bd.cursorY);
-        root.frameCursor = Qt.point(c.x, c.y);
+        const rw = root.width;
+        const rh = root.height;
+        const bdw = bd.width;
+        const bdh = bd.height;
+        const pad = root.pad;
+        const geomChanged = force || p0.x !== s[0] || p0.y !== s[1] || p1.x !== s[2] || p1.y !== s[3] || p2.x !== s[4] || p2.y !== s[5]
+                || rw !== s[6] || rh !== s[7] || bdw !== s[8] || bdh !== s[9] || pad !== s[12];
+        const trackCursor = root.followBackdropHover;
+        const cx = trackCursor ? bd.cursorX : 0;
+        const cy = trackCursor ? bd.cursorY : 0;
+        const cursorChanged = force || (trackCursor && (cx !== s[10] || cy !== s[11]));
+        if (!geomChanged && !cursorChanged) return;
+        if (geomChanged) {
+            s[0] = p0.x; s[1] = p0.y; s[2] = p1.x; s[3] = p1.y; s[4] = p2.x; s[5] = p2.y;
+            s[6] = rw; s[7] = rh; s[8] = bdw; s[9] = bdh; s[12] = pad;
+            const bw = Math.max(1, bdw);
+            const bh = Math.max(1, bdh);
+            const angle = Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
+            const t = (((-Math.round(angle / 90)) % 4) + 4) % 4;
+            if (t !== root.turns) root.turns = t;
+            const a = bd.mapFromItem(root, -pad, -pad);
+            const b = bd.mapFromItem(root, rw + pad, rh + pad);
+            root.sampleRect = Qt.rect(a.x / bw, a.y / bh, (b.x - a.x) / bw, (b.y - a.y) / bh);
+            const fa = bd.mapFromItem(glassFrame, 0, 0);
+            const fb = bd.mapFromItem(glassFrame, glassFrame.width, glassFrame.height);
+            root.frameRect = Qt.rect(Math.min(fa.x, fb.x) / bw, Math.min(fa.y, fb.y) / bh, Math.abs(fb.x - fa.x) / bw, Math.abs(fb.y - fa.y) / bh);
+        }
+        if (geomChanged || cursorChanged) {
+            s[10] = cx; s[11] = cy;
+            if (trackCursor) {
+                const c = glassFrame.mapFromItem(bd, cx, cy);
+                root.frameCursor = Qt.point(c.x, c.y);
+            }
+        }
     }
 
     Connections {
@@ -208,6 +223,7 @@ Item {
     onHeightChanged: refresh()
     onXChanged: refresh()
     onYChanged: refresh()
+    onFollowBackdropHoverChanged: refresh(true)
 
     function cornerRadius(i) {
         const r = [root.topLeftRadius, root.topRightRadius, root.bottomRightRadius, root.bottomLeftRadius];
@@ -235,7 +251,7 @@ Item {
     }
 
     onSampleRectChanged: {
-        if (!root.active) return;
+        if (!root.active || !root.backdrop) return;
         const bw = root.backdrop.width;
         const bh = root.backdrop.height;
         const cx = (sampleRect.x + sampleRect.width * 0.5) * bw;

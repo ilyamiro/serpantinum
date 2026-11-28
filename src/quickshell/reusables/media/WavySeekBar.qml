@@ -54,16 +54,13 @@ Item {
 
     readonly property real progressX: pad + shownFraction * (width - 2 * pad)
 
-    // sin(phase * mult) with mult 1.0, 2.2 and their halves repeats every 20 pi,
-    // so the phase loops over 10 cycles without a jump.
     property real phase: 0
-    NumberAnimation on phase {
-        running: bar.active
-        paused: running && !(bar.playing || bar.ampFactor > 0.001)
-        from: 0
-        to: Math.PI * 20
-        duration: bar.cycleMs * 10
-        loops: Animation.Infinite
+    FrameAnimation {
+        running: bar.active && (bar.playing || bar.ampFactor > 0.001)
+        onTriggered: {
+            let period = Math.max(1, bar.cycleMs);
+            bar.phase = (bar.phase + Math.min(frameTime, 0.1) * (Math.PI * 2000.0 / period)) % (Math.PI * 20);
+        }
     }
 
     property real startTaperMax: height < 30 ? 32 : bar.s(64)
@@ -76,8 +73,8 @@ Item {
         id: wave
         anchors.fill: parent
 
-        opacity: (bar.isDragging || mouseArea.containsMouse) ? 1.0 : (bar.playing ? 1.0 : 0.55)
-        Behavior on opacity {
+        property real trackDim: (bar.isDragging || mouseArea.containsMouse || bar.playing) ? 1.0 : 0.55
+        Behavior on trackDim {
             NumberAnimation { duration: 400; easing.type: Easing.OutQuad }
         }
 
@@ -88,7 +85,7 @@ Item {
         property real endX: Math.max(bar.pad, bar.progressX)
         property real strokeWidth: bar.strokeWidth
         property real amplitude: bar.amplitude * bar.liveAmp
-        property real trackAlpha: bar.trackAlpha
+        property real trackAlpha: bar.trackAlpha * trackDim
         property real startTaper: bar.startTaperMax
         property real phase: bar.phase
         property vector4d shape0: Qt.vector4d(0.65, 0.50, bar.s(130) * bar.scaleFactor, bar.baseLen * 1.75)

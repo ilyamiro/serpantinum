@@ -34,6 +34,10 @@ backup_compositors() {
 
 migrate_legacy() {
     local compositors=("$@")
+    local state_home="${XDG_STATE_HOME:-$HOME/.local/state}"
+    local config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+    local backup_dir="$config_home/hypr_backup"
+
     pkill -f "settings_watcher.sh" 2>/dev/null || true
     pkill -f "hypr/scripts/quickshell" 2>/dev/null || true
 
@@ -41,8 +45,13 @@ migrate_legacy() {
 
     backup_compositors "${compositors[@]}"
 
-    if [ -f "$HOME/.local/state/imperative-dots-version" ]; then
-        mkdir -p "$HOME/.config/hypr_backup"
-        mv "$HOME/.local/state/imperative-dots-version" "$HOME/.config/hypr_backup/imperative-dots-version.bak" 2>/dev/null || true
+    if [ -f "$state_home/imperative-dots-version" ]; then
+        mkdir -p "$backup_dir"
+        mv "$state_home/imperative-dots-version" "$backup_dir/imperative-dots-version.bak" 2>/dev/null || true
+    fi
+
+    if [ -f "$config_home/hypr/scripts/settings_watcher.sh" ]; then
+        mkdir -p "$backup_dir"
+        mv "$config_home/hypr/scripts/settings_watcher.sh" "$backup_dir/settings_watcher.sh.bak" 2>/dev/null || true
     fi
 }

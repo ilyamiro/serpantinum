@@ -2,10 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import Quickshell
-import Quickshell.Io
 import "../../"
 import "../"
-
 
 Item {
     id: root
@@ -29,6 +27,7 @@ Item {
 
     property bool fuzzySearch: true
     property bool isPathSelector: false
+    property bool allowCustomValue: isPathSelector
 
     property color accentColor: ThemeBackend.blue
     property color baseColor: ThemeBackend.surface0
@@ -65,8 +64,8 @@ Item {
     readonly property real popupPadding: 4
     readonly property bool popupHovered: popupLoader.item !== null && popupLoader.item.listHovered
     property bool isHoveredOrHighlighted: (btnMa.containsMouse || root.action_highlight) && root.enabled
-    readonly property real charSlotStep: globalCharMetrics.width + root.charSpacing
-    property real scrollOffset: 0
+    readonly property real charSlotStep: searchField.charSlotStep
+    readonly property real scrollOffset: searchField.scrollOffset
 
     signal valueChanged(int index, string value)
     signal selected(int index, string value)
@@ -74,6 +73,8 @@ Item {
     signal opened()
     signal closed()
     signal searchChanged(string text)
+    signal editingStarted()
+    signal customAccepted(string rawText)
 
     function fuzzyScore(query, text) {
         let q = String(query).toLowerCase();
@@ -106,81 +107,50 @@ Item {
         return qIdx === qLen ? score : -1;
     }
 
-    function scanPath(query) {
-        if (!root.isPathSelector) return;
-        let q = query.trim();
-        let home = (typeof Quickshell !== "undefined" && Quickshell.env("HOME")) ? Quickshell.env("HOME") : "";
-        if (q.startsWith("~") && home !== "") {
-            q = home + q.slice(1);
+    function mergeOptions(newItems) {
+        if (!newItems || newItems.length === 0) return;
+        let merged = root.options.slice();
+        let seen = {};
+        for (let i = 0; i < merged.length; i++) {
+            seen[merged[i]] = true;
         }
-        pathScanProcess.targetQuery = q;
-        pathScanProcess.running = false;
-        pathScanProcess.running = true;
-    }
-
-    Timer {
-        id: pathScanTimer
-        interval: 150
-        repeat: false
-        onTriggered: {
-            if (root.isPathSelector && root.isEditing && root.searchText.length > 0) {
-                root.scanPath(root.searchText);
+        let changed = false;
+        for (let i = 0; i < newItems.length; i++) {
+            if (!seen[newItems[i]]) {
+                seen[newItems[i]] = true;
+                merged.push(newItems[i]);
+                changed = true;
             }
         }
+        if (changed) {
+            root.options = merged;
+            root.filterData();
+        }
     }
 
-    Process {
-        id: pathScanProcess
-        property string targetQuery: ""
-        running: false
-        command: {
-            let pyScript =
-                "import os, sys\n" +
-                "home = os.path.expanduser('~')\n" +
-                "q = sys.argv[1].strip()\n" +
-                "exts = {'.jpg', '.jpeg', '.png', '.webp', '.bmp', '.mp4', '.mkv', '.mov', '.webm'}\n" +
-                "dirs = set()\n" +
-                "base = q if os.path.isdir(q) else (os.path.dirname(q) if (os.path.isabs(q) and os.path.exists(os.path.dirname(q))) else '')\n" +
-                "search_roots = []\n" +
-                "if base and os.path.isdir(base):\n" +
-                "    search_roots.append(base)\n" +
-                "else:\n" +
-                "    search_roots = [home, os.path.join(home, 'Pictures'), os.path.join(home, 'Wallpapers'), os.path.join(home, 'Videos'), '/usr/share/backgrounds', '/usr/share/wallpapers']\n" +
-                "for r in search_roots:\n" +
-                "    if not os.path.isdir(r): continue\n" +
-                "    dirs.add(r)\n" +
-                "    for root_dir, subdirs, files in os.walk(r, followlinks=True):\n" +
-                "        depth = root_dir[len(r):].count(os.sep)\n" +
-                "        if depth > 3:\n" +
-                "            subdirs[:] = []\n" +
-                "            continue\n" +
-                "        subdirs[:] = [d for d in subdirs if not d.startswith('.')]\n" +
-                "        if any(os.path.splitext(f)[1].lower() in exts for f in files) or (q and q.lower() in root_dir.lower()):\n" +
-                "            dirs.add(root_dir)\n" +
-                "for d in sorted(list(dirs), key=lambda x: (x.count(os.sep), x.lower()))[:60]:\n" +
-                "    print(d)\n";
-            return ["python3", "-c", pyScript, targetQuery];
+    function selectOrInsertOption(val) {
+        if (!val || val === "") return;
+        let opts = root.options.slice();
+        let idx = opts.indexOf(val);
+        if (idx === -1) {
+            opts.unshift(val);
+            root.options = opts;
+            idx = 0;
         }
-        stdout: StdioCollector {
-            onStreamFinished: {
-                let lines = this.text.trim().split("\n").map(function(s) { return s.trim(); }).filter(function(s) { return s.length > 0; });
-                if (lines.length > 0) {
-                    let merged = root.options.slice();
-                    let seen = new Set();
-                    for (let i = 0; i < merged.length; i++) {
-                        seen.add(merged[i]);
-                    }
-                    for (let i = 0; i < lines.length; i++) {
-                        if (!seen.has(lines[i])) {
-                            seen.add(lines[i]);
-                            merged.push(lines[i]);
-                        }
-                    }
-                    root.options = merged;
-                    root.filterData();
-                }
-            }
+        if (root.currentIndex !== idx) {
+            root.currentIndex = idx;
+            root.valueChanged(idx, val);
         }
+        root.selected(idx, val);
+    }
+
+    Loader {
+        id: legacyPathScanner
+        active: root.isPathSelector
+        visible: false
+        width: 0
+        height: 0
+        source: "PathDropdown.qml"
     }
 
     function showPopup() {
@@ -228,13 +198,12 @@ Item {
         if (!root.enabled) return;
         root.isEditing = true;
         root.searchText = "";
-        innerInput.text = "";
-        charModel.clear();
-        root.scrollOffset = 0;
+        searchField.clear();
         root.filterData();
-        innerInput.forceActiveFocus();
-        if (root.isPathSelector && root.currentValue) {
-            root.scanPath(root.currentValue);
+        searchField.forceInputFocus();
+        root.editingStarted();
+        if (root.isPathSelector && legacyPathScanner.item && root.currentValue) {
+            legacyPathScanner.item.scanPathFor(root.currentValue, function(lines) { root.mergeOptions(lines); });
         }
         if (!root.isOpen && root.filteredOptions.length > 0) {
             root.showPopup();
@@ -244,9 +213,7 @@ Item {
     function stopEditing() {
         root.isEditing = false;
         root.searchText = "";
-        innerInput.text = "";
-        charModel.clear();
-        root.scrollOffset = 0;
+        searchField.clear();
         root.filteredOptions = root.options;
     }
 
@@ -282,56 +249,7 @@ Item {
     }
 
     function updateScroll() {
-        let totalW = charRow.contentWidth;
-        let visibleW = searchFieldArea.width;
-
-        if (visibleW <= 0) return;
-
-        if (totalW <= visibleW) {
-            root.scrollOffset = 0;
-            return;
-        }
-
-        let curX = innerInput.cursorPosition * root.charSlotStep;
-        let minOffset = visibleW - totalW;
-        let maxOffset = 0;
-        let margin = 4;
-        let curScreenX = curX + root.scrollOffset;
-
-        if (curScreenX < margin) {
-            root.scrollOffset = Math.min(maxOffset, Math.max(minOffset, margin - curX));
-        } else if (curScreenX > visibleW - margin - 2) {
-            root.scrollOffset = Math.min(maxOffset, Math.max(minOffset, visibleW - margin - 2 - curX));
-        } else {
-            root.scrollOffset = Math.min(maxOffset, Math.max(minOffset, root.scrollOffset));
-        }
-    }
-
-    function syncModel() {
-        let str = innerInput.text;
-        let oldCount = charModel.count;
-        let newCount = str.length;
-
-        let prefix = 0;
-        while (prefix < oldCount && prefix < newCount && charModel.get(prefix).char === str[prefix]) {
-            prefix++;
-        }
-
-        let suffix = 0;
-        while (suffix < (oldCount - prefix) && suffix < (newCount - prefix) && charModel.get(oldCount - 1 - suffix).char === str[newCount - 1 - suffix]) {
-            suffix++;
-        }
-
-        let deleteCount = oldCount - prefix - suffix;
-        if (deleteCount > 0) {
-            charModel.remove(prefix, deleteCount);
-        }
-
-        let insertStr = str.slice(prefix, newCount - suffix);
-        for (let i = 0; i < insertStr.length; i++) {
-            charModel.insert(prefix + i, { char: insertStr[i] });
-        }
-        updateScroll();
+        searchField.updateScroll();
     }
 
     onOptionsChanged: {
@@ -340,17 +258,6 @@ Item {
         } else {
             root.filterData();
         }
-    }
-
-    TextMetrics {
-        id: globalCharMetrics
-        font.family: root.fontFamily
-        font.pixelSize: root.fontPixelSize
-        text: "0"
-    }
-
-    ListModel {
-        id: charModel
     }
 
     Rectangle {
@@ -402,261 +309,85 @@ Item {
                     verticalAlignment: Text.AlignVCenter
                 }
 
-                Item {
-                    id: searchFieldArea
+                AnimatedCharField {
+                    id: searchField
                     anchors.fill: parent
                     visible: root.isEditing
-                    clip: true
-                    onWidthChanged: root.updateScroll()
+                    placeholderText: root.placeholderText
+                    fontFamily: root.fontFamily
+                    fontPixelSize: root.fontPixelSize
+                    textColor: root.textColor
+                    placeholderColor: root.subTextColor
+                    placeholderOpacity: 0.45
+                    selectionColor: root.accentColor
+                    caretColor: root.accentColor
+                    horizontalAlignment: TextInput.AlignLeft
+                    charSpacing: root.charSpacing
+                    enabled: root.enabled && root.isEditing
+                    actionHighlight: root.action_highlight
+                    caretVisible: root.isEditing && (hasFocus || root.action_highlight)
+                    caretBlinkRunning: caretVisible
+                    handleEscape: true
 
-                    Text {
-                        id: placeholderLabel
-                        text: root.placeholderText
-                        font.family: root.fontFamily
-                        font.pixelSize: root.fontPixelSize
-                        color: root.subTextColor
-                        opacity: (innerInput.text.length === 0 && charModel.count === 0) ? 0.45 : 0.0
-                        anchors.verticalCenter: parent.verticalCenter
-                        Behavior on opacity { NumberAnimation { duration: 150 } }
-                    }
-
-                    Rectangle {
-                        id: selectionHighlight
-                        readonly property int selMin: Math.min(innerInput.selectionStart, innerInput.selectionEnd)
-                        readonly property int selMax: Math.max(innerInput.selectionStart, innerInput.selectionEnd)
-                        readonly property bool hasSelection: selMax > selMin
-
-                        anchors.verticalCenter: parent.verticalCenter
-                        height: Math.min(parent.height - 4, root.fontPixelSize * 1.7)
-                        radius: 4
-                        color: root.accentColor
-                        opacity: hasSelection ? 0.28 : 0.0
-
-                        x: root.scrollOffset + (selMin * root.charSlotStep) - 2
-                        width: hasSelection ? ((selMax - selMin) * root.charSlotStep - root.charSpacing + 4) : 0
-
-                        Behavior on opacity { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
-                        Behavior on x { NumberAnimation { duration: 60; easing.type: Easing.OutQuad } }
-                        Behavior on width { NumberAnimation { duration: 60; easing.type: Easing.OutQuad } }
-                    }
-
-                    ListView {
-                        id: charRow
-                        height: parent.height
-                        anchors.verticalCenter: parent.verticalCenter
-                        orientation: ListView.Horizontal
-                        interactive: false
-                        boundsBehavior: Flickable.StopAtBounds
-                        spacing: root.charSpacing
-                        width: contentWidth
-                        x: root.scrollOffset
-                        model: charModel
-
-                        onContentWidthChanged: root.updateScroll()
-
-                        property int entranceDuration: 420
-                        property real entranceOvershoot: 3.2
-                        property int exitDuration: 160
-
-                        Behavior on x { NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
-
-                        add: Transition {
-                            ParallelAnimation {
-                                NumberAnimation { property: "scale"; from: 0.3; to: 1.0; duration: charRow.entranceDuration; easing.type: Easing.OutBack; easing.overshoot: charRow.entranceOvershoot }
-                                NumberAnimation { property: "y"; from: 10; to: 0; duration: charRow.entranceDuration; easing.type: Easing.OutBack; easing.overshoot: charRow.entranceOvershoot * 0.8 }
-                                NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 150; easing.type: Easing.OutCubic }
+                    onTextEdited: function(newText) {
+                        if (root.isEditing) {
+                            root.searchText = newText;
+                            if (typeof Sounds !== "undefined") {
+                                Sounds.playSfx(root.keySound);
                             }
-                        }
-
-                        remove: Transition {
-                            ParallelAnimation {
-                                NumberAnimation { property: "scale"; to: 0.3; duration: charRow.exitDuration; easing.type: Easing.InBack }
-                                NumberAnimation { property: "y"; to: -8; duration: charRow.exitDuration; easing.type: Easing.InCubic }
-                                NumberAnimation { property: "opacity"; to: 0; duration: charRow.exitDuration * 0.9; easing.type: Easing.InCubic }
-                            }
-                        }
-
-                        displaced: Transition {
-                            NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutBack; easing.overshoot: 1.6 }
-                        }
-
-                        delegate: Item {
-                            id: slot
-                            width: globalCharMetrics.width
-                            height: charRow.height
-                            transformOrigin: Item.Center
-
-                            Text {
-                                anchors.centerIn: parent
-                                text: model.char
-                                color: root.textColor
-                                font.family: root.fontFamily
-                                font.pixelSize: root.fontPixelSize
+                            root.filterData();
+                            root.searchChanged(newText);
+                            if (root.isPathSelector && legacyPathScanner.item && newText.length > 0) {
+                                legacyPathScanner.item.scheduleScanFor(newText, function(lines) { root.mergeOptions(lines); });
                             }
                         }
                     }
 
-                    Rectangle {
-                        id: caretRect
-                        width: 2
-                        height: root.fontPixelSize * 1.2
-                        color: root.accentColor
-                        visible: root.isEditing && (innerInput.activeFocus || root.action_highlight)
-                        anchors.verticalCenter: parent.verticalCenter
-                        x: root.scrollOffset + (innerInput.cursorPosition * root.charSlotStep)
-
-                        Behavior on x { NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
-
-                        SequentialAnimation on opacity {
-                            running: root.isEditing && (innerInput.activeFocus || root.action_highlight)
-                            loops: Animation.Infinite
-                            NumberAnimation { to: 0; duration: 100; easing.type: Easing.InQuad }
-                            PauseAnimation { duration: 400 }
-                            NumberAnimation { to: 1; duration: 100; easing.type: Easing.OutQuad }
-                            PauseAnimation { duration: 400 }
-                        }
-                    }
-
-                    TextInput {
-                        id: innerInput
-                        anchors.fill: parent
-                        opacity: 0
-                        color: "transparent"
-                        selectionColor: "transparent"
-                        selectedTextColor: "transparent"
-                        selectByMouse: true
-                        mouseSelectionMode: TextInput.SelectCharacters
-                        font.family: root.fontFamily
-                        font.pixelSize: root.fontPixelSize
-                        enabled: root.enabled && root.isEditing
-
-                        onCursorPositionChanged: root.updateScroll()
-                        onSelectionStartChanged: root.updateScroll()
-                        onSelectionEndChanged: root.updateScroll()
-
-                        onTextEdited: {
-                            if (root.isEditing) {
-                                root.searchText = text;
-                                root.syncModel();
-                                if (typeof Sounds !== "undefined") {
-                                    Sounds.playSfx(root.keySound);
-                                }
-                                root.filterData();
-                                root.searchChanged(text);
-                                if (root.isPathSelector) {
-                                    pathScanTimer.restart();
-                                }
-                            }
-                        }
-
-                        onActiveFocusChanged: {
-                            if (!activeFocus && !root.isOpen) {
-                                root.stopEditing();
-                            }
-                        }
-
-                        Keys.onEscapePressed: {
-                            root.hidePopup();
+                    onInputActiveFocusChanged: function(active) {
+                        if (!active && !root.isOpen) {
                             root.stopEditing();
                         }
+                    }
 
-                        onAccepted: {
-                            let textVal = innerInput.text.trim();
-                            let home = (typeof Quickshell !== "undefined" && Quickshell.env("HOME")) ? Quickshell.env("HOME") : "";
-                            let expandedVal = textVal;
-                            if (expandedVal.startsWith("~") && home !== "") {
-                                expandedVal = home + expandedVal.slice(1);
-                            }
+                    onEscapePressed: {
+                        root.hidePopup();
+                        root.stopEditing();
+                    }
 
-                            if (root.filteredOptions.length > 0) {
-                                let actualValue = root.filteredOptions[0];
-                                let actualIndex = root.options.indexOf(actualValue);
-                                if (actualIndex !== -1) {
-                                    if (root.currentIndex !== actualIndex) {
-                                        root.currentIndex = actualIndex;
-                                        root.valueChanged(actualIndex, actualValue);
-                                    }
-                                    root.selected(actualIndex, actualValue);
+                    onAccepted: function(finalText) {
+                        let textVal = finalText.trim();
+                        if (root.filteredOptions.length > 0) {
+                            let actualValue = root.filteredOptions[0];
+                            let actualIndex = root.options.indexOf(actualValue);
+                            if (actualIndex !== -1) {
+                                if (root.currentIndex !== actualIndex) {
+                                    root.currentIndex = actualIndex;
+                                    root.valueChanged(actualIndex, actualValue);
                                 }
-                            } else if (root.isPathSelector && textVal !== "") {
-                                let opts = root.options.slice();
-                                let idx = opts.indexOf(expandedVal);
-                                if (idx === -1) {
-                                    opts.unshift(expandedVal);
-                                    root.options = opts;
-                                    idx = 0;
-                                }
-                                if (root.currentIndex !== idx) {
-                                    root.currentIndex = idx;
-                                    root.valueChanged(idx, expandedVal);
-                                }
-                                root.selected(idx, expandedVal);
+                                root.selected(actualIndex, actualValue);
                             }
-                            root.hidePopup();
-                            root.stopEditing();
+                        } else if (root.isPathSelector && textVal !== "") {
+                            let expandedVal = (textVal.startsWith("~") && Caching.home !== "") ? (Caching.home + textVal.slice(1)) : textVal;
+                            root.selectOrInsertOption(expandedVal);
+                        } else if (root.allowCustomValue && textVal !== "") {
+                            root.customAccepted(textVal);
                         }
+                        root.hidePopup();
+                        root.stopEditing();
                     }
                 }
             }
 
-            Item {
+            ChevronIcon {
                 id: chevronWrapper
                 Layout.alignment: Qt.AlignVCenter
                 implicitWidth: root.iconSize
                 implicitHeight: root.iconSize
                 width: root.iconSize
                 height: root.iconSize
-
+                color: root.iconColor
                 rotation: root.isOpen ? 90 : -90
                 Behavior on rotation { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
-
-                property real armThickness: Math.max(1.5, (root.iconSize / 0.38) * 0.048)
-                property real armLength: Math.max(5, (root.iconSize / 0.38) * 0.19)
-                property real dotSize: armThickness
-
-                Item {
-                    id: pivotNode
-                    x: (chevronWrapper.width - (chevronWrapper.armLength * 0.766)) / 2
-                    y: chevronWrapper.height / 2
-                    width: 0
-                    height: 0
-
-                    Rectangle {
-                        anchors.centerIn: parent
-                        width: chevronWrapper.dotSize
-                        height: chevronWrapper.dotSize
-                        radius: width / 2
-                        color: root.iconColor
-                        antialiasing: true
-                        Behavior on color { ColorAnimation { duration: 150 } }
-                    }
-
-                    Rectangle {
-                        x: 0
-                        y: -chevronWrapper.armThickness / 2
-                        width: chevronWrapper.armLength
-                        height: chevronWrapper.armThickness
-                        radius: height / 2
-                        transformOrigin: Item.Left
-                        rotation: 40
-                        color: root.iconColor
-                        antialiasing: true
-                        Behavior on color { ColorAnimation { duration: 150 } }
-                    }
-
-                    Rectangle {
-                        x: 0
-                        y: -chevronWrapper.armThickness / 2
-                        width: chevronWrapper.armLength
-                        height: chevronWrapper.armThickness
-                        radius: height / 2
-                        transformOrigin: Item.Left
-                        rotation: -40
-                        color: root.iconColor
-                        antialiasing: true
-                        Behavior on color { ColorAnimation { duration: 150 } }
-                    }
-                }
             }
         }
 
@@ -730,8 +461,8 @@ Item {
 
         Popup {
             id: popup
-        parent: root
-        readonly property bool listHovered: listHover.hovered
+            parent: root
+            readonly property bool listHovered: listHover.hovered
             y: root.openUpward ? -(popup.height + 6) : root.height + 6
             width: root.width
             padding: root.popupPadding
@@ -775,7 +506,7 @@ Item {
 
             onClosed: {
                 root.closed();
-                if (!innerInput.activeFocus) {
+                if (!searchField.hasFocus) {
                     root.stopEditing();
                 }
             }

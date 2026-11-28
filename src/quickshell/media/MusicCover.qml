@@ -162,11 +162,11 @@ Item {
                 border.color: (root.targetPlayer && root.targetPlayer.isPlaying) ? (ThemeBackend.mauve || "#cba6f7") : (ThemeBackend.overlay0 || "#6c7086")
                 Behavior on border.color { ColorAnimation { duration: 500 } }
 
-                NumberAnimation on rotation {
-                    from: 0; to: 360; duration: 25000
-                    loops: Animation.Infinite
-                    running: root.active
-                    paused: root.active && !(root.targetPlayer && root.targetPlayer.isPlaying)
+                FrameAnimation {
+                    running: root.active && Boolean(root.targetPlayer && root.targetPlayer.isPlaying)
+                    onTriggered: {
+                        vinylBase.rotation = (vinylBase.rotation + Math.min(frameTime, 0.1) * (360.0 / 25.0)) % 360.0;
+                    }
                 }
 
                 Item {
@@ -200,6 +200,8 @@ Item {
                                 id: artImgA
                                 anchors.fill: parent
                                 fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                                sourceSize: Qt.size(Math.max(1, Math.ceil(Math.max(coverHost.width, coverHost.Layout.preferredWidth) * 2 * (Screen.devicePixelRatio || 1))), Math.max(1, Math.ceil(Math.max(coverHost.height, coverHost.Layout.preferredHeight) * 2 * (Screen.devicePixelRatio || 1))))
                                 opacity: artCrossfader.showingA && status === Image.Ready ? 1.0 : 0.0
                                 Behavior on opacity { NumberAnimation { duration: 650; easing.type: Easing.InOutQuad } }
                             }
@@ -208,6 +210,8 @@ Item {
                                 id: artImgB
                                 anchors.fill: parent
                                 fillMode: Image.PreserveAspectCrop
+                                asynchronous: true
+                                sourceSize: Qt.size(Math.max(1, Math.ceil(Math.max(coverHost.width, coverHost.Layout.preferredWidth) * 2 * (Screen.devicePixelRatio || 1))), Math.max(1, Math.ceil(Math.max(coverHost.height, coverHost.Layout.preferredHeight) * 2 * (Screen.devicePixelRatio || 1))))
                                 opacity: !artCrossfader.showingA && status === Image.Ready ? 1.0 : 0.0
                                 Behavior on opacity { NumberAnimation { duration: 650; easing.type: Easing.InOutQuad } }
                             }

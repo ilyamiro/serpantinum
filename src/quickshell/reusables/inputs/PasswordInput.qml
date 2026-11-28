@@ -34,11 +34,12 @@ FocusScope {
     property int maximumLength: -1
     property var validator: null
 
-    property bool isRevealed: (typeof Config !== "undefined") ? Config.getSetting("inputs.passwordReveal", false) : false
+    property bool persistReveal: true
+    property bool isRevealed: (persistReveal && typeof Config !== "undefined") ? Config.getSetting("inputs.passwordReveal", false) : false
     property bool _isUpdatingFromConfig: false
 
     Connections {
-        target: (typeof Config !== "undefined") ? Config : null
+        target: (root.persistReveal && typeof Config !== "undefined") ? Config : null
         function onSettingsLoaded() {
             let saved = Config.getSetting("inputs.passwordReveal", false);
             if (root.isRevealed !== saved) {
@@ -60,11 +61,12 @@ FocusScope {
 
     property int horizontalAlignment: I18n.rtl ? TextInput.AlignRight : TextInput.AlignLeft
     property int charSlotWidth: -1
-    property int charSpacing: 2
+    property int charSpacing: 1
     property alias symbolSpacing: root.charSpacing
-    readonly property real dotSize: Math.round(root.implicitHeight * 0.44)
-    readonly property real charSlotStep: (root.charSlotWidth > 0 ? root.charSlotWidth : (root.revealProgress > 0.5 ? globalCharMetrics.width : root.dotSize)) + root.charSpacing
-    property real scrollOffset: 0
+    readonly property real dotSize: Math.round(root.implicitHeight * 0.50)
+    readonly property real charSlotStep: charField.charSlotStep
+    readonly property real scrollOffset: charField.scrollOffset
+    property int activeShapeIdx: 0
 
     property bool enabled: true
     property bool hasError: false
@@ -75,7 +77,7 @@ FocusScope {
     readonly property bool showError: (root.hasError && !root._statusDismissed) || root._markedError
     readonly property bool showSuccess: (root.hasSuccess && !root._statusDismissed) || root._markedSuccess
     property bool isBusy: false
-    readonly property bool hasFocus: innerInput.activeFocus || root.activeFocus
+    readonly property bool hasFocus: charField.hasFocus || root.activeFocus
     property bool action_highlight: false
     property bool isHoveredOrHighlighted: mainHover.hovered || root.action_highlight
     property bool isWidgetVisible: true
@@ -112,35 +114,25 @@ FocusScope {
     }
 
     function clear() {
-        if (innerInput.text !== "" && typeof Sounds !== "undefined") {
+        if (charField.inputText !== "" && typeof Sounds !== "undefined") {
             Sounds.playSfx(root.keySound);
         }
-        innerInput.text = "";
+        charField.clear();
         root.text = "";
-        charModel.clear();
-        root.scrollOffset = 0;
         root._markedSuccess = false;
         root._markedError = false;
         root.cleared();
     }
 
     function forceInputFocus() {
-        innerInput.forceActiveFocus();
+        charField.forceInputFocus();
     }
 
     function insertText(newStr) {
         if (!root.enabled || root.isBusy) return;
-        let pos = innerInput.cursorPosition;
-        let cur = innerInput.text;
-        let updated = cur.slice(0, pos) + newStr + cur.slice(pos);
-        if (root.maximumLength > 0 && updated.length > root.maximumLength) {
-            updated = updated.slice(0, root.maximumLength);
-        }
-        innerInput.text = updated;
-        innerInput.cursorPosition = Math.min(updated.length, pos + newStr.length);
-        root.text = updated;
         root.dismissStatus();
-        syncModel();
+        let updated = charField.insertText(newStr);
+        root.text = updated;
         if (typeof Sounds !== "undefined") {
             Sounds.playSfx(root.keySound);
         }
@@ -178,7 +170,7 @@ FocusScope {
 
     function verify(validatorFn) {
         if (typeof validatorFn === "function") {
-            var isValid = validatorFn(innerInput.text);
+            var isValid = validatorFn(charField.inputText);
             if (isValid) {
                 root.markSuccess();
             } else {
@@ -190,73 +182,22 @@ FocusScope {
     }
 
     function submit() {
-        root.accepted(innerInput.text);
+        root.accepted(charField.inputText);
         root.triggered();
     }
 
-    function computeRowX(rowWidth, fieldWidth) {
-        switch (root.horizontalAlignment) {
-            case TextInput.AlignHCenter:
-            case Qt.AlignHCenter:
-                return (fieldWidth - rowWidth) / 2;
-            case TextInput.AlignRight:
-            case Qt.AlignRight:
-                return fieldWidth - rowWidth;
-            default:
-                return 0;
-        }
-    }
-
     function updateScroll() {
-        let totalW = charRow.contentWidth;
-        let visibleW = fieldArea.width;
-
-        if (visibleW <= 0) {
-            return;
-        }
-
-        if (totalW <= visibleW) {
-            switch (root.horizontalAlignment) {
-                case TextInput.AlignHCenter:
-                case Qt.AlignHCenter:
-                    root.scrollOffset = (visibleW - totalW) / 2;
-                    break;
-                case TextInput.AlignRight:
-                case Qt.AlignRight:
-                    root.scrollOffset = visibleW - totalW;
-                    break;
-                default:
-                    root.scrollOffset = 0;
-                    break;
-            }
-            return;
-        }
-
-        let curX = innerInput.cursorPosition * root.charSlotStep;
-        let minOffset = visibleW - totalW;
-        let maxOffset = 0;
-        let margin = 4;
-        let curScreenX = curX + root.scrollOffset;
-
-        if (curScreenX < margin) {
-            root.scrollOffset = Math.min(maxOffset, Math.max(minOffset, margin - curX));
-        } else if (curScreenX > visibleW - margin - 2) {
-            root.scrollOffset = Math.min(maxOffset, Math.max(minOffset, visibleW - margin - 2 - curX));
-        } else {
-            root.scrollOffset = Math.min(maxOffset, Math.max(minOffset, root.scrollOffset));
-        }
+        charField.updateScroll();
     }
-
-    onHorizontalAlignmentChanged: updateScroll()
 
     onRevealProgressChanged: {
-        updateScroll();
+        charField.updateScroll();
         lockButton.requestPaint();
     }
 
     onIsRevealedChanged: {
         submitButton.triggerSpin();
-        if (root._isUpdatingFromConfig) return;
+        if (!root.persistReveal || root._isUpdatingFromConfig) return;
         if (typeof Config !== "undefined") {
             Config.setSetting("inputs.passwordReveal", root.isRevealed);
         }
@@ -278,9 +219,8 @@ FocusScope {
     }
 
     onTextChanged: {
-        if (innerInput.text !== root.text) {
-            innerInput.text = root.text;
-            syncModel();
+        if (charField.text !== root.text) {
+            charField.text = root.text;
         }
         if (glass.active) typePulseAnim.restart();
     }
@@ -311,25 +251,6 @@ FocusScope {
         lockButton.requestPaint();
     }
 
-    function syncModel() {
-        let str = innerInput.text;
-        let minLen = Math.min(str.length, charModel.count);
-        let matchLen = 0;
-
-        while (matchLen < minLen && str[matchLen] === charModel.get(matchLen).glyph) {
-            matchLen++;
-        }
-
-        while (charModel.count > matchLen) {
-            charModel.remove(charModel.count - 1);
-        }
-
-        for (let i = matchLen; i < str.length; i++) {
-            charModel.append({ glyph: str[i] });
-        }
-        updateScroll();
-    }
-
     SequentialAnimation {
         id: shakeAnim
         NumberAnimation { target: shakeT; property: "x"; from: 0; to: -6; duration: 50 }
@@ -343,17 +264,6 @@ FocusScope {
         id: focusPopAnim
         NumberAnimation { target: root; property: "focusPop"; to: 1.02; duration: 120; easing.type: Easing.OutQuad }
         NumberAnimation { target: root; property: "focusPop"; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
-    }
-
-    TextMetrics {
-        id: globalCharMetrics
-        font.family: root.fontFamily
-        font.pixelSize: root.fontPixelSize
-        text: "0"
-    }
-
-    ListModel {
-        id: charModel
     }
 
     HoverHandler {
@@ -384,7 +294,7 @@ FocusScope {
             opacity: root.enabled ? 1.0 : 0.5
             readonly property color stateColor: {
                 if (root.hasFocus) return root.focusColor;
-                if (innerInput.text.length > 0) return root.activeColor;
+                if (charField.inputText.length > 0) return root.activeColor;
                 if (root.isHoveredOrHighlighted) return root.hoverColor;
                 return root.baseColor;
             }
@@ -636,16 +546,13 @@ FocusScope {
                     NumberAnimation { target: submitButton; property: "popScale"; to: 1.0; duration: 400; easing.type: Easing.OutQuint }
                 }
 
-                Item {
+                ChevronIcon {
                     id: chevronWrapper
                     anchors.centerIn: parent
                     width: submitButton.size * 0.38
                     height: submitButton.size * 0.38
                     rotation: I18n.rtl ? 0 : 180
-
-                    property real armThickness: Math.max(1.5, submitButton.size * 0.048)
-                    property real armLength: Math.max(5, submitButton.size * 0.19)
-                    property real dotSize: armThickness
+                    color: root.baseColor
 
                     NumberAnimation {
                         id: chevronSpinAnim
@@ -655,50 +562,6 @@ FocusScope {
                         to: I18n.rtl ? 360 : 540
                         duration: 400
                         easing.type: Easing.OutCubic
-                    }
-
-                    Item {
-                        id: pivotNode
-                        x: (chevronWrapper.width - (chevronWrapper.armLength * 0.766)) / 2
-                        y: chevronWrapper.height / 2
-                        width: 0
-                        height: 0
-
-                        Rectangle {
-                            anchors.centerIn: parent
-                            width: chevronWrapper.dotSize
-                            height: chevronWrapper.dotSize
-                            radius: width / 2
-                            color: root.baseColor
-                            antialiasing: true
-                            Behavior on color { ColorAnimation { duration: 150 } }
-                        }
-
-                        Rectangle {
-                            x: 0
-                            y: -chevronWrapper.armThickness / 2
-                            width: chevronWrapper.armLength
-                            height: chevronWrapper.armThickness
-                            radius: height / 2
-                            transformOrigin: Item.Left
-                            rotation: 40
-                            color: root.baseColor
-                            antialiasing: true
-                            Behavior on color { ColorAnimation { duration: 150 } }
-                        }
-
-                        Rectangle {
-                            x: 0
-                            y: -chevronWrapper.armThickness / 2
-                            width: chevronWrapper.armLength
-                            height: chevronWrapper.armThickness
-                            radius: height / 2
-                            transformOrigin: Item.Left
-                            rotation: -40
-                            color: root.baseColor
-                            antialiasing: true
-                            Behavior on color { ColorAnimation { duration: 150 } }
-                        }
                     }
                 }
 
@@ -727,8 +590,8 @@ FocusScope {
             }
         }
 
-        Item {
-            id: fieldArea
+        AnimatedCharField {
+            id: charField
             anchors.left: !I18n.rtl ? (root.showLockIcon ? lockButton.right : parent.left) : (root.showSubmitButton ? submitButton.right : parent.left)
             anchors.leftMargin: !I18n.rtl ? (root.showLockIcon ? 6 : root.horizontalPadding) : (root.showSubmitButton ? 6 : root.horizontalPadding)
             anchors.right: !I18n.rtl ? (root.showSubmitButton ? submitButton.left : parent.right) : (root.showLockIcon ? lockButton.left : parent.right)
@@ -737,185 +600,215 @@ FocusScope {
             anchors.bottom: parent.bottom
             anchors.topMargin: root.verticalPadding
             anchors.bottomMargin: root.verticalPadding
-            clip: true
-            onWidthChanged: root.updateScroll()
 
-            Text {
-                id: placeholderLabel
-                text: root.placeholderText
-                font.family: root.fontFamily
-                font.pixelSize: root.fontPixelSize
-                color: root.subTextColor
-                opacity: (innerInput.text.length === 0 && !root.hasFocus && charModel.count === 0) ? 0.45 : 0.0
-                x: root.computeRowX(implicitWidth, fieldArea.width)
-                anchors.verticalCenter: parent.verticalCenter
-                Behavior on opacity { NumberAnimation { duration: 150 } }
+            text: root.text
+            placeholderText: root.placeholderText
+            fontFamily: root.fontFamily
+            fontPixelSize: root.fontPixelSize
+            textColor: root.textColor
+            placeholderColor: root.subTextColor
+            placeholderOpacity: 0.45
+            hidePlaceholderOnFocus: true
+            selectionColor: root.activeSignalColor
+            caretColor: root.caretColor
+            horizontalAlignment: root.horizontalAlignment
+            charSlotWidth: root.charSlotWidth
+            customSlotWidth: root.charSlotWidth > 0 ? root.charSlotWidth : (root.revealProgress > 0.5 ? measuredCharWidth : root.dotSize)
+            charSpacing: root.charSpacing
+            maximumLength: root.maximumLength
+            validator: root.validator
+            enabled: root.enabled && !root.isBusy
+            inputFocus: true
+            showCaret: root.showCaret
+            caretVisible: root.showCaret && (root.hasFocus || root.action_highlight) && (root.isRevealed || root.revealProgress > 0.01)
+            caretBlinkRunning: caretVisible && root.isWidgetVisible
+            caretHeightFactor: 1.3
+            caretMoveDuration: 150
+            caretBlinkDuration: 120
+            caretBlinkPause: 380
+            actionHighlight: root.action_highlight
+            isWidgetVisible: root.isWidgetVisible
+            blockCopy: true
+            blockAutoRepeatExceptBackspace: true
+            suffixOnlySync: true
+            entranceDuration: 250
+            entranceOvershoot: 1.35
+            exitDuration: 130
+
+            onLengthGrew: root.activeShapeIdx = (root.activeShapeIdx + 1) % 8
+
+            onTextEdited: function(newText) {
+                root.dismissStatus();
+                root.text = newText;
+                if (typeof Sounds !== "undefined") {
+                    Sounds.playSfx(root.keySound);
+                }
+                root.textEdited(newText);
             }
 
-            Rectangle {
-                id: selectionHighlight
-                readonly property int selMin: Math.min(innerInput.selectionStart, innerInput.selectionEnd)
-                readonly property int selMax: Math.max(innerInput.selectionStart, innerInput.selectionEnd)
-                readonly property bool hasSelection: selMax > selMin
+            onAccepted: root.submit()
 
-                anchors.verticalCenter: parent.verticalCenter
-                height: Math.min(parent.height - 6, root.fontPixelSize * 1.6)
-                radius: 4
-                color: root.activeSignalColor
-                opacity: hasSelection ? 0.28 : 0.0
-
-                x: root.scrollOffset + (selMin * root.charSlotStep) - 2
-                width: hasSelection ? ((selMax - selMin) * root.charSlotStep - root.charSpacing + 4) : 0
-
-                Behavior on opacity { NumberAnimation { duration: 120; easing.type: Easing.OutCubic } }
-                Behavior on x { NumberAnimation { duration: 80; easing.type: Easing.OutQuad } }
-                Behavior on width { NumberAnimation { duration: 80; easing.type: Easing.OutQuad } }
-            }
-
-            ListView {
-                id: charRow
-                height: parent.height
-                anchors.verticalCenter: parent.verticalCenter
-                orientation: ListView.Horizontal
-                interactive: false
-                boundsBehavior: Flickable.StopAtBounds
-                spacing: root.charSpacing
-                width: contentWidth
-                x: root.scrollOffset
-                model: charModel
-
-                onContentWidthChanged: root.updateScroll()
-
-                Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-
-                add: Transition {
-                    ParallelAnimation {
-                        NumberAnimation {
-                            property: "scale"
-                            from: 0.60
-                            to: 1.0
-                            duration: 250
-                            easing.type: Easing.OutBack
-                            easing.overshoot: 1.35
-                        }
-                        NumberAnimation {
-                            property: "y"
-                            from: 3.5
-                            to: 0
-                            duration: 250
-                            easing.type: Easing.OutBack
-                            easing.overshoot: 1.25
-                        }
-                        NumberAnimation {
-                            property: "rotation"
-                            from: -9
-                            to: 0
-                            duration: 250
-                            easing.type: Easing.OutCubic
-                        }
-                        NumberAnimation {
-                            property: "opacity"
-                            from: 0
-                            to: 1
-                            duration: 150
-                            easing.type: Easing.OutQuad
-                        }
-                    }
-                }
-
-                remove: Transition {
-                    ParallelAnimation {
-                        NumberAnimation {
-                            property: "scale"
-                            to: 0.0
-                            duration: 130
-                            easing.type: Easing.InCubic
-                        }
-                        NumberAnimation {
-                            property: "y"
-                            to: 2
-                            duration: 130
-                            easing.type: Easing.InCubic
-                        }
-                        NumberAnimation {
-                            property: "rotation"
-                            to: 6
-                            duration: 130
-                            easing.type: Easing.InCubic
-                        }
-                        NumberAnimation {
-                            property: "opacity"
-                            to: 0
-                            duration: 100
-                            easing.type: Easing.InQuad
-                        }
-                    }
-                }
-
-                displaced: Transition {
-                    NumberAnimation {
-                        properties: "x,y"
-                        duration: 160
-                        easing.type: Easing.OutCubic
-                    }
-                }
-
-                delegate: Item {
+            charDelegate: Component {
+                Item {
                     id: charSlot
                     required property int index
                     required property string glyph
 
-                    property real baseWidth: root.charSlotWidth > 0
-                        ? root.charSlotWidth
-                        : (root.revealProgress > 0.5
-                            ? globalCharMetrics.width
-                            : root.dotSize)
+                    readonly property bool isLastChar: charSlot.index === charField.charCount - 1
+                    readonly property bool morphActive: root.isWidgetVisible && root.visible && !root.isRevealed && root.revealProgress < 0.99
+                    readonly property var activeShapes: [8, 5, 9, 6, 10, 7, 11, 4]
 
-                    width: baseWidth
-                    height: charRow.height
+                    property bool ready: false
+                    property real shapeFrom: 0
+                    property real shapeTo: isLastChar ? activeShapes[root.activeShapeIdx] : 0
+                    property real shapeBlend: 1.0
+                    property real spinAngle: 0.0
+                    property real idleSpin: 0.0
+
+                    Behavior on shapeBlend {
+                        id: blendBehavior
+                        enabled: charSlot.ready
+                        SpringAnimation {
+                            spring: 4.4
+                            damping: 0.56
+                            mass: 1.0
+                            epsilon: 0.0008
+                        }
+                    }
+
+                    Behavior on spinAngle {
+                        enabled: charSlot.ready
+                        SpringAnimation {
+                            spring: 4.2
+                            damping: 0.58
+                            mass: 1.0
+                            epsilon: 0.01
+                        }
+                    }
+
+                    NumberAnimation on idleSpin {
+                        from: 0.0
+                        to: 360.0
+                        duration: 18000
+                        loops: Animation.Infinite
+                        running: charSlot.isLastChar && charSlot.morphActive
+                    }
+
+                    NumberAnimation {
+                        id: activeMorphAnim
+                        target: charSlot
+                        property: "shapeBlend"
+                        from: 0.0
+                        to: 1.0
+                        duration: 950
+                        easing.type: Easing.InOutSine
+                    }
+
+                    function morphTo(nextShape, turnDeg, smooth) {
+                        if (nextShape === charSlot.shapeTo) return;
+                        activeMorphAnim.stop();
+                        blendBehavior.enabled = false;
+                        charSlot.shapeFrom = charSlot.shapeTo;
+                        charSlot.shapeBlend = 0.0;
+                        charSlot.shapeTo = nextShape;
+                        if (smooth && charSlot.ready) {
+                            activeMorphAnim.start();
+                        } else {
+                            blendBehavior.enabled = charSlot.ready;
+                            charSlot.shapeBlend = 1.0;
+                        }
+                        if (charSlot.ready && turnDeg !== 0) {
+                            if (charSlot.isLastChar) {
+                                charSlot.spinAngle += turnDeg;
+                            } else {
+                                let total = charSlot.spinAngle + charSlot.idleSpin;
+                                let snapped = Math.round((total + turnDeg) / 90.0) * 90.0;
+                                charSlot.spinAngle = snapped - charSlot.idleSpin;
+                            }
+                        }
+                    }
+
+                    onIsLastCharChanged: {
+                        let target = isLastChar ? activeShapes[root.activeShapeIdx] : 0;
+                        if (!ready) {
+                            shapeTo = target;
+                            return;
+                        }
+                        morphTo(target, 90.0, false);
+                    }
+
+                    Timer {
+                        id: activeMorphTimer
+                        interval: 2800
+                        repeat: true
+                        running: charSlot.ready && charSlot.isLastChar && charSlot.morphActive
+                        onTriggered: {
+                            let step = 1 + Math.floor(Math.random() * (charSlot.activeShapes.length - 1));
+                            root.activeShapeIdx = (root.activeShapeIdx + step) % charSlot.activeShapes.length;
+                            charSlot.morphTo(charSlot.activeShapes[root.activeShapeIdx], 0.0, true);
+                        }
+                    }
+
+                    Component.onCompleted: {
+                        if (root.isRevealed || !isLastChar) {
+                            let target = isLastChar ? activeShapes[root.activeShapeIdx] : 0;
+                            shapeFrom = target;
+                            shapeTo = target;
+                            shapeBlend = 1.0;
+                            spinAngle = 0.0;
+                            Qt.callLater(function() {
+                                if (!charSlot) return;
+                                charSlot.ready = true;
+                            });
+                        } else {
+                            shapeFrom = 0;
+                            shapeTo = activeShapes[root.activeShapeIdx];
+                            shapeBlend = 0.0;
+                            spinAngle = -90.0;
+                            Qt.callLater(function() {
+                                if (!charSlot) return;
+                                if (!charSlot.isLastChar) {
+                                    charSlot.shapeFrom = 0;
+                                    charSlot.shapeTo = 0;
+                                    charSlot.shapeBlend = 1.0;
+                                    charSlot.spinAngle = 0.0;
+                                    charSlot.ready = true;
+                                    return;
+                                }
+                                charSlot.shapeTo = charSlot.activeShapes[root.activeShapeIdx];
+                                charSlot.ready = true;
+                                charSlot.shapeBlend = 1.0;
+                                charSlot.spinAngle = 0.0;
+                            });
+                        }
+                    }
+
+                    width: charField.resolvedSlotWidth
+                    height: charField.charListView.height
                     transformOrigin: Item.Center
 
-                    Rectangle {
+                    ShaderEffect {
                         id: charShape
                         anchors.centerIn: parent
-                        width: root.dotSize
+                        width: root.dotSize * 1.36
                         height: width
-                        radius: Math.round(width * 0.24)
 
-                        color: root.textColor
-                        antialiasing: true
-
-                        property real dotPop: 1.0
-
-                        opacity: 1.0 - root.revealProgress
-                        scale: (1.0 - root.revealProgress) * dotPop
-                        rotation: root.revealProgress * -12
-
+                        opacity: Math.max(0.0, Math.min(1.0, 1.0 - root.revealProgress))
+                        scale: Math.max(0.0, 1.0 - root.revealProgress)
                         visible: opacity > 0.01
 
-                        Component.onCompleted: {
-                            dotPop = 0.82
-                            dotPopAnim.restart()
-                        }
+                        property vector2d itemSize: Qt.vector2d(width, height)
+                        property real shapeFrom: charSlot.shapeFrom
+                        property real shapeTo: charSlot.shapeTo
+                        property real shapeBlend: charSlot.shapeBlend
+                        property real angleRad: (charSlot.spinAngle + charSlot.idleSpin - root.revealProgress * 30.0) * Math.PI / 180.0
+                        property real hoverAmt: 0.0
+                        property real activeAmt: 0.0
+                        property real glassMode: 0.0
+                        property color fillColor: root.textColor
+                        property color rimColor: root.textColor
 
-                        SequentialAnimation {
-                            id: dotPopAnim
-                            NumberAnimation {
-                                target: charShape
-                                property: "dotPop"
-                                to: 1.11
-                                duration: 110
-                                easing.type: Easing.OutBack
-                                easing.overshoot: 1.25
-                            }
-                            NumberAnimation {
-                                target: charShape
-                                property: "dotPop"
-                                to: 1.0
-                                duration: 170
-                                easing.type: Easing.OutCubic
-                            }
-                        }
+                        fragmentShader: "file://" + Caching.serpantinumDir + "/assets/shaders/widgets/workspace_morph.frag.qsb"
                     }
 
                     Text {
@@ -933,74 +826,6 @@ FocusScope {
 
                         visible: opacity > 0.01
                     }
-                }
-            }
-
-            Rectangle {
-                id: caretRect
-                width: 2
-                height: root.fontPixelSize * 1.3
-                color: root.caretColor
-                visible: root.showCaret && (root.hasFocus || root.action_highlight) && (root.isRevealed || root.revealProgress > 0.01)
-                anchors.verticalCenter: parent.verticalCenter
-                x: root.scrollOffset + (innerInput.cursorPosition * root.charSlotStep)
-
-                Behavior on x { NumberAnimation { duration: 150; easing.type: Easing.OutCubic } }
-
-                SequentialAnimation on opacity {
-                    running: root.showCaret && (root.hasFocus || root.action_highlight) && (root.isRevealed || root.revealProgress > 0.01) && root.isWidgetVisible
-                    loops: Animation.Infinite
-                    NumberAnimation { to: 0; duration: 120; easing.type: Easing.InQuad }
-                    PauseAnimation { duration: 380 }
-                    NumberAnimation { to: 1; duration: 120; easing.type: Easing.OutQuad }
-                    PauseAnimation { duration: 380 }
-                }
-            }
-
-            TextInput {
-                id: innerInput
-                anchors.fill: parent
-                focus: true
-                opacity: 0
-                color: "transparent"
-                selectionColor: "transparent"
-                selectedTextColor: "transparent"
-                selectByMouse: true
-                mouseSelectionMode: TextInput.SelectCharacters
-                horizontalAlignment: root.horizontalAlignment
-                font.family: root.fontFamily
-                font.pixelSize: root.fontPixelSize
-                enabled: root.enabled && !root.isBusy
-                maximumLength: root.maximumLength > 0 ? root.maximumLength : 32767
-                validator: root.validator
-
-                onCursorPositionChanged: root.updateScroll()
-                onSelectionStartChanged: root.updateScroll()
-                onSelectionEndChanged: root.updateScroll()
-
-                Keys.onPressed: function(event) {
-                    // Password field: only Backspace auto-repeats (see the note in lock/LockScreen.qml)
-                    if (event.isAutoRepeat && event.key !== Qt.Key_Backspace) {
-                        event.accepted = true;
-                        return;
-                    }
-                    if (event.matches(StandardKey.Copy) || (event.modifiers & Qt.ControlModifier && event.key === Qt.Key_C)) {
-                        event.accepted = true;
-                    }
-                }
-
-                onTextEdited: {
-                    root.dismissStatus();
-                    root.text = text;
-                    syncModel();
-                    if (typeof Sounds !== "undefined") {
-                        Sounds.playSfx(root.keySound);
-                    }
-                    root.textEdited(text);
-                }
-
-                onAccepted: {
-                    root.submit();
                 }
             }
         }

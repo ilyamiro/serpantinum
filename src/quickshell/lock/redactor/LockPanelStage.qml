@@ -1,6 +1,6 @@
 import QtQuick
 import "../../"
-import "../../widgets"
+import "../../reusables/canvas"
 
 Item {
     id: stage
@@ -17,6 +17,11 @@ Item {
     readonly property real panelTop: LockLayoutStore.panelY >= 0 ? LockLayoutStore.panelY : (stage.height - LockLayoutStore.panelH) / 2
     readonly property real minPanelW: Scaler.s(240)
     readonly property real minPanelH: Scaler.s(160)
+
+    property real resizeStartL: 0
+    property real resizeStartT: 0
+    property real resizeStartW: 0
+    property real resizeStartH: 0
 
     function snap(v) {
         return stage.gridEnabled ? Math.round(v / stage.gridStep) * stage.gridStep : v;
@@ -53,7 +58,7 @@ Item {
         LockLayoutStore.setPanelRect(nl, nt, panel.width, panel.height);
     }
 
-    function resizePanel(ex, ey, dx, dy, sl, st, sw, sh) {
+    function resizePanel(ex, ey, dx, dy) {
         let ins = stage.contentInsets();
         let curL = stage.panelLeft;
         let curT = stage.panelTop;
@@ -65,10 +70,10 @@ Item {
         let r = curR;
         let b = curB;
 
-        if (ex < 0) l = Math.max(0, Math.min(stage.snap(sl + dx), curL + ins.l, curR - stage.minPanelW));
-        if (ex > 0) r = Math.min(stage.width, Math.max(stage.snap(sl + sw + dx), curR - ins.r, curL + stage.minPanelW));
-        if (ey < 0) t = Math.max(0, Math.min(stage.snap(st + dy), curT + ins.t, curB - stage.minPanelH));
-        if (ey > 0) b = Math.min(stage.height, Math.max(stage.snap(st + sh + dy), curB - ins.b, curT + stage.minPanelH));
+        if (ex < 0) l = Math.max(0, Math.min(stage.snap(stage.resizeStartL + dx), curL + ins.l, curR - stage.minPanelW));
+        if (ex > 0) r = Math.min(stage.width, Math.max(stage.snap(stage.resizeStartL + stage.resizeStartW + dx), curR - ins.r, curL + stage.minPanelW));
+        if (ey < 0) t = Math.max(0, Math.min(stage.snap(stage.resizeStartT + dy), curT + ins.t, curB - stage.minPanelH));
+        if (ey > 0) b = Math.min(stage.height, Math.max(stage.snap(stage.resizeStartT + stage.resizeStartH + dy), curB - ins.b, curT + stage.minPanelH));
 
         if (l === curL && t === curT && r === curR && b === curB) return;
         stage.shiftItems(curL - l, curT - t);
@@ -136,72 +141,29 @@ Item {
         }
     }
 
-    Item {
+    SelectionFrame {
         id: panelSelection
         x: panel.x - Scaler.s(8)
         y: panel.y - Scaler.s(8)
         width: panel.width + Scaler.s(16)
         height: panel.height + Scaler.s(16)
         z: 200
-        opacity: stage.panelSelected && stage.active ? 1.0 : 0.0
-        visible: opacity > 0
-        Behavior on opacity { NumberAnimation { duration: 150 } }
+        active: stage.panelSelected && stage.active
+        handlesEnabled: true
+        aspectLocked: false
+        rot90: false
+        unit: stage.unit
+        coordinateItem: stage
 
-        SelectionOutline {
-            anchors.fill: parent
-            running: panelSelection.visible
-            lineWidth: 2 * stage.unit
+        onResizeStarted: (ex, ey) => {
+            stage.resizeStartL = stage.panelLeft;
+            stage.resizeStartT = stage.panelTop;
+            stage.resizeStartW = panel.width;
+            stage.resizeStartH = panel.height;
         }
 
-        Repeater {
-            model: [
-                { ex: -1, ey: -1 }, { ex: 1, ey: -1 }, { ex: -1, ey: 1 }, { ex: 1, ey: 1 },
-                { ex: 0, ey: -1 }, { ex: 0, ey: 1 }, { ex: -1, ey: 0 }, { ex: 1, ey: 0 }
-            ]
-
-            delegate: MouseArea {
-                id: hit
-
-                readonly property int ex: modelData ? modelData.ex : 0
-                readonly property int ey: modelData ? modelData.ey : 0
-                readonly property bool corner: hit.ex !== 0 && hit.ey !== 0
-                readonly property real u: stage.unit
-
-                property real startMX
-                property real startMY
-                property real startL
-                property real startT
-                property real startW
-                property real startH
-
-                enabled: panelSelection.visible
-                width: hit.corner ? 24 * hit.u : (hit.ex === 0 ? panelSelection.width - 36 * hit.u : 16 * hit.u)
-                height: hit.corner ? 24 * hit.u : (hit.ey === 0 ? panelSelection.height - 36 * hit.u : 16 * hit.u)
-                x: hit.ex < 0 ? -hit.width / 2 : (hit.ex > 0 ? panelSelection.width - hit.width / 2 : 18 * hit.u)
-                y: hit.ey < 0 ? -hit.height / 2 : (hit.ey > 0 ? panelSelection.height - hit.height / 2 : 18 * hit.u)
-                hoverEnabled: true
-                preventStealing: true
-                cursorShape: {
-                    if (hit.corner) return hit.ex === hit.ey ? Qt.SizeFDiagCursor : Qt.SizeBDiagCursor;
-                    return hit.ey !== 0 ? Qt.SizeVerCursor : Qt.SizeHorCursor;
-                }
-
-                onPressed: (mouse) => {
-                    let p = mapToItem(stage, mouse.x, mouse.y);
-                    startMX = p.x;
-                    startMY = p.y;
-                    startL = stage.panelLeft;
-                    startT = stage.panelTop;
-                    startW = panel.width;
-                    startH = panel.height;
-                }
-
-                onPositionChanged: (mouse) => {
-                    if (!pressed) return;
-                    let p = mapToItem(stage, mouse.x, mouse.y);
-                    stage.resizePanel(hit.ex, hit.ey, p.x - startMX, p.y - startMY, startL, startT, startW, startH);
-                }
-            }
+        onResizeMoved: (ex, ey, dx, dy, modifiers) => {
+            stage.resizePanel(ex, ey, dx, dy);
         }
     }
 }

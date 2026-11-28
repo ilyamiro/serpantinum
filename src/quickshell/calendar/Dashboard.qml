@@ -2,41 +2,32 @@ import QtQuick
 import QtQuick.Window
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Hyprland
 import "../"
 import "../reusables"
 import "."
 
-PanelWindow {
+ShellOverlayWindow {
     id: dashboardWindow
 
     screen: DashboardController.screen
 
     WlrLayershell.namespace: "qs-dashboard"
-    WlrLayershell.layer: WlrLayer.Overlay
-    focusable: dashboardWindow.isOpen
-    exclusionMode: ExclusionMode.Ignore
-    color: "transparent"
+    overlayOpen: DashboardController.isVisible
+    carveBarHole: true
+    barHoleThickness: SurfaceRegistry.barInset
+    dismissOnOutsideClick: true
+    focusTarget: content
+    focusRetryInterval: 60
+    maxFocusRetries: 4
 
-    mask: Region { item: topBarHole; intersection: Intersection.Xor }
+    onOutsideClicked: dashboardWindow.closeDashboard()
+    onEscapeDismissed: dashboardWindow.closeDashboard()
 
-    anchors {
-        top: true
-        bottom: true
-        left: true
-        right: true
-    }
-
-    function s(val) {
-        return (typeof Scaler !== "undefined" && Scaler.s) ? Scaler.s(val) : val;
-    }
-
-    property bool isOpen: DashboardController.isVisible
-    property int configRevision: 0
+    readonly property bool isOpen: DashboardController.isVisible
 
     SpringProgress {
         id: reveal
-        open: dashboardWindow.isOpen
+        open: dashboardWindow.mountedReady && dashboardWindow.isOpen
         openDuration: dashboardWindow.barSmaller ? 750 : 700
         onActiveChanged: {
             if (!active) content.visible = false;
@@ -51,136 +42,57 @@ PanelWindow {
         DashboardController.hide();
     }
 
-    function grabInputFocus() {
-        content.forceActiveFocus();
-    }
-
-    onIsOpenChanged: {
+    function applyOpenState() {
         if (isOpen) {
             if (content.visible) content.visible = false;
             content.visible = true;
-            grabInputFocus();
-            focusRetries = 0;
-            focusTimer.restart();
+            dashboardWindow.acquireFocus();
         } else {
-            focusTimer.stop();
+            dashboardWindow.stopFocusAcquire();
         }
     }
 
-    property int focusRetries: 0
-
-    Timer {
-        id: focusTimer
-        interval: 60
-        repeat: true
-        onTriggered: {
-            dashboardWindow.grabInputFocus();
-            dashboardWindow.focusRetries++;
-            if (dashboardWindow.focusRetries >= 4) stop();
-        }
+    onIsOpenChanged: {
+        if (mountedReady) applyOpenState();
     }
 
-    Shortcut {
-        sequence: "Escape"
-        context: Qt.WindowShortcut
-        enabled: dashboardWindow.isOpen
-        onActivated: dashboardWindow.closeDashboard()
+    onMountedReadyChanged: {
+        if (mountedReady && dashboardWindow.isOpen) dashboardWindow.applyOpenState();
     }
 
     Connections {
         target: (typeof Config !== "undefined") ? Config : null
         function onSettingsLoaded() {
             DashboardController.hide();
-            dashboardWindow.configRevision++;
         }
     }
 
-    property var rawBarSettings: {
-        let dummy = configRevision;
-        return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : ({});
-    }
+    readonly property string barStyle: SurfaceRegistry.barStyle
+    readonly property string barPosition: SurfaceRegistry.barPosition
+    readonly property real barHeight: Math.round(s(SurfaceRegistry.barRawHeight))
+    readonly property real barInset: SurfaceRegistry.barInset
 
-    property string barStyle: {
-        let dummy = configRevision;
-        if (typeof Config === "undefined" || !Config.rawSettings || !Config.rawSettings.bar) return "modular";
-        let s = Config.rawSettings.bar.style;
-        if (typeof s === "string") return s;
-        if (s && typeof s === "object") {
-            if (s.fill || s.mode === "fill") return "fill";
-            if (s.solid || s.mode === "solid") return "solid";
-        }
-        return "modular";
-    }
-
-    property string barPosition: {
-        let dummy = configRevision;
-        if (typeof Config === "undefined" || !Config.rawSettings || !Config.rawSettings.bar) return "top";
-        return Config.rawSettings.bar.position || "top";
-    }
-
-    property bool barAutohide: (rawBarSettings && rawBarSettings.autohide !== undefined) ? Boolean(rawBarSettings.autohide) : false
-
-    readonly property bool isOsdFullscreen: (typeof OsdController !== "undefined") ? Boolean(OsdController.isFullscreen) : false
-
-    readonly property bool isToplevelFullscreen: {
-        try {
-            if (typeof ToplevelManager !== "undefined" && ToplevelManager.activeToplevel && ToplevelManager.activeToplevel.fullscreen) {
-                let atl = ToplevelManager.activeToplevel;
-                if (atl.screens && atl.screens.length > 0) {
-                    return atl.screens.indexOf(dashboardWindow.screen) !== -1;
-                }
-                return true;
-            }
-        } catch (e) {}
-        return false;
-    }
-
-    readonly property bool isHyprlandFullscreen: {
-        try {
-            if (typeof Hyprland !== "undefined" && Hyprland.focusedWorkspace) {
-                return Boolean(Hyprland.focusedWorkspace.hasFullscreen || (Hyprland.activeToplevel && Hyprland.activeToplevel.fullscreen));
-            }
-        } catch (e) {}
-        return false;
-    }
-
-    readonly property bool isFullscreenActive: isOsdFullscreen || isToplevelFullscreen || isHyprlandFullscreen
-
-    readonly property bool isBarEffectivelyHidden: barAutohide || isFullscreenActive
-
-    property real barHeight: {
-        let dummy = configRevision;
-        let v = (rawBarSettings && rawBarSettings.height !== undefined) ? Number(rawBarSettings.height) : 40;
-        if (isNaN(v)) v = 40;
-        return Math.round(s(Math.max(28, Math.min(48, v))));
-    }
-
-    property real barInset: barHeight + (barStyle === "solid" && !barAutohide ? Math.round(s(4)) : 0)
-
-    readonly property bool isSolid: barStyle === "solid" || barStyle === "fill"
+    readonly property bool isSolid: SurfaceRegistry.isSolidBar || SurfaceRegistry.isFillBar
     property real cornerRadius: Math.min(ThemeBackend.borderRadius || s(12), s(28))
 
-    readonly property bool isSideBar: barPosition === "left" || barPosition === "right"
+    readonly property bool isSideBar: SurfaceRegistry.isSideBar
     readonly property real modularGap: isSolid ? 0 : Math.round(s(10))
     readonly property real edgeOffset: (isBarEffectivelyHidden ? 0 : barInset) + modularGap
 
-    readonly property var barWin: dashboardWindow.screen ? ShellSurfaces.bars[dashboardWindow.screen.name] : null
-    readonly property bool hasBarSpan: barWin ? (isSideBar ? barWin.currentBarMaxY > barWin.currentBarMinY : barWin.currentBarMaxX > barWin.currentBarMinX) : false
-    readonly property real spanOrigin: barWin ? (isSideBar ? barWin.margins.top : barWin.margins.left) : 0
-    readonly property real spanStart: hasBarSpan ? spanOrigin + (isSideBar ? barWin.currentBarMinY : barWin.currentBarMinX) : 0
-    readonly property real spanEnd: hasBarSpan ? spanOrigin + (isSideBar ? barWin.currentBarMaxY : barWin.currentBarMaxX) : (isSideBar ? height : width)
+    readonly property var barSpan: {
+        let _rev = SurfaceRegistry.windowsRevision;
+        let name = dashboardWindow.screen ? dashboardWindow.screen.name : "";
+        return SurfaceRegistry.barSpanOn(name);
+    }
+    readonly property bool hasBarSpan: barSpan.valid
+    readonly property real spanStart: hasBarSpan ? (isSideBar ? barSpan.minY : barSpan.minX) : 0
+    readonly property real spanEnd: hasBarSpan ? (isSideBar ? barSpan.maxY : barSpan.maxX) : (isSideBar ? height : width)
     readonly property real barEndRadius: Math.min(barStyle === "fill" ? s(12) : ThemeBackend.borderRadius, barHeight / 2)
-    readonly property real spanInset: barEndRadius + cornerRadius
     readonly property real panelLength: isSideBar ? panel.fullHeight : panel.fullWidth
-    readonly property bool fitsBar: isSolid && cornerRadius > 0.5 && panelLength <= spanEnd - spanStart - 2 * spanInset
 
     function fitToBar(pos, len, lo, hi) {
-        if (fitsBar) return Math.max(spanStart + spanInset, Math.min(spanEnd - spanInset - len, pos));
-        if (!isSolid || !hasBarSpan) return pos;
-        let r = barEndRadius;
-        if (pos + len > spanEnd - r && pos + len < spanEnd) pos = spanEnd - len;
-        if (pos > spanStart && pos < spanStart + r) pos = spanStart;
-        return Math.max(lo, Math.min(hi, pos));
+        let extent = hi + len + lo;
+        return SurfaceRegistry.fitToBar(pos, len, hasBarSpan ? spanStart : 0, hasBarSpan ? spanEnd : 0, extent, lo, barEndRadius, cornerRadius, isSolid);
     }
 
     readonly property bool barSmaller: !isBarEffectivelyHidden && hasBarSpan && panelLength > spanEnd - spanStart
@@ -194,46 +106,8 @@ PanelWindow {
     readonly property bool flatStart: isSolid && startOnBar
     readonly property bool flatEnd: isSolid && endOnBar
 
-    onBarPositionChanged: DashboardController.hide()
-    onBarStyleChanged: DashboardController.hide()
-
-    Item {
-        id: topBarHole
-
-        property int barThickness: dashboardWindow.barInset
-        property string bp: dashboardWindow.barPosition
-        property bool activeBar: !dashboardWindow.isBarEffectivelyHidden
-
-        x: {
-            if (!activeBar) return 0;
-            if (bp === "right") return dashboardWindow.width - barThickness;
-            return 0;
-        }
-
-        y: {
-            if (!activeBar) return 0;
-            if (bp === "bottom") return dashboardWindow.height - barThickness;
-            return 0;
-        }
-
-        width: {
-            if (!activeBar) return 0;
-            if (bp === "left" || bp === "right") return barThickness;
-            return dashboardWindow.width;
-        }
-
-        height: {
-            if (!activeBar) return 0;
-            if (bp === "top" || bp === "bottom") return barThickness;
-            return dashboardWindow.height;
-        }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        enabled: dashboardWindow.isOpen
-        onClicked: dashboardWindow.closeDashboard()
-    }
+    onBarPositionChanged: if (mountedReady) DashboardController.hide()
+    onBarStyleChanged: if (mountedReady) DashboardController.hide()
 
     AttachedSurface {
         kind: "dashboard"

@@ -22,16 +22,13 @@ PanelWindow {
         return (Quickshell.screens.length > 0 ? Quickshell.screens[0].name : "");
     }
 
-    property var targetScreen: {
-        let scr = Quickshell.screens.find(s => s.name === win.monitorName);
-        return scr || (Quickshell.screens.length > 0 ? Quickshell.screens[0] : null);
-    }
+    property var targetScreen: Compositor.screenByName(win.monitorName) || (Quickshell.screens.length > 0 ? Quickshell.screens[0] : null)
     readonly property string safeMonitorName: (monitorName || (targetScreen ? targetScreen.name : "default")).replace(/[^a-zA-Z0-9_-]/g, "_")
     screen: win.targetScreen
 
     WlrLayershell.namespace: "qs-widget-redactor-" + win.safeMonitorName
     WlrLayershell.layer: WlrLayer.Overlay
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+    WlrLayershell.keyboardFocus: Compositor.interactiveKeyboardFocus
 
     exclusionMode: ExclusionMode.Ignore
     focusable: true

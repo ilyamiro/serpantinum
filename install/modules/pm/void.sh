@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 
-PM_BOOTSTRAP_TOOLS=(fzf jq curl git pciutils unzip fontconfig xz)
+if ! declare -f os_release_get >/dev/null; then
+    source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/../os_release.sh"
+fi
+
+PM_BOOTSTRAP_TOOLS=(python3 jq curl git pciutils unzip fontconfig xz)
 
 PM_EXTRA_PKGS=(
     font-awesome6 ttf-jetbrains-mono xdg-user-dirs xdg-utils xwayland-satellite xorg-server-xwayland
@@ -13,6 +17,8 @@ PM_AUDIO_BUILD_PKGS=(gcc make pkg-config pipewire-devel)
 
 VOID_HYPRLAND_REPO_CONF="/etc/xbps.d/20-serpantinum-hyprland.conf"
 VOID_HYPRLAND_REPO_BASE="https://mirror.black-hole.dev"
+VOID_UNIVERSAL_REPO_CONF="/etc/xbps.d/10-universalrepository.conf"
+VOID_UNIVERSAL_REPO_URL="https://universalrepo.pages.dev/void"
 VOID_SDDM_SESSION_WRAPPER="/usr/local/share/serpantinum/sddm-wayland-session"
 
 declare -A PM_PKG_MAP=(
@@ -29,7 +35,8 @@ declare -A PM_PKG_MAP=(
 )
 
 declare -A PM_EXTERNAL_REPO_MAP=(
-    [hyprland]=1
+    [hyprland]=hyprland
+    [umbriel]=universal
 )
 
 declare -A PM_RELEASE_MAP=(
@@ -38,11 +45,13 @@ declare -A PM_RELEASE_MAP=(
 )
 
 pm_supports_os() {
-    [ -f /etc/os-release ] || return 1
+    local os_release
+    os_release="$(os_release_path)"
+    [ -f "$os_release" ] || return 1
     local id like
-    id=$(awk -F= '/^ID=/{gsub(/"/, "", $2); print $2}' /etc/os-release)
-    like=$(awk -F= '/^ID_LIKE=/{gsub(/"/, "", $2); print $2}' /etc/os-release)
-    case " $id $like " in
+    id="$(os_release_get ID "$os_release")"
+    like="$(os_release_get ID_LIKE "$os_release")"
+    case " ${id,,} ${like,,} " in
         *" void "*) return 0 ;;
     esac
     return 1
@@ -107,13 +116,28 @@ pm_missing_pkgs() {
     done
 }
 
-pm_enable_hyprland_repo() {
-    [ -f "$VOID_HYPRLAND_REPO_CONF" ] && return 0
-    local arch
-    arch="$(xbps-uhelper arch 2>/dev/null || uname -m)"
-    echo -e "\e[36m[ INFO ]\e[0m $(t "installer.deps.enabling_repo" "repo=$VOID_HYPRLAND_REPO_BASE/$arch")"
-    sudo mkdir -p "$(dirname "$VOID_HYPRLAND_REPO_CONF")" || return 1
-    printf 'repository=%s/%s/\n' "$VOID_HYPRLAND_REPO_BASE" "$arch" | sudo tee "$VOID_HYPRLAND_REPO_CONF" >/dev/null || return 1
+pm_enable_external_repo() {
+    local conf url entry arch
+    case "$1" in
+        hyprland)
+            arch="$(xbps-uhelper arch 2>/dev/null || uname -m)"
+            conf="$VOID_HYPRLAND_REPO_CONF"
+            url="$VOID_HYPRLAND_REPO_BASE/$arch"
+            entry="$url/"
+            ;;
+        universal)
+            conf="$VOID_UNIVERSAL_REPO_CONF"
+            url="$VOID_UNIVERSAL_REPO_URL"
+            entry="$url"
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+    [ -f "$conf" ] && return 0
+    echo -e "\e[36m[ INFO ]\e[0m $(t "installer.deps.enabling_repo" "repo=$url")"
+    sudo mkdir -p "$(dirname "$conf")" || return 1
+    printf 'repository=%s\n' "$entry" | sudo tee "$conf" >/dev/null || return 1
     sudo xbps-install -Sy
 }
 
@@ -191,7 +215,7 @@ pm_install_pkg() {
     target="${spec%%|*}"
 
     if [ -n "${PM_EXTERNAL_REPO_MAP[$pkg]:-}" ] && ! xbps-query -R "$target" &>/dev/null; then
-        pm_enable_hyprland_repo || return 1
+        pm_enable_external_repo "${PM_EXTERNAL_REPO_MAP[$pkg]}" || return 1
     fi
 
     sudo xbps-install -y "$target"

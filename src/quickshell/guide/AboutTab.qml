@@ -32,22 +32,15 @@ GuideTab {
         if (visible) activateTab();
     }
 
-    Flickable {
-        anchors.fill: parent
-        contentWidth: width
-        contentHeight: mainCol.implicitHeight + rootObj.s(32)
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-
-        ColumnLayout {
-            id: mainCol
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.leftMargin: rootObj.s(24)
-            anchors.rightMargin: rootObj.s(24)
-            anchors.topMargin: rootObj.s(16)
-            spacing: rootObj.s(24)
+    GuideScrollView {
+        rootObj: aboutTabRoot.rootObj
+        edgeMargin: 0
+        bottomEdgeMargin: 0
+        leftPadding: rootObj.s(24)
+        rightPadding: rootObj.s(24)
+        topPadding: rootObj.s(16)
+        bottomPadding: rootObj.s(32)
+        spacing: rootObj.s(24)
 
             Item {
                 id: headerArea
@@ -379,4 +372,3 @@ GuideTab {
             }
         }
     }
-}

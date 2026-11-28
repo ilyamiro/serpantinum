@@ -108,29 +108,15 @@ PanelWindow {
         }
     }
 
-    property string barStyle: {
-        let dummy = configRevision;
-        if (typeof Config === "undefined" || !Config.rawSettings || !Config.rawSettings.bar) return "modular";
-        let s = Config.rawSettings.bar.style;
-        if (typeof s === "string") return s;
-        if (s && typeof s === "object") {
-            if (s.fill || s.mode === "fill") return "fill";
-            if (s.solid || s.mode === "solid") return "solid";
-        }
-        return "modular";
-    }
+    readonly property string barStyle: SurfaceRegistry.barStyle
 
     onBarStyleChanged: {
         TrayMenuController.hide();
     }
 
-    property bool isFill: barStyle === "fill"
-    property bool isSolid: barStyle === "solid" || barStyle === "fill"
-
-    property real barHeight: {
-        let dummy = configRevision;
-        return (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar && Config.rawSettings.bar.height) ? s(Config.rawSettings.bar.height) : s(40);
-    }
+    readonly property bool isFill: SurfaceRegistry.isFillBar
+    readonly property bool isSolid: SurfaceRegistry.isSolidBar || SurfaceRegistry.isFillBar
+    readonly property real barHeight: s(SurfaceRegistry.barRawHeight)
 
     property real cornerRadius: {
         let dummy = configRevision;
@@ -152,16 +138,10 @@ PanelWindow {
     readonly property bool hasBarSpan: TrayMenuController.barSpanEnd > TrayMenuController.barSpanStart
     readonly property real spanStart: hasBarSpan ? TrayMenuController.barSpanStart : 0
     readonly property real spanEnd: hasBarSpan ? TrayMenuController.barSpanEnd : (isSideBar ? height : width)
-    readonly property real barInset: barEndRadius + cornerRadius
-    readonly property bool fitsBar: isSolid && cornerRadius > 0.5 && (isSideBar ? targetMenuHeight : menuWidth) <= spanEnd - spanStart - 2 * barInset
 
     function fitToBar(pos, len, lo, hi) {
-        if (fitsBar) return Math.max(spanStart + barInset, Math.min(spanEnd - barInset - len, pos));
-        if (!isSolid || !hasBarSpan) return pos;
-        let r = barEndRadius;
-        if (pos + len > spanEnd - r && pos + len < spanEnd) pos = spanEnd - len;
-        if (pos > spanStart && pos < spanStart + r) pos = spanStart;
-        return Math.max(lo, Math.min(hi, pos));
+        let extent = hi + len + lo;
+        return SurfaceRegistry.fitToBar(pos, len, hasBarSpan ? spanStart : 0, hasBarSpan ? spanEnd : 0, extent, lo, barEndRadius, cornerRadius, isSolid);
     }
 
     SpringProgress {
@@ -218,7 +198,7 @@ PanelWindow {
         if (!isVisible) {
             clearSubmenus();
         } else if (!activeItem) {
-            TrayMenuController.hide();
+            Qt.callLater(TrayMenuController.hide);
         }
     }
 
@@ -304,21 +284,7 @@ PanelWindow {
 
     readonly property real barEndRadius: Math.min(isFill ? s(12) : ThemeBackend.borderRadius, barHeight / 2)
     function surfaceRect(item, box) {
-        const sc = item.scale;
-        let ox = item.width / 2;
-        let oy = item.height / 2;
-        const o = item.transformOrigin;
-        if (o === Item.Top) oy = 0;
-        else if (o === Item.Bottom) oy = item.height;
-        else if (o === Item.Left) ox = 0;
-        else if (o === Item.Right) ox = item.width;
-        return {
-            x: item.x + ox * (1 - sc),
-            y: item.y + oy * (1 - sc),
-            w: item.width * sc,
-            h: item.height * sc,
-            r: [box.topLeftRadius * sc, box.topRightRadius * sc, box.bottomRightRadius * sc, box.bottomLeftRadius * sc]
-        };
+        return SurfaceRegistry.itemSurfaceRect(item, box);
     }
 
     readonly property var surfaceGroups: {

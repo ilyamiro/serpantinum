@@ -11,6 +11,8 @@ SettingsBlob {
 
     SettingsGroup {
         rootObj: section.tab.rootObj
+        settingId: "bar_style"
+        searchKeywords: "bar style appearance modular solid fill floating panel"
         icon: "󰏘"
         title: I18n.t("guide.bar.style.title")
         description: I18n.t("guide.bar.style.desc")
@@ -30,16 +32,18 @@ SettingsBlob {
             fontPixelSize: rootObj.s(11)
             onToggled: function(index) {
                 section.tab.clearPendingGroup();
-                if (index === 0) section.tab.barStyle = "modular";
-                else if (index === 1) section.tab.barStyle = "solid";
-                else if (index === 2) section.tab.barStyle = "fill";
-                section.tab.updateBarSettings();
+                let st = "modular";
+                if (index === 1) st = "solid";
+                else if (index === 2) st = "fill";
+                section.tab.setBarSetting("style", st);
             }
         }
 
         subSettings: [
             SettingsRow {
                 rootObj: section.tab.rootObj
+                settingId: "bar_distinct_pills"
+                searchKeywords: "bar pills modules separate cards capsules solid fill"
                 icon: "󰍜"
                 title: I18n.t("guide.bar.distinct_pills.title")
                 description: I18n.t("guide.bar.distinct_pills.desc")
@@ -53,8 +57,7 @@ SettingsBlob {
                     handleOffColor: ThemeBackend.text
                     onToggled: function(c) {
                         section.tab.clearPendingGroup();
-                        section.tab.distinctPills = c;
-                        section.tab.updateBarSettings();
+                        section.tab.setBarSetting("distinctPills", c);
                     }
                 }
             }

@@ -8,15 +8,15 @@ Item {
     id: root
 
     property int refreshInterval: {
-        let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
-            ? Config.getSetting("general", {})
+        let gs = (typeof Config !== "undefined" && typeof Config.peekSetting === "function")
+            ? Config.peekSetting("general", {})
             : ((typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings.general : null);
-        let mins = (gs && gs.weatherInterval !== undefined) ? Number(gs.weatherInterval) : 15;
-        return (!isNaN(mins) && mins > 0 ? mins : 15) * 60000;
+        let mins = (gs && gs.weatherInterval !== undefined) ? Number(gs.weatherInterval) : 30;
+        return (!isNaN(mins) && mins > 0 ? mins : 30) * 60000;
     }
     property string unit: {
-        let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
-            ? Config.getSetting("general", {})
+        let gs = (typeof Config !== "undefined" && typeof Config.peekSetting === "function")
+            ? Config.peekSetting("general", {})
             : ((typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings.general : null);
         return (gs && gs.weatherUnit !== undefined) ? gs.weatherUnit : "metric";
     }
@@ -76,8 +76,8 @@ Item {
         target: typeof Config !== "undefined" ? Config : null
         function onSettingsLoaded() {
             root.checkLocationUpdate();
-            let gs = (typeof Config !== "undefined" && typeof Config.getSetting === "function")
-                ? Config.getSetting("general", {})
+            let gs = (typeof Config !== "undefined" && typeof Config.peekSetting === "function")
+                ? Config.peekSetting("general", {})
                 : ((typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings.general : null);
             if (gs) {
                 if (gs.weatherInterval !== undefined) {
@@ -94,8 +94,18 @@ Item {
         }
     }
 
+    function currentLocationFingerprint() {
+        if (root.customLocation !== null) {
+            return JSON.stringify(root.customLocation);
+        }
+        if (typeof Location !== "undefined" && Location.hasValidCoordinates) {
+            return Location.fingerprint;
+        }
+        return JSON.stringify(root.activeLocation || {});
+    }
+
     function checkLocationUpdate() {
-        let fp = JSON.stringify(root.activeLocation || {});
+        let fp = root.currentLocationFingerprint();
         if (root._lastLocationFingerprint !== "" && root._lastLocationFingerprint !== fp) {
             root._lastLocationFingerprint = fp;
             root.refresh(true);
@@ -224,7 +234,7 @@ Item {
         path: Caching.cacheDir ? (Caching.getCacheDir("weather") + "/weather.json") : ""
         watchChanges: true
         onLoaded: root.parseJson(typeof weatherWatcher.text === "function" ? weatherWatcher.text() : weatherWatcher.text)
-        onFileChanged: root.parseJson(typeof weatherWatcher.text === "function" ? weatherWatcher.text() : weatherWatcher.text)
+        onFileChanged: weatherWatcher.reload()
     }
 
     Timer {
@@ -237,7 +247,11 @@ Item {
     }
 
     Component.onCompleted: {
-        root._lastLocationFingerprint = JSON.stringify(root.activeLocation || {});
+        root._lastLocationFingerprint = root.currentLocationFingerprint();
+        if (typeof Location !== "undefined" && Location.hasValidCoordinates) {
+            root.latitude = Location.coordinates.lat;
+            root.longitude = Location.coordinates.lon;
+        }
         root._lastUnit = root.unit;
         if (typeof Config !== "undefined" && Config.dataReady) {
             root.refresh(false);

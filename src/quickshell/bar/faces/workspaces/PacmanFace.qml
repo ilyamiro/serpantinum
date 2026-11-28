@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../../../reusables"
 import "../../../"
+import "."
 
 Item {
     id: pacmanFaceRoot
@@ -14,8 +15,13 @@ Item {
 
     property real pacmanSize: slotSize * 1.15
 
-    implicitWidth: pelletsLayout.implicitWidth
-    implicitHeight: pelletsLayout.implicitHeight
+    readonly property var shownIndices: widget ? widget.shownIndices : []
+    readonly property int shownCount: widget ? widget.shownCount : 0
+    readonly property int activeShownSlot: shownIndices.indexOf(activeIdx)
+    readonly property real settledLength: shownCount > 0 ? shownCount * slotSize + (shownCount - 1) * slotSpacing : 0
+
+    implicitWidth: isVertical ? slotSize : settledLength
+    implicitHeight: isVertical ? settledLength : slotSize
 
     property int activeIdx: widget ? widget.activeIndex : 0
     property int prevIdx: 0
@@ -23,7 +29,7 @@ Item {
     property real pacmanAngle: 90
 
     property real stepSize: slotSize + slotSpacing
-    property real targetPacmanPos: activeIdx >= 0 ? ((isVertical ? pelletsLayout.y : pelletsLayout.x) + activeIdx * stepSize) : 0
+    property real targetPacmanPos: activeShownSlot >= 0 ? ((isVertical ? pelletsLayout.y : pelletsLayout.x) + activeShownSlot * stepSize) : 0
     property real currentPacmanPos: targetPacmanPos
 
     Behavior on currentPacmanPos {
@@ -79,20 +85,18 @@ Item {
         spacing: pacmanFaceRoot.slotSpacing
 
         Repeater {
-            model: widget ? widget.workspaceCount : 0
+            model: widget ? (widget.slotModel || widget.workspaceCount) : 0
 
-            delegate: Item {
+            delegate: WorkspaceSlot {
                 id: pelletSlot
-                required property int index
+                widget: pacmanFaceRoot.widget
+                isVertical: pacmanFaceRoot.isVertical
+                slideDuration: 650
 
-                width: pacmanFaceRoot.slotSize
-                height: pacmanFaceRoot.slotSize
+                width: pacmanFaceRoot.isVertical ? pacmanFaceRoot.slotSize : (shown ? pacmanFaceRoot.slotSize : 0)
+                height: pacmanFaceRoot.isVertical ? (shown ? pacmanFaceRoot.slotSize : 0) : pacmanFaceRoot.slotSize
 
-                property bool isOccupied: widget ? widget.isOccupied(index) : false
-                property bool isActive: widget ? (index === widget.activeIndex) : false
-                property bool isHovered: pelletMouse.containsMouse
                 property bool isPowerPellet: index % 2 === 1
-                property bool initAnimTrigger: false
 
                 Rectangle {
                     id: dot
@@ -106,7 +110,7 @@ Item {
                     color: Qt.alpha((widget && widget.isCompact) ? ThemeBackend.surface1 : ThemeBackend.surface0, ThemeBackend.elementOpacity)
                     opacity: pelletSlot.isActive ? 0.0 : (pelletSlot.isHovered ? 1.0 : 0.85)
 
-                    scale: pelletSlot.isActive ? 0.0 : (pelletMouse.pressed ? 0.88 : (pelletSlot.isHovered ? 1.2 : 1.0))
+                    scale: pelletSlot.isActive ? 0.0 : (pelletSlot.pressed ? 0.88 : (pelletSlot.isHovered ? 1.2 : 1.0))
                     Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
                     Behavior on opacity { NumberAnimation { duration: 150 } }
                     Behavior on color { ColorAnimation { duration: 250 } }
@@ -119,7 +123,7 @@ Item {
                     width: pacmanFaceRoot.slotSize * 1.2
                     height: width * 1.1
 
-                    scale: pelletSlot.isActive ? 0.0 : (pelletMouse.pressed ? 0.88 : (pelletSlot.isHovered ? 1.15 : 1.0))
+                    scale: pelletSlot.isActive ? 0.0 : (pelletSlot.pressed ? 0.88 : (pelletSlot.isHovered ? 1.15 : 1.0))
                     opacity: pelletSlot.isActive ? 0.0 : (pelletSlot.isHovered ? 1.0 : 0.85)
 
                     Behavior on scale {
@@ -206,42 +210,6 @@ Item {
                         }
                     }
                 }
-
-                opacity: initAnimTrigger ? 1.0 : 0.0
-                transform: Translate {
-                    x: (!pacmanFaceRoot.isVertical || pelletSlot.initAnimTrigger) ? 0 : (widget ? widget.s(15) : 15)
-                    y: (pacmanFaceRoot.isVertical || pelletSlot.initAnimTrigger) ? 0 : (widget ? widget.s(15) : 15)
-                    Behavior on x { NumberAnimation { duration: 650; easing.type: Easing.OutQuint } }
-                    Behavior on y { NumberAnimation { duration: 650; easing.type: Easing.OutQuint } }
-                }
-
-                Component.onCompleted: {
-                    if (widget && widget.barWindow && !widget.barWindow.startupCascadeFinished) {
-                        animTimer.interval = index * 50 + 100;
-                        if (widget.moduleActive) animTimer.start();
-                    } else {
-                        initAnimTrigger = true;
-                    }
-                }
-
-                Timer {
-                    id: animTimer
-                    running: false
-                    repeat: false
-                    onTriggered: pelletSlot.initAnimTrigger = true
-                }
-
-                Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
-
-                MouseArea {
-                    id: pelletMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        if (widget) widget.focusWorkspace(pelletSlot.index);
-                    }
-                }
             }
         }
     }
@@ -253,7 +221,7 @@ Item {
         y: pacmanFaceRoot.isVertical ? pacmanFaceRoot.currentPacmanPos + (pacmanFaceRoot.slotSize - height) / 2 : pelletsLayout.y + (pelletsLayout.height - height) / 2
         width: pacmanFaceRoot.pacmanSize
         height: pacmanFaceRoot.pacmanSize
-        visible: widget && widget.workspaceCount > 0 && widget.activeIndex >= 0
+        visible: widget && widget.workspaceCount > 0 && pacmanFaceRoot.activeShownSlot >= 0
         opacity: visible ? 1.0 : 0.0
         Behavior on opacity { NumberAnimation { duration: 150 } }
 

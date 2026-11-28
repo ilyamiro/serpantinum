@@ -1,3 +1,85 @@
+### 2.5.4
+
+- feat(niri): add blurred and dimmed wallpaper backdrop for overview
+- fix(installer): prevent legacy telemetry from reporting target version as old version
+- feat(screenshot): add screen color picker overlay and cli command
+- feat(install): add multi-tier logo header lockup and remove preview launcher
+- feat(install): add interactive terminal UI, safe preview launcher, and full localization
+- perf(network): batch wifi/eth rebuilds, update beams once per frame and speed up list sync
+- feat(guide): add module picker with arrow navigation to bar modules tab and let widgets handle escape
+- fix(bar): center morph workspace triangle so it no longer shifts with rotation
+- fix(media): keep eq slider handles opaque over tracks when dynamic eq dims them
+- fix(media): keep seek bar progress line at full color when paused
+- feat(bar): add morph and trace workspace style variants
+- fix(bar): keep workspace pills length stable during rapid switches
+- fix(nix): drop nonexistent bars sysmon style
+- feat(bar): add ambient media style and sysmon style variants
+- perf(website): optimize LCP rendering, responsive WebP assets, and docs INP
+- fix(mango): use exclusive focus on modal overlays and prevent bottom dock/bar overlap
+
+### 2.5.3
+
+- feat(bar): add per-monitor bar display setting with reusable monitor selector
+- fix: hoist topbar IpcHandler out of Variants and guard dock screen teardown
+- feat(osd): add optional keyboard layout switch indicator
+- style(guide): shrink sidebar subtab chevrons and equalize tab horizontal margins
+- style(guide): remove keyboard shortcut hints from empty search state
+- feat(guide): improve settings search, add GuideScrollView, autosave inputs and animate copy button
+- fix(idle): stop printing idle helper inhibit logs to the console
+- feat(dock): add icons only toggle to hide app background boxes
+- feat(notifications): add per-urgency popup timeouts with optional app timeout override
+- fix(guide): restore liquid glass, rounded rows and tab-style icons in settings search
+- chore: pin serpantinum-core 0.8.0
+- feat(widgets): add history graph variant for CPU, RAM and temperature with configurable update rate
+- feat(tray): recolor tray icons into the theme accent while preserving luminance
+- feat(installer): add uninstall option that removes Serpantinum and resets app themes, Qt and SDDM
+- fix(website): fetch live GitHub commit count in star history stats
+- feat(website): sync Matugen preview themes, switch to IBM Plex Mono and polish hero and docs UI
+- style(wallpaper): use deep cubic bezier wave curve with full diagonal curvature
+- style(wallpaper): remove glowing outline from hex grid transition
+- style(wallpaper): make venetian blinds transition a clean line with no edge effects
+- style(wallpaper): make fluid wave transition a clean line with no edge effects
+- style(wallpaper): make clock sweep transition a clean line with no edge effects
+
+### 2.5.2
+
+- feat(wallpaper): remove iris transition, slow ink bleed, and add hex grid size setting
+- fix(wallpaper): restrict clock sweep seam antialiasing to the 12 o'clock boundary
+- feat(wallpaper): add fluid wave, blinds, clock, iris, hex grid, and ink bleed transitions
+- chore: pin serpantinum-core 0.7.0
+- feat: add umbriel compositor support
+- chore(aur): bundle Ski 0.6.4
+- perf(cli): skip redundant sourcing on the msg hot path (fixes #608)
+- feat(syspanel): left click keeps caffeine on indefinitely, right click starts or extends it by an hour
+- feat(bar): keep caffeine on until manually turned off when toggled from the bar
+- feat(i18n): add Serbian Cyrillic translation (#603)
+- fix(install): detect package manager from os-release so Fedora isn't routed to pacman
+- feat(i18n): add Croatian translation (#598)
+- Merge pull request #596 from gouthamkrishnap/perf/notes-large-note-lag
+- perf(quickactions): reduce notes panel lag with large notes
+- perf(weather): increase alert and weather polling intervals
+- refactor: split widget redactor into modules under widgets/redactor
+- feat: add font control to text widget
+- fix: disable keyboard input and add preview mode in widget previews
+- style: show 3 widget presets per row
+- feat: add desk clock and system monitor widget presets
+- chore(i18n): remove unused strings and translate missing keys in all languages
+- fix(installer): send nothing at all when telemetry is disabled
+- perf: improve INP responsiveness and LCP preview preloading on website
+- fix(music): keep audio toggle on the same line as its label
+- feat(website): add Reddit and Telegram icon links to the topbar
+- feat(presets): export button per preset with save picker, strip location and custom paths when sharing
+- fix(draggable): pick handle text color by handle luminance so it stays visible in light theme
+- feat(calendar): liquid glass day selection that slides between forecast days
+- fix(theme): generate colors from the frame snapshot when switching mode on a video wallpaper
+- perf(glass): evaluate the surface field once per pixel and drop arrays from the liquid glass shader
+- fix(glass): inline field distances so the GLES shader variant compiles
+- fix: pin serpantinum-core 0.6.1 and link system sqlite in the Nix build
+- perf(calendar): skip redundant weather rebuilds, update grid in place, speed up intro
+- fix(calendar): keep sun arc inside panel top when bar is on the side
+- fix(calendar): fit sun arc within panel when bar is on the side
+- chore: update flake.lock
+
 ### 2.5.1
 
 - fix(screenshot): silence missing qr_result FileView warning

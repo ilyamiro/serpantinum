@@ -13,7 +13,7 @@ Item {
     readonly property int batteryPercentage: (UPower.displayDevice.ready && root.hasBattery) ? Math.round(UPower.displayDevice.percentage * 100) : 0
     readonly property bool isCharging: root.hasBattery && UPower.displayDevice.ready && (UPower.displayDevice.state === UPowerDeviceState.Charging || UPower.displayDevice.state === UPowerDeviceState.FullyCharged)
     readonly property string stateFilePath: {
-        let base = (typeof Caching !== "undefined" && Caching.runDir) ? Caching.runDir : "/tmp/serpantinum";
+        let base = (typeof Caching !== "undefined" && Caching.runDir) ? Caching.getRunDir() : "/tmp/serpantinum";
         return base + "/battery_notif_state.json";
     }
 
@@ -36,35 +36,111 @@ Item {
     }
     onIsDesktopChanged: root.checkBattery()
 
-    FileView {
-        id: stateFileView
-        path: root.stateFilePath
-        watchChanges: false
-        onLoaded: {
-            root.loadState();
+    Component {
+        id: actionNotifComp
+        Process {
+            id: proc
+            property var callback: null
+            property bool gotExit: false
+            property bool gotStream: false
+            property string outText: ""
+
+            stdout: StdioCollector {
+                onStreamFinished: {
+                    proc.outText = text ? text.trim() : "";
+                    proc.gotStream = true;
+                    proc.finish();
+                }
+            }
+
+            onExited: {
+                proc.gotExit = true;
+                proc.finish();
+            }
+
+            function finish() {
+                if (!proc.gotExit || !proc.gotStream) return;
+                if (proc.outText !== "" && typeof proc.callback === "function") {
+                    proc.callback(proc.outText);
+                }
+                proc.destroy();
+            }
         }
     }
 
-    function loadState() {
-        try {
-            let txt = typeof stateFileView.text === "function" ? stateFileView.text() : stateFileView.text;
-            if (txt && txt.trim().length > 0) {
-                let data = JSON.parse(txt);
-                if (data && typeof data === "object") {
-                    if (data.notifiedFull !== undefined) root.notifiedFull = Boolean(data.notifiedFull);
-                    if (data.notifiedLow !== undefined) root.notifiedLow = Boolean(data.notifiedLow);
-                    if (data.notifiedCritical !== undefined) root.notifiedCritical = Boolean(data.notifiedCritical);
-                    if (data.lastPercentage !== undefined) root.lastPercentage = Number(data.lastPercentage);
-                    if (data.lastNotifTime !== undefined) root.lastNotifTime = Number(data.lastNotifTime);
-                    if (data.lastNotifType !== undefined) root.lastNotifType = String(data.lastNotifType);
-                    root.stateLoaded = true;
+    function send(opts) {
+        if (!opts || typeof opts !== "object") return;
+        let args = ["serpantinum-core", "notify"];
+        if (opts.app) {
+            args.push("--app", String(opts.app));
+        }
+        if (opts.urgency) {
+            args.push("--urgency", String(opts.urgency));
+        }
+        let iconVal = opts.icon ? String(opts.icon) : (opts.image ? String(opts.image) : "");
+        if (iconVal !== "") {
+            args.push("--icon", iconVal);
+        }
+        if (opts.action !== undefined && opts.action !== null) {
+            if (typeof opts.action === "string" && opts.action !== "") {
+                args.push("--action", opts.action);
+            } else if (Array.isArray(opts.action)) {
+                for (let i = 0; i < opts.action.length; i++) {
+                    if (opts.action[i]) args.push("--action", String(opts.action[i]));
+                }
+            } else if (typeof opts.action === "object") {
+                if (opts.action.name && opts.action.label) {
+                    args.push("--action", String(opts.action.name) + "=" + String(opts.action.label));
+                } else {
+                    let keys = Object.keys(opts.action);
+                    for (let i = 0; i < keys.length; i++) {
+                        args.push("--action", keys[i] + "=" + String(opts.action[keys[i]]));
+                    }
                 }
             }
-        } catch (e) {}
+        }
+        args.push("--", String(opts.title || ""));
+        if (opts.body !== undefined && opts.body !== null && String(opts.body) !== "") {
+            args.push(String(opts.body));
+        }
+        if (typeof opts.onAction === "function") {
+            let p = actionNotifComp.createObject(root, {
+                command: args,
+                callback: opts.onAction
+            });
+            if (p) p.running = true;
+        } else {
+            Quickshell.execDetached(args);
+        }
+    }
+
+    JsonStateFile {
+        id: stateFile
+        path: root.stateFilePath
+        watchChanges: false
+        printErrors: false
+        onLoaded: function(data) {
+            root.applyState(data);
+        }
+        onLoadFailed: {
+            root.stateLoaded = true;
+        }
+    }
+
+    function applyState(data) {
+        if (data && typeof data === "object") {
+            if (data.notifiedFull !== undefined) root.notifiedFull = Boolean(data.notifiedFull);
+            if (data.notifiedLow !== undefined) root.notifiedLow = Boolean(data.notifiedLow);
+            if (data.notifiedCritical !== undefined) root.notifiedCritical = Boolean(data.notifiedCritical);
+            if (data.lastPercentage !== undefined) root.lastPercentage = Number(data.lastPercentage);
+            if (data.lastNotifTime !== undefined) root.lastNotifTime = Number(data.lastNotifTime);
+            if (data.lastNotifType !== undefined) root.lastNotifType = String(data.lastNotifType);
+        }
+        root.stateLoaded = true;
     }
 
     function saveState() {
-        let payload = JSON.stringify({
+        stateFile.save({
             "notifiedFull": root.notifiedFull,
             "notifiedLow": root.notifiedLow,
             "notifiedCritical": root.notifiedCritical,
@@ -72,12 +148,6 @@ Item {
             "lastNotifTime": root.lastNotifTime,
             "lastNotifType": root.lastNotifType
         });
-        stateFileWriter.setText(payload + "\n");
-    }
-
-    FileView {
-        id: stateFileWriter
-        path: root.stateFilePath
     }
 
     function sendNotification(type, summary, body, icon, urgency) {
@@ -96,23 +166,17 @@ Item {
         let ic = icon ? icon : "battery";
         let appName = I18n.t("sysnotif.battery.app_name");
         if (appName === "sysnotif.battery.app_name") appName = "System";
-        Quickshell.execDetached([
-            "serpantinum-core", "notify",
-            "--app", appName,
-            "--urgency", u,
-            "--icon", ic,
-            "--",
-            summary,
-            body
-        ]);
+        root.send({
+            app: appName,
+            title: summary,
+            body: body,
+            icon: ic,
+            urgency: u
+        });
     }
 
     function checkBattery() {
         if (!root.hasBattery || root.isDesktop || !UPower.displayDevice.ready || (typeof I18n !== "undefined" && !I18n.isReady)) return;
-
-        if (!root.stateLoaded) {
-            root.loadState();
-        }
 
         let pct = root.batteryPercentage;
         let state = UPower.displayDevice.state;
@@ -210,9 +274,5 @@ Item {
         function onReadyChanged() { root.checkBattery(); }
         function onIsPresentChanged() { root.checkBattery(); }
         function onIsLaptopBatteryChanged() { root.checkBattery(); }
-    }
-
-    Component.onCompleted: {
-        root.loadState();
     }
 }

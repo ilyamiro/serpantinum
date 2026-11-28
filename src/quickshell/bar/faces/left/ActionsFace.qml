@@ -1,0 +1,173 @@
+import QtQuick
+import QtQuick.Layouts
+import Quickshell
+import "../../../reusables"
+import "../../../"
+import "../../"
+
+BarFaceBase {
+    id: root
+
+    readonly property bool showLayout: (barWindow && !isPreview) ? Boolean(barWindow.isStartupReady) : true
+
+    property string menuStyle: String(readSetting("menuStyle", "", "button"))
+
+    property var menuItems: {
+        if (widget && widget !== root && widget.menuItems !== undefined) return widget.menuItems;
+        let dummy = configRevision;
+        let bs = (typeof Config !== "undefined" && Config.rawSettings && Config.rawSettings.bar) ? Config.rawSettings.bar : {};
+        return BarModuleRegistry.menuItemsFromSettings(bs);
+    }
+
+    readonly property bool iconOnly: menuStyle === "icon"
+
+    readonly property var helpButton: {
+        let dummy = menuRepeater.count;
+        let found = null;
+        for (let i = 0; i < menuRepeater.count; i++) {
+            let it = menuRepeater.itemAt(i);
+            if (!it) continue;
+            if (it.itemId === "settings") return it;
+            if (!found && it.itemId === "launcher") found = it;
+        }
+        return found || menuRepeater.itemAt(0);
+    }
+
+    readonly property var idleService: ShellRouter.idleService
+    readonly property bool nightLightActive: (typeof Gamma !== "undefined") ? Gamma.anyEnabled : false
+    readonly property bool caffeineActive: root.idleService ? root.idleService.caffeineActive : false
+
+    function toggleNightLight() {
+        if (typeof Gamma !== "undefined" && typeof Gamma.toggleAll === "function") {
+            Gamma.toggleAll();
+        }
+    }
+
+    function shuffleWallpaper(btn) {
+        let scr = barWindow ? barWindow.screen : null;
+        let transition = "circle";
+        if (btn && scr && scr.width > 0 && scr.height > 0) {
+            let pt = btn.mapToItem(null, btn.width / 2, btn.height / 2);
+            let pos = barWindow.barPosition;
+            let x = pt.x + (pos === "right" ? scr.width - barWindow.width : 0);
+            let y = pt.y + (pos === "bottom" ? scr.height - barWindow.height : 0);
+            transition = "circle:" + Math.max(0, Math.min(1, x / scr.width)) + ":" + Math.max(0, Math.min(1, y / scr.height));
+        }
+        Wallpaper.shuffle(scr && scr.name ? scr.name : "", transition);
+    }
+
+    function toggleCaffeine() {
+        if (root.idleService && typeof root.idleService.toggleCaffeine === "function") {
+            root.idleService.toggleCaffeine();
+        }
+    }
+
+    function openColorPicker() {
+        let scr = barWindow ? barWindow.screen : null;
+        let args = ["bash", Caching.serpantinumDir + "/scripts/screenshot.sh", "--color-picker"];
+        if (scr && scr.name) {
+            args.push("--monitor", scr.name);
+        }
+        Quickshell.execDetached(args);
+    }
+
+    readonly property int menuCount: menuItems ? menuItems.length : 0
+    readonly property real buttonsLength: menuCount > 0
+        ? menuCount * (isVertical ? s(isCompact ? 28 : 30) : s(isCompact ? 30 : 32)) + (menuCount - 1) * s(isCompact ? 2 : 4)
+        : 0
+    property real targetLength: (!module || module.moduleActive) ? (buttonsLength + s(isCompact ? 6 : 8)) : 0
+
+    implicitWidth: isVertical ? (parent ? parent.width : 0) : targetLength
+    implicitHeight: isVertical ? targetLength : s(isCompact ? 28 : 30)
+
+    component MenuButton: Item {
+        id: menuBtn
+        property string glyph: ""
+        property bool active: false
+        property color activeColor: ThemeBackend.peach
+        property int glyphYOffset: 0
+        signal clicked()
+
+        width: root.isVertical ? root.s(root.isCompact ? 28 : 30) : root.s(root.isCompact ? 30 : 32)
+        height: root.s(root.isCompact ? 28 : 30)
+
+        opacity: (root.isVertical || root.showLayout) ? 1.0 : 0.0
+        transform: Translate {
+            y: (root.isVertical || root.showLayout) ? 0 : root.s(15)
+            Behavior on y { NumberAnimation { duration: 620; easing.type: Easing.OutQuint } }
+        }
+        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
+
+        IconButton {
+            anchors.fill: parent
+            visible: !root.iconOnly
+            cornerRadius: Math.max(0, ThemeBackend.borderRadius - root.s(2))
+            buttonIcon: menuBtn.glyph
+            iconOffsetY: menuBtn.glyphYOffset
+            iconFontSize: root.s(root.isCompact ? 14 : 15)
+            accentColor: menuBtn.active ? menuBtn.activeColor : (root.isCompact ? Qt.lighter(ThemeBackend.surface0, 1.18) : ThemeBackend.surface0)
+            bgOpacity: menuBtn.active ? 1.0 : root.barOpacity
+            textColor: menuBtn.active ? ThemeBackend.crust : (isHoveredOrHighlighted ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2))
+            onClicked: menuBtn.clicked()
+        }
+
+        Text {
+            anchors.centerIn: parent
+            anchors.verticalCenterOffset: menuBtn.glyphYOffset
+            visible: root.iconOnly
+            text: menuBtn.glyph
+            font.family: ThemeBackend.iconFont
+            font.pixelSize: root.s(root.isCompact ? 15 : 16)
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color: menuBtn.active ? menuBtn.activeColor : (iconMouse.containsMouse ? ThemeBackend.text : (root.isCompact ? ThemeBackend.subtext0 : ThemeBackend.overlay2))
+            Behavior on color { ColorAnimation { duration: 150 } }
+        }
+
+        MouseArea {
+            id: iconMouse
+            anchors.fill: parent
+            visible: root.iconOnly
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: menuBtn.clicked()
+        }
+    }
+
+    AxisFlow {
+        id: buttonsFlow
+        vertical: root.isVertical
+        horizontalItemAlignment: Grid.AlignHCenter
+        verticalItemAlignment: Grid.AlignVCenter
+        spacing: root.s(root.isCompact ? 2 : 4)
+        anchors.centerIn: root.isVertical ? parent : undefined
+        anchors.verticalCenter: root.isVertical ? undefined : parent.verticalCenter
+        anchors.left: root.isVertical ? undefined : parent.left
+        anchors.leftMargin: root.isVertical ? 0 : root.s(root.isCompact ? 3 : 4)
+
+        Repeater {
+            id: menuRepeater
+            model: root.menuItems
+
+            MenuButton {
+                id: menuItem
+                required property string modelData
+                readonly property string itemId: modelData
+                glyph: BarModuleRegistry.menuItemIcon(itemId)
+                glyphYOffset: itemId === "nightlight" ? -1 : 0
+                active: itemId === "nightlight" ? root.nightLightActive : (itemId === "caffeine" ? root.caffeineActive : false)
+                activeColor: itemId === "caffeine" ? Qt.tint(ThemeBackend.peach, "#5c3016") : ThemeBackend.peach
+                onClicked: {
+                    if (root.isPreview) return;
+                    if (itemId === "settings") root.togglePanel("settings");
+                    else if (itemId === "launcher") root.togglePanel("launcher");
+                    else if (itemId === "nightlight") root.toggleNightLight();
+                    else if (itemId === "caffeine") root.toggleCaffeine();
+                    else if (itemId === "shuffle") root.shuffleWallpaper(menuItem);
+                    else if (itemId === "colorpicker") root.openColorPicker();
+                    else if (itemId === "clipboard") root.togglePanel("clipboard");
+                }
+            }
+        }
+    }
+}

@@ -13,6 +13,31 @@ RAW_URL="$2"
 TITLE="$3"
 ARTIST="$4"
 
+if [[ "$RAW_URL" == "data:stdin" ]]; then
+    data="$(timeout 5 head -n 1 | head -c 20000000)"
+    RAW_URL=""
+    if [[ "$data" == data:image/*\;base64,* ]]; then
+        payload="${data#*,}"
+        sum=$(printf '%s' "$payload" | md5sum | cut -d" " -f1)
+        embedded="$TMP_DIR/embedded_${sum}.img"
+        if [ -s "$embedded" ]; then
+            RAW_URL="$embedded"
+        else
+            part="$TMP_DIR/embedded_${sum}.part.$$"
+            if printf '%s' "$payload" | base64 -d > "$part" 2>/dev/null && [ -s "$part" ] && mv -f "$part" "$embedded"; then
+                RAW_URL="$embedded"
+                (cd "$TMP_DIR" 2>/dev/null && ls -1t -- embedded_*.img 2>/dev/null | tail -n +6 | while read -r f; do
+                    rm -f -- "$f"
+                done
+                find . -maxdepth 1 -name 'embedded_*.part.*' -mmin +1 -delete) >/dev/null 2>&1
+            else
+                rm -f "$part"
+            fi
+        fi
+    fi
+    unset data payload
+fi
+
 CLEAN_URL="$RAW_URL"
 if [[ "$RAW_URL" == file://* ]]; then
     CLEAN_URL="${RAW_URL#file://}"

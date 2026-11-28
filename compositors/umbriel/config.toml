@@ -1,0 +1,7 @@
+[include]
+files = [
+  "config/input.toml",
+  "config/layout.toml",
+  "config/autostart.toml",
+  "config/keybinds.toml",
+]

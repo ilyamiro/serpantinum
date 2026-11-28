@@ -1,15 +1,15 @@
 import QtQuick
 import "../../"
 import "../../../"
+import "../../../reusables"
 import "../../../bar"
 
 GuideTab {
     id: barTabRoot
-    subTabIndex: 0
 
     property real cardRadius: ThemeBackend.clampedBorderRadius
 
-    property var defaultBarSettings: {
+    property var defaultBarSettings: ({
         "position": "top",
         "width": 100,
         "height": 40,
@@ -25,13 +25,20 @@ GuideTab {
             "center": ["timedate", "info", "weather"],
             "right": ["tray", ["kb", "wifi", "bt", "vol", "bat"]]
         }
+    })
+
+    ConfigSection {
+        id: barCfg
+        section: "bar"
+        defaults: barTabRoot.defaultBarSettings
     }
 
-    property var barSettings: Config.getSetting("bar", defaultBarSettings)
-    property string barPosition: barSettings.position !== undefined ? barSettings.position : "top"
-    property real currentBarWidth: barSettings.width !== undefined ? barSettings.width : 100
-    property real currentBarThickness: barSettings.height !== undefined ? barSettings.height : 40
-    property string barStyle: {
+    readonly property var barSettings: barCfg.values
+    readonly property string barPosition: barSettings.position !== undefined ? String(barSettings.position) : "top"
+    readonly property var barMonitors: Array.isArray(barSettings.monitors) ? barSettings.monitors.slice() : null
+    readonly property real currentBarWidth: barSettings.width !== undefined ? Number(barSettings.width) : 100
+    readonly property real currentBarThickness: barSettings.height !== undefined ? Number(barSettings.height) : 40
+    readonly property string barStyle: {
         let s = barSettings.style;
         if (typeof s === "string") return s;
         if (s && typeof s === "object") {
@@ -40,10 +47,10 @@ GuideTab {
         }
         return "modular";
     }
-    property bool distinctPills: barSettings.distinctPills !== undefined ? barSettings.distinctPills : false
-    property bool centerByEdges: barSettings.centerByEdges !== undefined ? barSettings.centerByEdges : true
-    property bool autohide: barSettings.autohide !== undefined ? barSettings.autohide : false
-    property int autohideTimeout: barSettings.autohideTimeout !== undefined ? barSettings.autohideTimeout : 1000
+    readonly property bool distinctPills: barSettings.distinctPills !== undefined ? Boolean(barSettings.distinctPills) : false
+    readonly property bool centerByEdges: barSettings.centerByEdges !== undefined ? Boolean(barSettings.centerByEdges) : true
+    readonly property bool autohide: barSettings.autohide !== undefined ? Boolean(barSettings.autohide) : false
+    readonly property int autohideTimeout: barSettings.autohideTimeout !== undefined ? Number(barSettings.autohideTimeout) : 1000
 
     ListModel { id: leftModel }
     ListModel { id: centerModel }
@@ -54,7 +61,6 @@ GuideTab {
     property alias centerModel: centerModel
     property alias rightModel: rightModel
     property alias availableModel: availableModel
-    property alias barWidthDebounceTimer: barWidthDebounceTimer
 
     property string currentPlaceholderList: ""
     property int currentPlaceholderIndex: -1
@@ -65,13 +71,8 @@ GuideTab {
 
     property string lastSavedModulesString: ""
 
-    Timer {
-        id: barWidthDebounceTimer
-        interval: 100
-        repeat: false
-        onTriggered: {
-            barTabRoot.updateBarSettings();
-        }
+    onVisibleChanged: {
+        if (!visible) barCfg.flush();
     }
 
     function clearPendingGroup() {
@@ -395,26 +396,24 @@ GuideTab {
         let l = buildModelArray(leftModel);
         let c = buildModelArray(centerModel);
         let r = buildModelArray(rightModel);
-
-        let current = Config.getSetting("bar", barTabRoot.defaultBarSettings);
-        current.modules = { "left": l, "center": c, "right": r };
-        current.groupColors = barTabRoot.assignedGroupColors;
-
-        barTabRoot.lastSavedModulesString = barTabRoot.getModulesString(current.modules);
-        Config.setSetting("bar", current);
+        let mods = { "left": l, "center": c, "right": r };
+        barTabRoot.lastSavedModulesString = barTabRoot.getModulesString(mods);
+        barCfg.setMany({
+            "modules": mods,
+            "groupColors": barTabRoot.assignedGroupColors
+        });
     }
 
     function resetBarSettings() {
         clearPendingGroup();
-        let current = Config.getSetting("bar", barTabRoot.defaultBarSettings);
-        current.modules = JSON.parse(JSON.stringify(barTabRoot.defaultBarSettings.modules));
-        current.groupColors = {};
-        current.distinctPills = barTabRoot.defaultBarSettings.distinctPills;
+        let mods = JSON.parse(JSON.stringify(barTabRoot.defaultBarSettings.modules));
         barTabRoot.assignedGroupColors = {};
-        barTabRoot.distinctPills = barTabRoot.defaultBarSettings.distinctPills;
-        barTabRoot.lastSavedModulesString = barTabRoot.getModulesString(current.modules);
-        Config.setSetting("bar", current);
-        barTabRoot.barSettings = current;
+        barTabRoot.lastSavedModulesString = barTabRoot.getModulesString(mods);
+        barCfg.setMany({
+            "modules": mods,
+            "groupColors": {},
+            "distinctPills": barTabRoot.defaultBarSettings.distinctPills
+        });
         barTabRoot.loadModuleModels();
     }
 
@@ -689,41 +688,39 @@ GuideTab {
         return target;
     }
 
-    function syncSettings() {
-        let ts = Config.getSetting("bar", barTabRoot.defaultBarSettings);
-        barTabRoot.barPosition = ts.position !== undefined ? ts.position : "top";
-        barTabRoot.currentBarWidth = ts.width !== undefined ? ts.width : 100;
-        barTabRoot.currentBarThickness = ts.height !== undefined ? ts.height : 40;
-        if (typeof ts.style === "string") {
-            barTabRoot.barStyle = ts.style;
-        } else if (ts.style && typeof ts.style === "object") {
-            if (ts.style.fill || ts.style.mode === "fill") barTabRoot.barStyle = "fill";
-            else if (ts.style.solid || ts.style.mode === "solid") barTabRoot.barStyle = "solid";
-            else barTabRoot.barStyle = "modular";
-        } else {
-            barTabRoot.barStyle = "modular";
+    function setBarSetting(key, value) {
+        barCfg.set(key, value);
+    }
+
+    function setBarSettingDebounced(key, value) {
+        barCfg.setDebounced(key, value, 100);
+    }
+
+    function flushBarSettings() {
+        barCfg.flush();
+    }
+
+    function setBarMonitors(selected) {
+        if (Array.isArray(selected)) {
+            barCfg.set("monitors", selected.slice());
+            return;
         }
-        barTabRoot.distinctPills = ts.distinctPills !== undefined ? ts.distinctPills : false;
-        barTabRoot.centerByEdges = ts.centerByEdges !== undefined ? ts.centerByEdges : true;
-        barTabRoot.autohide = ts.autohide !== undefined ? ts.autohide : false;
-        barTabRoot.autohideTimeout = ts.autohideTimeout !== undefined ? ts.autohideTimeout : 1000;
-        if (ts.groupColors) {
-            barTabRoot.assignedGroupColors = ts.groupColors;
-        }
-        barTabRoot.barSettings = ts;
+        let current = Object.assign({}, barTabRoot.barSettings);
+        delete current.monitors;
+        Config.setSetting("bar", current);
     }
 
     Component.onCompleted: {
-        syncSettings();
         loadModuleModels();
     }
 
     Connections {
         target: Config
         function onSettingsLoaded() {
-            syncSettings();
-            let ts = Config.getSetting("bar", barTabRoot.defaultBarSettings);
-            let tsModules = ts.modules || barTabRoot.defaultBarSettings.modules;
+            if (barTabRoot.barSettings && barTabRoot.barSettings.groupColors) {
+                barTabRoot.assignedGroupColors = barTabRoot.barSettings.groupColors;
+            }
+            let tsModules = (barTabRoot.barSettings && barTabRoot.barSettings.modules) || barTabRoot.defaultBarSettings.modules;
             let currentStr = barTabRoot.getModulesString(tsModules);
             if (currentStr === barTabRoot.lastSavedModulesString) {
                 return;
@@ -731,22 +728,5 @@ GuideTab {
             barTabRoot.lastSavedModulesString = "";
             barTabRoot.loadModuleModels();
         }
-    }
-
-    function updateBarSettings() {
-        let current = Config.getSetting("bar", barTabRoot.defaultBarSettings);
-        current.position = barTabRoot.barPosition;
-        current.width = barTabRoot.currentBarWidth;
-        current.height = barTabRoot.currentBarThickness;
-        current.style = barTabRoot.barStyle;
-        current.distinctPills = barTabRoot.distinctPills;
-        current.centerByEdges = barTabRoot.centerByEdges;
-        current.autohide = barTabRoot.autohide;
-        current.autohideTimeout = barTabRoot.autohideTimeout;
-        if (!current.modules) current.modules = barTabRoot.defaultBarSettings.modules;
-        current.groupColors = barTabRoot.assignedGroupColors;
-
-        barTabRoot.lastSavedModulesString = barTabRoot.getModulesString(current.modules);
-        Config.setSetting("bar", current);
     }
 }

@@ -3,74 +3,22 @@ import QtQuick
 import "../../"
 import "../../widgets"
 import "../../bar"
-import "../../reusables"
 
 QtObject {
     id: registry
-
-    property Component showTextComponent: Component {
-        Item {
-            id: settingRoot
-            property var proxy: null
-            property var redactor: null
-
-            implicitWidth: showTextRow.implicitWidth + Scaler.s(20)
-            implicitHeight: Scaler.s(34)
-
-            Rectangle {
-                anchors.fill: parent
-                radius: ThemeBackend.borderRadius
-                color: showTextGlass.active ? "transparent" : ThemeBackend.surface0
-
-                GlassFill {
-                    id: showTextGlass
-                    anchors.fill: parent
-                    radius: parent.radius
-                    tintColor: ThemeBackend.surface0
-                    tintAmount: 0.3
-                }
-            }
-
-            Row {
-                id: showTextRow
-                anchors.centerIn: parent
-                spacing: Scaler.s(8)
-
-                Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: I18n.t("lock.redactor.setting.show_text", "Show text")
-                    font.family: ThemeBackend.fontFamily
-                    font.pixelSize: Scaler.s(11)
-                    font.bold: true
-                    color: ThemeBackend.text
-                }
-
-                Toggle {
-                    anchors.verticalCenter: parent.verticalCenter
-                    horizontalPadding: 0
-                    cornerRadius: ThemeBackend.borderRadius
-                    checked: settingRoot.proxy ? settingRoot.proxy.pShowText : true
-                    accentColor: ThemeBackend.mauve
-                    baseColor: ThemeBackend.surface1
-                    handleColor: ThemeBackend.crust
-                    handleOffColor: ThemeBackend.text
-                    onToggled: function(c) {
-                        if (settingRoot.redactor && settingRoot.proxy) settingRoot.redactor.setWidgetProperty("showText", c, settingRoot.proxy.pId);
-                    }
-                }
-            }
-        }
-    }
 
     readonly property var lockTypeIds: ["clock", "avatar", "user", "lockstatus", "password", "fingerprint", "keyboard", "battery", "notifications"]
 
     readonly property var types: ({
         "clock": {
             icon: String.fromCodePoint(0xF0954),
+            nameKey: "lock.redactor.element.clock",
             scopes: ["screen"],
             widgetKey: "time",
             defaultVariant: "lockscreen",
-            w: 420, h: 200
+            w: 420,
+            h: 200,
+            migrateZeroSize: true
         },
         "avatar": {
             icon: String.fromCodePoint(0xF0009),
@@ -98,6 +46,8 @@ QtObject {
             icon: String.fromCodePoint(0xF0306),
             file: "elements/LockPasswordElement.qml",
             scopes: ["panel"],
+            requiredIn: "panel",
+            providesPasswordInput: true,
             deletable: false,
             w: 380, h: 44, minW: 160, minH: 32, maxW: 1000, maxH: 80,
             variants: ["filled", "glass"]
@@ -110,8 +60,19 @@ QtObject {
             defaultVariant: "classic",
             variants: ["classic", "ring", "scanner", "pulse", "orbit", "liquid"],
             variantAliases: { "labeled": "classic", "icon": "classic" },
+            defaults: { showText: true },
+            variantPropertyMigrations: {
+                "icon": { showText: false }
+            },
             additionalSettings: [
-                { id: "showText", row: "bottom", component: registry.showTextComponent }
+                {
+                    id: "showText",
+                    type: "toggle",
+                    property: "showText",
+                    label: I18n.t("lock.redactor.setting.show_text", "Show text"),
+                    row: "bottom",
+                    defaultValue: true
+                }
             ]
         },
         "keyboard": {
@@ -138,15 +99,18 @@ QtObject {
             scopes: ["screen", "panel"],
             w: 400, h: 440, minW: 220, minH: 140, maxW: 800, maxH: 1000,
             variants: ["card", "plain"]
-        },
+        }
     })
 
     function isWidget(type) {
-        return type === "clock" || String(type).indexOf("widget:") === 0;
+        let t = registry.types[type];
+        return (!!t && !!t.widgetKey) || String(type).indexOf("widget:") === 0;
     }
 
     function widgetKey(type) {
-        return type === "clock" ? registry.types["clock"].widgetKey : String(type).substring(7);
+        let t = registry.types[type];
+        if (t && t.widgetKey) return t.widgetKey;
+        return String(type).indexOf("widget:") === 0 ? String(type).substring(7) : "";
     }
 
     function hasType(type) {
@@ -155,25 +119,35 @@ QtObject {
     }
 
     function allowedIn(type, scope) {
-        if (registry.isWidget(type)) return true;
         let t = registry.types[type];
-        return !!t && t.scopes.indexOf(scope) >= 0;
+        if (t && Array.isArray(t.scopes)) return t.scopes.indexOf(scope) >= 0;
+        if (registry.isWidget(type)) return true;
+        return false;
     }
 
     function isScaled(type) {
-        if (registry.isWidget(type)) return false;
         let t = registry.types[type];
-        return !!t && t.scaled === true;
+        return !!t && !t.widgetKey && t.scaled === true;
     }
 
     function isDeletable(type) {
-        if (registry.isWidget(type)) return true;
         let t = registry.types[type];
-        return !!t && t.deletable !== false;
+        if (t) return t.deletable !== false;
+        return registry.isWidget(type);
+    }
+
+    function requiredTypes(scope) {
+        return registry.lockTypeIds.filter(id => registry.types[id] && registry.types[id].requiredIn === scope);
+    }
+
+    function providesPasswordInput(type) {
+        let t = registry.types[type];
+        return !!t && t.providesPasswordInput === true;
     }
 
     function typeName(type) {
-        if (type === "clock") return I18n.t("lock.redactor.element.clock");
+        let t = registry.types[type];
+        if (t && t.nameKey) return I18n.t(t.nameKey);
         if (registry.isWidget(type)) {
             let w = WidgetRegistry.types[registry.widgetKey(type)];
             return w ? w.name : "";
@@ -182,11 +156,13 @@ QtObject {
     }
 
     function typeIcon(type) {
+        let t = registry.types[type];
+        if (t && t.icon) return t.icon;
         if (registry.isWidget(type)) {
             let w = WidgetRegistry.types[registry.widgetKey(type)];
             return w ? w.icon : "";
         }
-        return registry.types[type] ? registry.types[type].icon : "";
+        return "";
     }
 
     function variantList(type) {
@@ -196,11 +172,21 @@ QtObject {
         let t = registry.types[type];
         if (!t) return [];
         if (t.barModule) return BarModuleRegistry.variantList(t.barModule).map(v => ({ id: v.id, name: v.name }));
-        return t.variants.map(id => ({ id: id, name: I18n.t("lock.redactor.variant." + type + "." + id) }));
+        return (t.variants || []).map(id => ({ id: id, name: I18n.t("lock.redactor.variant." + type + "." + id) }));
     }
 
-    function additionalSettings(type, row) {
-        if (registry.isWidget(type)) return [];
+    function variantProps(type, variant) {
+        if (registry.isWidget(type)) return WidgetRegistry.variantProps(registry.widgetKey(type), variant);
+        return null;
+    }
+
+    function variantCircleMask(type, variant) {
+        if (registry.isWidget(type)) return WidgetRegistry.variantCircleMask(registry.widgetKey(type), variant);
+        return false;
+    }
+
+    function additionalSettings(type, row, variant) {
+        if (registry.isWidget(type)) return WidgetRegistry.additionalSettings(registry.widgetKey(type), row, variant);
         let t = registry.types[type];
         if (!t || !t.additionalSettings) return [];
         return t.additionalSettings.filter(s => (s.row || "top") === row);
@@ -211,29 +197,29 @@ QtObject {
     }
 
     function defaultVariant(type) {
-        if (type === "clock") return registry.types["clock"].defaultVariant;
-        if (registry.isWidget(type)) return WidgetRegistry.defaultVariant(registry.widgetKey(type));
         let t = registry.types[type];
-        if (!t) return "";
-        return t.defaultVariant || t.variants[0];
+        if (t && t.defaultVariant) return t.defaultVariant;
+        if (registry.isWidget(type)) return WidgetRegistry.defaultVariant(registry.widgetKey(type));
+        if (!t || !t.variants) return "";
+        return t.variants[0] || "";
     }
 
     function normalizeVariant(type, variantId) {
-        let t = registry.isWidget(type) ? null : registry.types[type];
+        let t = registry.types[type];
         return t && t.variantAliases && t.variantAliases[variantId] ? t.variantAliases[variantId] : variantId;
     }
 
     function defaultSize(type) {
-        if (type === "clock") return { w: registry.types["clock"].w, h: registry.types["clock"].h };
-        if (registry.isWidget(type)) return WidgetRegistry.defaultSize(registry.widgetKey(type));
         let t = registry.types[type];
+        if (t && t.w > 0 && t.h > 0) return { w: t.w, h: t.h };
+        if (registry.isWidget(type)) return WidgetRegistry.defaultSize(registry.widgetKey(type));
         if (!t || t.scaled) return { w: 0, h: 0 };
-        return { w: t.w, h: t.h };
+        return { w: t.w || 0, h: t.h || 0 };
     }
 
     function limits(type) {
-        let t = registry.isWidget(type) ? null : registry.types[type];
-        if (!t || t.scaled) return null;
+        let t = registry.types[type];
+        if (!t || t.widgetKey || t.scaled) return null;
         return { minW: t.minW, minH: t.minH, maxW: t.maxW, maxH: t.maxH, aspect: t.aspect || 0 };
     }
 
@@ -241,6 +227,29 @@ QtObject {
         if (registry.isWidget(type)) return WidgetRegistry.faceFile(registry.widgetKey(type), variant);
         let t = registry.types[type];
         return t ? t.file : "";
+    }
+
+    function migrateEntry(raw, entry) {
+        let t = registry.types[raw.itype];
+        if (!t) return;
+        if (t.migrateZeroSize && entry.iw <= 0) {
+            let cs = registry.defaultSize(raw.itype);
+            entry.ix -= cs.w / 2;
+            entry.iy -= cs.h / 2;
+            entry.iw = cs.w;
+            entry.ih = cs.h;
+        }
+        if (t.defaults) {
+            for (let k in t.defaults) {
+                if (entry[k] === undefined) entry[k] = t.defaults[k];
+            }
+        }
+        if (t.variantPropertyMigrations && raw.ivariant && t.variantPropertyMigrations[raw.ivariant]) {
+            let mig = t.variantPropertyMigrations[raw.ivariant];
+            for (let mk in mig) {
+                if (raw[mk] === undefined) entry[mk] = mig[mk];
+            }
+        }
     }
 
     function lockTypeList(scope) {

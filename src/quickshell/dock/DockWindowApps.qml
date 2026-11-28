@@ -10,6 +10,7 @@ DockWindowState {
 
     property var runningInfoMap: ({})
     property int runningInfoRevision: 0
+    property int dockAppsRevision: 0
 
     function _recomputeRunningInfo() {
         let groups = (typeof WindowTracker !== "undefined" && WindowTracker.groups) ? WindowTracker.groups : {};
@@ -301,10 +302,12 @@ DockWindowState {
                 icon: app.icon || ""
             });
         }
+        dockWindow.dockAppsRevision++;
         dockWindow._syncRunningApps();
     }
 
     function saveApps() {
+        dockWindow.dockAppsRevision++;
         let arr = [];
         for (let i = 0; i < dockAppsModel.count; i++) {
             let item = dockAppsModel.get(i);
@@ -428,7 +431,7 @@ DockWindowState {
         if (typeof DesktopEntries !== "undefined") {
             let entry = DesktopEntries.byId(desktopId) || DesktopEntries.byId(String(desktopId).replace(/\.desktop$/, ""));
             if (entry) {
-                entry.execute();
+                AppMatcher.launch(entry);
             }
         }
     }

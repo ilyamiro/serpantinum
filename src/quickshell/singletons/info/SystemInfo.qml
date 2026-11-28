@@ -34,8 +34,25 @@ Item {
     Connections {
         target: Config
         function onSettingsLoaded() {
-            root.fetch();
+            root.refreshAvatar();
         }
+    }
+
+    function refreshAvatar() {
+        let cropped = Caching.getCacheDir("avatar") + "/avatar_cropped.png";
+        let cfgAvatar = Config.peekSetting("general.avatarPath", "") || "";
+        avatarProc.command = [
+            "bash", "-c",
+            "cropped_avatar=\"$1\"; cfg_avatar=\"$2\"; avatar=\"\"; " +
+            "if [ -f \"$cropped_avatar\" ]; then avatar=\"$cropped_avatar\"; " +
+            "elif [ -n \"$cfg_avatar\" ] && [ -f \"$cfg_avatar\" ]; then avatar=\"$cfg_avatar\"; " +
+            "else for a in \"$HOME/.face\" \"$HOME/.face.icon\" \"/var/lib/AccountsService/icons/$USER\"; do " +
+            "if [ -f \"$a\" ]; then avatar=\"$a\"; break; fi; done; fi; " +
+            "printf '%s' \"$avatar\"",
+            "_", cropped, cfgAvatar
+        ];
+        avatarProc.running = false;
+        avatarProc.running = true;
     }
 
     function fetch() {
@@ -47,6 +64,7 @@ Item {
         uptimeFile.reload();
         chassisFile.reload();
 
+        root.refreshAvatar();
         hwProc.running = false;
         hwProc.running = true;
 
@@ -91,21 +109,37 @@ Item {
         }
     }
 
+    function parseOsReleaseValue(raw) {
+        let val = raw.trim();
+        if (val.length >= 2 && val[0] === "\"" && val[val.length - 1] === "\"") {
+            return val.slice(1, -1).replace(/\\(["\\$`])/g, "$1");
+        }
+        if (val.length >= 2 && val[0] === "'" && val[val.length - 1] === "'") {
+            return val.slice(1, -1);
+        }
+        return val;
+    }
+
     FileView {
         id: osReleaseFile
         path: "/etc/os-release"
         onLoaded: {
             let txt = text();
             if (!txt) return;
-            let lines = txt.split("\n");
+            let pretty = "";
+            let name = "";
+            let lines = txt.split(/\r?\n/);
             for (let i = 0; i < lines.length; i++) {
-                let line = lines[i];
+                let line = lines[i].trim();
+                if (!line || line.startsWith("#")) continue;
                 if (line.startsWith("PRETTY_NAME=")) {
-                    root.osName = line.split("=")[1].replace(/"/g, "").trim();
-                    break;
-                } else if (line.startsWith("NAME=") && !root.osName) {
-                    root.osName = line.split("=")[1].replace(/"/g, "").trim();
+                    pretty = root.parseOsReleaseValue(line.slice("PRETTY_NAME=".length));
+                } else if (line.startsWith("NAME=")) {
+                    name = root.parseOsReleaseValue(line.slice("NAME=".length));
                 }
+            }
+            if (pretty || name) {
+                root.osName = pretty || name;
             }
         }
     }
@@ -250,15 +284,6 @@ Item {
             "disk_mod=$(lsblk -d -n -o MODEL 2>/dev/null | grep -v '^$' | head -n1); " +
             "[ -z \"$disk_mod\" ] && disk_mod=\"Generic Drive\"; " +
             "df_out=$(df -B1 / 2>/dev/null | awk 'NR==2 {print $2\"|\"$3\"|\"$5}'); " +
-            "cropped_avatar=\"" + Caching.getCacheDir("avatar") + "/avatar_cropped.png\"; " +
-            "cfg_avatar=\"" + (Config.getSetting("general", {}).avatarPath || "") + "\"; " +
-            "avatar=\"\"; " +
-            "if [ -f \"$cropped_avatar\" ]; then avatar=\"$cropped_avatar\"; " +
-            "elif [ -n \"$cfg_avatar\" ] && [ -f \"$cfg_avatar\" ]; then avatar=\"$cfg_avatar\"; " +
-            "else " +
-            "for a in \"$HOME/.face\" \"$HOME/.face.icon\" \"/var/lib/AccountsService/icons/$USER\"; do " +
-                "if [ -f \"$a\" ]; then avatar=\"$a\"; break; fi; " +
-            "done; fi; " +
             "has_battery=0; " +
             "for p in /sys/class/power_supply/*; do " +
                 "if [ -f \"$p/type\" ] && grep -qi 'Battery' \"$p/type\" 2>/dev/null; then " +
@@ -267,27 +292,36 @@ Item {
                 "fi; " +
             "done; " +
             "bat_named=0; compgen -G '/sys/class/power_supply/BAT*' >/dev/null && bat_named=1; " +
-            "echo \"$gpu|$disk_mod|$df_out|$avatar|$has_battery|$bat_named\""
+            "echo \"$gpu|$disk_mod|$df_out|$has_battery|$bat_named\""
         ]
         stdout: StdioCollector {
             onStreamFinished: {
                 let txt = this.text ? this.text.trim() : "";
                 if (!txt) return;
                 let p = txt.split("|");
-                if (p.length >= 7) {
+                if (p.length >= 6) {
                     root.gpuModel = p[0];
                     root.diskModel = p[1];
                     root.diskTotalGb = parseFloat((parseInt(p[2]) / 1073741824).toFixed(1));
                     root.diskUsedGb = parseFloat((parseInt(p[3]) / 1073741824).toFixed(1));
                     root.diskPercent = parseInt(p[4].replace("%", ""));
-                    root.avatarPath = p[5];
-                    if (p[6] === "1") {
+                    if (p[5] === "1") {
                         root.isDesktop = false;
                     }
-                    if (p.length >= 8) {
-                        root.hasBatSupply = p[7] === "1";
+                    if (p.length >= 7) {
+                        root.hasBatSupply = p[6] === "1";
                     }
                 }
+            }
+        }
+    }
+
+    Process {
+        id: avatarProc
+        running: false
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.avatarPath = this.text ? this.text.trim() : "";
             }
         }
     }

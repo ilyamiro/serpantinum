@@ -267,6 +267,7 @@ if [ "$COMMAND" == "start" ]; then
     [ "$VERBOSE" = true ] && echo "$(t "daemon.launching")"
 
     (
+        bash "$SERPANTINUM_DIR/scripts/migrate_niri_overview.sh"
         bash "$SERPANTINUM_DIR/scripts/migrate_easyeffects.sh"
         command -v serpantinum-audio >/dev/null 2>&1 && serpantinum-audio start
     ) 9>&- >/dev/null 2>&1 &

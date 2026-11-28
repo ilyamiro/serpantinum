@@ -2,35 +2,37 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import Quickshell.Bluetooth
-import Quickshell.Networking
 import Quickshell.Services.Pipewire
 import "../../"
+import "../../reusables"
 
 Item {
     id: controller
 
     property bool isVisible: false
     property string kind: "volume"
-    property int briVal: 0
+    property int briVal: Brightness.value
     property string stateVal: "off"
+    property string layoutName: ""
     property var screen: null
     property bool isHovered: false
     property bool isFullscreen: false
 
-    readonly property PwNode activeSink: Audio.defaultSink || (Audio.outputs && Audio.outputs.length > 0 ? Audio.outputs[0] : null)
-    readonly property real sysVolume: activeSink && activeSink.audio ? Math.round(activeSink.audio.volume * 100) : 0
-    readonly property bool sysMuted: activeSink && activeSink.audio ? activeSink.audio.muted : false
+    readonly property PwNode activeSink: Audio.effectiveSink
+    readonly property real sysVolume: Audio.sinkVolumePercent
+    readonly property bool sysMuted: Audio.sinkMuted
 
-    readonly property PwNode activeSource: Audio.defaultSource || (Audio.inputs && Audio.inputs.length > 0 ? Audio.inputs[0] : null)
-    readonly property real sysMicVolume: activeSource && activeSource.audio ? Math.round(activeSource.audio.volume * 100) : 0
-    readonly property bool sysMicMuted: activeSource && activeSource.audio ? activeSource.audio.muted : false
+    readonly property PwNode activeSource: Audio.effectiveSource
+    readonly property real sysMicVolume: Audio.sourceVolumePercent
+    readonly property bool sysMicMuted: Audio.sourceMuted
 
-    readonly property bool wifiRadioEnabled: Networking.wifiEnabled
-    readonly property bool btRadioEnabled: Boolean(Bluetooth.defaultAdapter && Bluetooth.defaultAdapter.enabled)
-    readonly property bool sysAirplane: !wifiRadioEnabled && !btRadioEnabled
+    readonly property bool wifiRadioEnabled: Connectivity.wifiEnabled
+    readonly property bool btRadioEnabled: Connectivity.bluetoothEnabled
+    readonly property bool sysAirplane: Connectivity.airplaneMode
 
-    property int sysBrightness: 0
+    readonly property int sysBrightness: Brightness.value
+    readonly property bool brightnessInitialized: Brightness.initialized
+    readonly property string brightnessBackend: Brightness.backend
 
     property real lastVolume: -1
     property bool lastMuted: false
@@ -40,10 +42,97 @@ Item {
     property int lastCapsLock: -1
     property int lastNumLock: -1
     property int lastBrightness: -1
-    property bool brightnessInitialized: false
-    property string brightnessBackend: ""
     property bool kbInitialized: false
+    property bool wantsKeyboardLayout: false
+    property bool kbLayoutInitialized: false
+    property bool kbLayoutSettling: false
+    property string lastKeyboardLayout: ""
     property bool isInitialized: false
+
+    SubscriptionGate {
+        target: KeyboardLayout
+        wanted: controller.wantsKeyboardLayout
+    }
+
+    function readWantsKeyboardLayout() {
+        if (typeof Config === "undefined") return false;
+        let osd = (Config.rawSettings && Config.rawSettings.osd) ? Config.rawSettings.osd : null;
+        if (!osd && typeof Config.getSetting === "function") {
+            osd = Config.getSetting("osd", null);
+        }
+        if (!osd || osd.showKeyboardLayout !== true) return false;
+        return osd.orientation !== "vertical";
+    }
+
+    function syncKeyboardLayoutSetting() {
+        let enabled = readWantsKeyboardLayout();
+        if (enabled === controller.wantsKeyboardLayout) return;
+        let wasInactive = !KeyboardLayout.active;
+        if (enabled) {
+            controller.kbLayoutInitialized = false;
+            controller.lastKeyboardLayout = "";
+            controller.wantsKeyboardLayout = true;
+            if (wasInactive) {
+                controller.kbLayoutSettling = true;
+                kbLayoutSettleTimer.restart();
+            }
+            if (KeyboardLayout.ready) {
+                controller.lastKeyboardLayout = KeyboardLayout.fullLayout || KeyboardLayout.layout;
+                controller.kbLayoutInitialized = true;
+            }
+        } else {
+            kbLayoutSettleTimer.stop();
+            controller.kbLayoutSettling = false;
+            controller.kbLayoutInitialized = false;
+            controller.lastKeyboardLayout = "";
+            controller.wantsKeyboardLayout = false;
+        }
+    }
+
+    function handleKeyboardLayoutUpdate() {
+        if (!controller.wantsKeyboardLayout || !KeyboardLayout.ready) return;
+        let current = KeyboardLayout.fullLayout || KeyboardLayout.layout;
+        if (!current) return;
+        if (!controller.kbLayoutInitialized || !controller.isInitialized || controller.kbLayoutSettling) {
+            controller.lastKeyboardLayout = current;
+            controller.kbLayoutInitialized = true;
+            return;
+        }
+        if (current !== controller.lastKeyboardLayout) {
+            controller.lastKeyboardLayout = current;
+            controller.show("layout", KeyboardLayout.layout);
+        }
+    }
+
+    Timer {
+        id: kbLayoutSettleTimer
+        interval: 250
+        repeat: false
+        onTriggered: {
+            controller.kbLayoutSettling = false;
+            if (controller.wantsKeyboardLayout && KeyboardLayout.ready) {
+                controller.lastKeyboardLayout = KeyboardLayout.fullLayout || KeyboardLayout.layout;
+                controller.kbLayoutInitialized = true;
+            }
+        }
+    }
+
+    Connections {
+        target: (typeof Config !== "undefined") ? Config : null
+        function onSettingsLoaded() { controller.syncKeyboardLayoutSetting(); }
+        function onRawSettingsChanged() { controller.syncKeyboardLayoutSetting(); }
+    }
+
+    Connections {
+        target: KeyboardLayout
+        enabled: controller.wantsKeyboardLayout
+        function onFullLayoutChanged() { controller.handleKeyboardLayoutUpdate(); }
+        function onReadyChanged() { controller.handleKeyboardLayoutUpdate(); }
+    }
+
+    Component.onCompleted: {
+        controller.syncKeyboardLayoutSetting();
+    }
 
     Timer {
         id: hideTimer
@@ -68,6 +157,10 @@ Item {
             controller.lastMicMuted = controller.sysMicMuted;
             controller.lastAirplane = controller.sysAirplane;
             controller.lastBrightness = controller.sysBrightness;
+            if (controller.wantsKeyboardLayout && KeyboardLayout.ready) {
+                controller.lastKeyboardLayout = KeyboardLayout.fullLayout || KeyboardLayout.layout;
+                controller.kbLayoutInitialized = true;
+            }
             controller.isInitialized = true;
         }
     }
@@ -112,67 +205,45 @@ Item {
         }
     }
 
+    onBrightnessInitializedChanged: {
+        if (controller.brightnessInitialized) {
+            controller.lastBrightness = controller.sysBrightness;
+            controller.briVal = controller.sysBrightness;
+        }
+    }
+
     onSysBrightnessChanged: {
-        if (!controller.isInitialized) return;
+        controller.briVal = controller.sysBrightness;
+        if (!controller.isInitialized || !controller.brightnessInitialized) {
+            controller.lastBrightness = controller.sysBrightness;
+            return;
+        }
         if (controller.lastBrightness !== controller.sysBrightness) {
             controller.lastBrightness = controller.sysBrightness;
             controller.show("brightness");
         }
     }
 
-    Process {
+    JsonStreamProcess {
         id: kbWatcher
-        running: true
+        active: true
         command: ["serpantinum-core", "watch", "locks"]
-        stdout: SplitParser {
-            onRead: data => {
-                let locks;
-                try {
-                    locks = JSON.parse(data);
-                } catch (e) {
-                    return;
-                }
-                let caps = locks.capsLock ? 1 : 0;
-                let num = locks.numLock ? 1 : 0;
-                if (!controller.kbInitialized) {
-                    controller.lastCapsLock = caps;
-                    controller.lastNumLock = num;
-                    controller.kbInitialized = true;
-                    return;
-                }
-                if (caps !== controller.lastCapsLock) {
-                    controller.lastCapsLock = caps;
-                    controller.show("capslock", caps === 1 ? "on" : "off");
-                }
-                if (num !== controller.lastNumLock) {
-                    controller.lastNumLock = num;
-                    controller.show("numlock", num === 1 ? "on" : "off");
-                }
+        onMessage: locks => {
+            let caps = locks.capsLock ? 1 : 0;
+            let num = locks.numLock ? 1 : 0;
+            if (!controller.kbInitialized) {
+                controller.lastCapsLock = caps;
+                controller.lastNumLock = num;
+                controller.kbInitialized = true;
+                return;
             }
-        }
-    }
-
-    Process {
-        id: briWatcher
-        running: true
-        command: ["serpantinum-core", "watch", "brightness"]
-        stdout: SplitParser {
-            onRead: data => {
-                let state;
-                try {
-                    state = JSON.parse(data);
-                } catch (e) {
-                    return;
-                }
-                controller.brightnessBackend = state.backend || "";
-                let val = state.percent;
-                if (typeof val !== "number" || val < 0) return;
-                if (!controller.brightnessInitialized) {
-                    controller.lastBrightness = val;
-                    controller.brightnessInitialized = true;
-                }
-                controller.sysBrightness = val;
-                controller.briVal = val;
+            if (caps !== controller.lastCapsLock) {
+                controller.lastCapsLock = caps;
+                controller.show("capslock", caps === 1 ? "on" : "off");
+            }
+            if (num !== controller.lastNumLock) {
+                controller.lastNumLock = num;
+                controller.show("numlock", num === 1 ? "on" : "off");
             }
         }
     }
@@ -181,6 +252,9 @@ Item {
         controller.kind = k || "volume";
         if (controller.kind === "brightness" && v !== undefined) {
             controller.briVal = parseInt(v) || 0;
+        } else if (controller.kind === "layout") {
+            controller.stateVal = (v !== undefined && v !== "") ? v.toString() : KeyboardLayout.layout;
+            controller.layoutName = KeyboardLayout.fullLayout;
         } else if (v !== undefined) {
             controller.stateVal = v.toString();
         }

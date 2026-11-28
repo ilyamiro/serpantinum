@@ -24,6 +24,7 @@ Item {
     property var aqiRaw: null
     property real evaluatedFetchedAt: 0
     property real pendingFetchedAt: 0
+    property bool alertsEnabled: true
     property bool lastQuiet: false
     property var queue: []
 
@@ -88,30 +89,28 @@ Item {
     function saveState() {
         if (!stateFile.path) return;
         root.pruneState();
-        stateFile.setText(JSON.stringify({
+        stateFile.save({
             "location": root.locationKey,
             "delivered": root.delivered,
             "lastDelivered": root.lastDelivered
-        }) + "\n");
+        });
     }
 
-    function loadState(text) {
-        try {
-            if (text && text.trim().length > 0) {
-                let data = JSON.parse(text);
-                if (data && typeof data === "object") {
-                    root.locationKey = data.location ? String(data.location) : "";
-                    root.delivered = data.delivered || {};
-                    root.lastDelivered = data.lastDelivered || {};
-                }
-            }
-        } catch (e) {}
+    function loadState(data) {
+        if (data && typeof data === "object") {
+            root.locationKey = data.location ? String(data.location) : "";
+            root.delivered = data.delivered || {};
+            root.lastDelivered = data.lastDelivered || {};
+        }
         root.pruneState();
         root.stateLoaded = true;
         root.maybeReload();
     }
 
     function currentLocationKey() {
+        if (typeof Location !== "undefined" && Location.hasValidCoordinates) {
+            return Location.fingerprint;
+        }
         let d = Weather.data || {};
         if (d.latitude === undefined || d.longitude === undefined) return "";
         return Number(d.latitude).toFixed(2) + "," + Number(d.longitude).toFixed(2);
@@ -161,21 +160,21 @@ Item {
         lasts[alert.kind.indexOf("daily_") === 0 ? "daily" : alert.kind] = now;
         root.lastDelivered = lasts;
         root.saveState();
-        Quickshell.execDetached([
-            "serpantinum-core", "notify",
-            "--app", "Weather",
-            "--urgency", alert.urgency === "critical" ? "critical" : "normal",
-            "--icon", "weather-kind-" + alert.kind,
-            "--",
-            alert.title,
-            alert.body
-        ]);
+        SysNotif.send({
+            app: I18n.t("widgets.types.weather", "Weather"),
+            title: alert.title,
+            body: alert.body,
+            icon: "weather-kind-" + alert.kind,
+            urgency: alert.urgency === "critical" ? "critical" : "normal"
+        });
     }
 
     function maybeReload() {
         let d = Weather.data || {};
         let fetched = Number(d.fetched_at) || 0;
         if (!root.stateLoaded || !Config.dataReady || !I18n.isReady || !weatherDir) return;
+        root.alertsEnabled = root.settings().enabled !== false;
+        if (!root.alertsEnabled) return;
         if (fetched <= 0 || fetched === root.evaluatedFetchedAt || fetched === root.pendingFetchedAt) return;
         root.checkLocation();
         root.pendingFetchedAt = fetched;
@@ -225,17 +224,16 @@ Item {
         }
     }
 
-    FileView {
+    JsonStateFile {
         id: stateFile
         path: root.weatherDir ? root.weatherDir + "/alerts_state.json" : ""
         watchChanges: false
         printErrors: false
-        atomicWrites: true
-        onLoaded: {
-            if (!root.stateLoaded) root.loadState(typeof stateFile.text === "function" ? stateFile.text() : stateFile.text);
+        onLoaded: function(data) {
+            if (!root.stateLoaded) root.loadState(data);
         }
         onLoadFailed: {
-            if (!root.stateLoaded) root.loadState("");
+            if (!root.stateLoaded) root.loadState(null);
         }
     }
 
@@ -284,6 +282,8 @@ Item {
     Connections {
         target: Config
         function onSettingsLoaded() {
+            root.alertsEnabled = root.settings().enabled !== false;
+            root.lastQuiet = root.isQuietNow();
             root.maybeReload();
         }
     }
@@ -307,9 +307,9 @@ Item {
         id: quietTimer
         interval: 60000
         repeat: true
-        running: true
+        running: root.stateLoaded && root.alertsEnabled && (root.lastQuiet || root.evaluatedFetchedAt === 0)
         onTriggered: {
-            if (!root.stateLoaded) return;
+            if (!root.stateLoaded || !root.alertsEnabled) return;
             let quiet = root.isQuietNow();
             if (root.lastQuiet && !quiet) {
                 root.evaluate();
@@ -321,6 +321,7 @@ Item {
     }
 
     Component.onCompleted: {
+        root.alertsEnabled = root.settings().enabled !== false;
         root.lastQuiet = root.isQuietNow();
     }
 }

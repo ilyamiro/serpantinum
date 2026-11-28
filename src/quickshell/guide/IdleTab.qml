@@ -78,33 +78,16 @@ GuideTab {
         "customActions": []
     })
 
-    property var idleSettings: {
-        let s = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings["idle"] : undefined;
-        if (s !== undefined && s !== null) return s;
-        if (typeof Config !== "undefined" && typeof Config.getSetting === "function") {
-            return Config.getSetting("idle", idleTabRoot.defaultIdleSettings);
-        }
-        return idleTabRoot.defaultIdleSettings;
+    ConfigSection {
+        id: idleCfg
+        section: "idle"
+        defaults: idleTabRoot.defaultIdleSettings
     }
 
-    Connections {
-        target: typeof Config !== "undefined" ? Config : null
-        function onSettingsLoaded() {
-            idleTabRoot.idleSettings = Qt.binding(function() {
-                let s = (typeof Config !== "undefined" && Config.rawSettings) ? Config.rawSettings["idle"] : undefined;
-                if (s !== undefined && s !== null) return s;
-                if (typeof Config !== "undefined" && typeof Config.getSetting === "function") {
-                    return Config.getSetting("idle", idleTabRoot.defaultIdleSettings);
-                }
-                return idleTabRoot.defaultIdleSettings;
-            });
-            idleTabRoot.refreshActionIds();
-        }
-    }
-
-    property bool idleEnabled: idleSettings && idleSettings.enabled !== undefined ? idleSettings.enabled : false
-    property bool manualInhibit: idleSettings && idleSettings.manualInhibit !== undefined ? idleSettings.manualInhibit : false
-    property bool lockOnSleep: idleSettings && idleSettings.lockOnSleep !== undefined ? idleSettings.lockOnSleep : true
+    readonly property var idleSettings: idleCfg.values
+    readonly property bool idleEnabled: Boolean(idleSettings.enabled !== undefined ? idleSettings.enabled : false)
+    readonly property bool manualInhibit: Boolean(idleSettings.manualInhibit !== undefined ? idleSettings.manualInhibit : false)
+    readonly property bool lockOnSleep: Boolean(idleSettings.lockOnSleep !== undefined ? idleSettings.lockOnSleep : true)
 
     property var actionIdsList: ["dim", "lock", "dpms", "suspend"]
 
@@ -206,7 +189,7 @@ GuideTab {
     }
 
     function getDefaultResumeCommand(actId) {
-        if (actId === "dpms") return Compositor.name === "niri" ? "niri msg action power-on-monitors" : Compositor.name === "mango" ? "mmsg get all-monitors 2>/dev/null | jq -r '.monitors[]?.name' | while read -r mon; do mmsg dispatch \"wakeup_monitor,$mon\"; done" : Compositor.name === "hyprland" ? "hyprctl dispatch 'hl.dsp.dpms({ action = \"enable\" })' || hyprctl dispatch dpms on" : "";
+        if (actId === "dpms") return Compositor.dpmsCommand(true);
         return I18n.t("guide.idle.resume_command.placeholder", "Resume command");
     }
 
@@ -216,25 +199,21 @@ GuideTab {
         actionObj.id = sanitizeId;
         actionObj.isCustom = true;
 
-        let current = JSON.parse(JSON.stringify(Config.getSetting("idle", defaultIdleSettings) || defaultIdleSettings));
-        if (!current.customActions || !Array.isArray(current.customActions)) current.customActions = [];
-        let customs = current.customActions;
+        let customs = Array.isArray(idleSettings.customActions) ? idleSettings.customActions.slice() : [];
         let idx = customs.findIndex(a => a && a.id === sanitizeId);
         if (idx !== -1) {
             customs[idx] = actionObj;
         } else {
             customs.push(actionObj);
         }
-        current.customActions = customs;
-        Config.setSetting("idle", current);
+        idleCfg.set("customActions", customs);
         idleTabRoot.refreshActionIds();
     }
 
     function deleteCustomAction(actionId) {
-        let current = JSON.parse(JSON.stringify(Config.getSetting("idle", defaultIdleSettings) || defaultIdleSettings));
-        if (!current.customActions || !Array.isArray(current.customActions)) return;
-        current.customActions = current.customActions.filter(a => a && a.id !== actionId);
-        Config.setSetting("idle", current);
+        if (!Array.isArray(idleSettings.customActions)) return;
+        let next = idleSettings.customActions.filter(a => a && a.id !== actionId);
+        idleCfg.set("customActions", next);
         idleTabRoot.refreshActionIds();
     }
 
@@ -258,30 +237,55 @@ GuideTab {
         idleTabRoot.saveCustomAction(newAction);
     }
 
-    function updateActionProp(actionId, isCustom, propKey, value) {
-        if (propKey === "timeout" && (isNaN(value) || value <= 0)) return;
-        let current = JSON.parse(JSON.stringify(Config.getSetting("idle", defaultIdleSettings) || defaultIdleSettings));
+    function updateActionProps(actionId, isCustom, props) {
+        if (!props) return;
+        let keys = Object.keys(props);
+        if (keys.length === 0) return;
 
         if (isCustom) {
-            let customs = (current.customActions && Array.isArray(current.customActions)) ? current.customActions : [];
-            let found = customs.find(a => a && a.id === actionId);
-            if (found) {
-                found[propKey] = value;
-                current.customActions = customs;
-                Config.setSetting("idle", current);
+            let customs = Array.isArray(idleSettings.customActions) ? idleSettings.customActions.map(a => Object.assign({}, a)) : [];
+            let target = customs.find(a => a && a.id === actionId);
+            if (!target) return;
+            let changed = false;
+            for (let i = 0; i < keys.length; i++) {
+                let k = keys[i];
+                let v = props[k];
+                if (k === "timeout" && (isNaN(v) || v <= 0)) continue;
+                if (target[k] !== v) {
+                    target[k] = v;
+                    changed = true;
+                }
             }
-        } else {
-            if (!current.actions) current.actions = JSON.parse(JSON.stringify(defaultIdleSettings.actions));
-            if (!current.actions[actionId]) current.actions[actionId] = JSON.parse(JSON.stringify(defaultIdleSettings.actions[actionId] || {}));
-            current.actions[actionId][propKey] = value;
-            Config.setSetting("idle", current);
+            if (changed) idleCfg.set("customActions", customs);
+            return;
+        }
+
+        let actions = Object.assign({}, defaultIdleSettings.actions, idleSettings.actions || {});
+        let target = Object.assign({}, defaultIdleSettings.actions[actionId] || {}, actions[actionId] || {});
+        let changed = false;
+        for (let i = 0; i < keys.length; i++) {
+            let k = keys[i];
+            let v = props[k];
+            if (k === "timeout" && (isNaN(v) || v <= 0)) continue;
+            if (target[k] !== v) {
+                target[k] = v;
+                changed = true;
+            }
+        }
+        if (changed) {
+            actions[actionId] = target;
+            idleCfg.set("actions", actions);
         }
     }
 
+    function updateActionProp(actionId, isCustom, propKey, value) {
+        let props = {};
+        props[propKey] = value;
+        updateActionProps(actionId, isCustom, props);
+    }
+
     function updateRootSetting(propKey, value) {
-        let current = JSON.parse(JSON.stringify(Config.getSetting("idle", defaultIdleSettings) || defaultIdleSettings));
-        current[propKey] = value;
-        Config.setSetting("idle", current);
+        idleCfg.set(propKey, value);
     }
 
     Component.onCompleted: {
@@ -376,10 +380,9 @@ GuideTab {
                         textColor: ThemeBackend.text
                         borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
                         cornerRadius: ThemeBackend.borderRadius
-                        onAccepted: function(t) {
-                            let val = (typeof t === "string") ? t : text;
-                            idleTabRoot.updateActionProp(actionCard.actId, true, "name", val);
-                        }
+                        onTextEdited: function(t) { actionCard.queuePropUpdate("name", t); }
+                        onAccepted: function(t) { actionCard.commitPropUpdate("name", typeof t === "string" ? t : text); }
+                        onHasFocusChanged: if (!hasFocus) actionCard.flushPendingProps()
                     }
 
                     Input {
@@ -395,10 +398,9 @@ GuideTab {
                         borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
                         cornerRadius: ThemeBackend.borderRadius
                         fontPixelSize: rootObj.s(11)
-                        onAccepted: function(t) {
-                            let val = (typeof t === "string") ? t : text;
-                            idleTabRoot.updateActionProp(actionCard.actId, true, "command", val);
-                        }
+                        onTextEdited: function(t) { actionCard.queuePropUpdate("command", t); }
+                        onAccepted: function(t) { actionCard.commitPropUpdate("command", typeof t === "string" ? t : text); }
+                        onHasFocusChanged: if (!hasFocus) actionCard.flushPendingProps()
                     }
                 }
             }
@@ -423,23 +425,38 @@ GuideTab {
                 }
             }
 
+            property var pendingProps: ({})
+
             Timer {
                 id: cardDebounceTimer
-                interval: 200
+                interval: 250
                 repeat: false
-                property var callback: null
-                onTriggered: {
-                    if (callback) {
-                        callback();
-                        callback = null;
-                    }
-                }
+                onTriggered: actionCard.flushPendingProps()
             }
 
-            function debounceAction(cb) {
-                cardDebounceTimer.callback = cb;
+            function queuePropUpdate(propKey, value) {
+                let next = Object.assign({}, actionCard.pendingProps);
+                next[propKey] = value;
+                actionCard.pendingProps = next;
                 cardDebounceTimer.restart();
             }
+
+            function commitPropUpdate(propKey, value) {
+                let next = Object.assign({}, actionCard.pendingProps);
+                next[propKey] = value;
+                actionCard.pendingProps = next;
+                actionCard.flushPendingProps();
+            }
+
+            function flushPendingProps() {
+                cardDebounceTimer.stop();
+                let props = actionCard.pendingProps;
+                if (!props || Object.keys(props).length === 0) return;
+                actionCard.pendingProps = ({});
+                idleTabRoot.updateActionProps(actionCard.actId, actionCard.isCustomAct, props);
+            }
+
+            Component.onDestruction: actionCard.flushPendingProps()
 
             NumberSelector {
                 Layout.alignment: Qt.AlignVCenter
@@ -464,11 +481,7 @@ GuideTab {
                     let num = (typeof val === "number" && !isNaN(val)) ? val : value;
                     let rounded = Math.round(num);
                     if (!isNaN(rounded) && rounded >= 10 && rounded <= 7200 && actionCard.actTimeout !== rounded) {
-                        let targetId = actionCard.actId;
-                        let isCustom = actionCard.isCustomAct;
-                        actionCard.debounceAction(function() {
-                            idleTabRoot.updateActionProp(targetId, isCustom, "timeout", rounded);
-                        });
+                        actionCard.queuePropUpdate("timeout", rounded);
                     }
                 }
             }
@@ -614,10 +627,9 @@ GuideTab {
                                 borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
                                 cornerRadius: ThemeBackend.borderRadius
                                 fontPixelSize: rootObj.s(11)
-                                onAccepted: function(t) {
-                                    let val = (typeof t === "string") ? t : text;
-                                    idleTabRoot.updateActionProp(actionCard.actId, actionCard.isCustomAct, "warningCommand", val);
-                                }
+                                onTextEdited: function(t) { actionCard.queuePropUpdate("warningCommand", t); }
+                                onAccepted: function(t) { actionCard.commitPropUpdate("warningCommand", typeof t === "string" ? t : text); }
+                                onHasFocusChanged: if (!hasFocus) actionCard.flushPendingProps()
                             }
 
                             NumberSelector {
@@ -643,11 +655,7 @@ GuideTab {
                                     let num = (typeof val === "number" && !isNaN(val)) ? val : value;
                                     let rounded = Math.max(0, Math.round(num));
                                     if (!isNaN(rounded) && actionCard.actWarningTimeout !== rounded) {
-                                        let targetId = actionCard.actId;
-                                        let isCustom = actionCard.isCustomAct;
-                                        actionCard.debounceAction(function() {
-                                            idleTabRoot.updateActionProp(targetId, isCustom, "warningTimeout", rounded);
-                                        });
+                                        actionCard.queuePropUpdate("warningTimeout", rounded);
                                     }
                                 }
                             }
@@ -681,10 +689,9 @@ GuideTab {
                                 borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
                                 cornerRadius: ThemeBackend.borderRadius
                                 fontPixelSize: rootObj.s(11)
-                                onAccepted: function(t) {
-                                    let val = (typeof t === "string") ? t : text;
-                                    idleTabRoot.updateActionProp(actionCard.actId, actionCard.isCustomAct, "beforeCommand", val);
-                                }
+                                onTextEdited: function(t) { actionCard.queuePropUpdate("beforeCommand", t); }
+                                onAccepted: function(t) { actionCard.commitPropUpdate("beforeCommand", typeof t === "string" ? t : text); }
+                                onHasFocusChanged: if (!hasFocus) actionCard.flushPendingProps()
                             }
                         }
 
@@ -716,10 +723,9 @@ GuideTab {
                                 borderColor: Qt.alpha(ThemeBackend.surface2, 0.6)
                                 cornerRadius: ThemeBackend.borderRadius
                                 fontPixelSize: rootObj.s(11)
-                                onAccepted: function(t) {
-                                    let val = (typeof t === "string") ? t : text;
-                                    idleTabRoot.updateActionProp(actionCard.actId, actionCard.isCustomAct, "resumeCommand", val);
-                                }
+                                onTextEdited: function(t) { actionCard.queuePropUpdate("resumeCommand", t); }
+                                onAccepted: function(t) { actionCard.commitPropUpdate("resumeCommand", typeof t === "string" ? t : text); }
+                                onHasFocusChanged: if (!hasFocus) actionCard.flushPendingProps()
                             }
                         }
                     }
@@ -728,20 +734,8 @@ GuideTab {
         }
     }
 
-    Flickable {
-        anchors.fill: parent
-        anchors.topMargin: rootObj.s(8)
-        anchors.leftMargin: rootObj.s(8)
-        anchors.rightMargin: rootObj.s(8)
-        anchors.bottomMargin: rootObj.s(8)
-        contentHeight: settingsCol.implicitHeight
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
-
-        ColumnLayout {
-            id: settingsCol
-            width: parent.width
-            spacing: rootObj.s(6)
+    GuideScrollView {
+        rootObj: idleTabRoot.rootObj
 
             SettingsBlob {
                 SettingsRow {
@@ -908,4 +902,3 @@ GuideTab {
             }
         }
     }
-}

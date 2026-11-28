@@ -38,15 +38,6 @@ Rectangle {
     property Item glassBackdropItem: null
     readonly property alias faceItem: faceLoader.item
 
-    readonly property var helpButton: (faceLoader.item && faceLoader.item.helpButton) ? faceLoader.item.helpButton : null
-    readonly property var volPill: (faceLoader.item && faceLoader.item.volPill) ? faceLoader.item.volPill : null
-    readonly property var kbPill: (faceLoader.item && faceLoader.item.kbPill) ? faceLoader.item.kbPill : null
-    readonly property var wifiPill: (faceLoader.item && faceLoader.item.wifiPill) ? faceLoader.item.wifiPill : null
-    readonly property var btPill: (faceLoader.item && faceLoader.item.btPill) ? faceLoader.item.btPill : null
-    readonly property var batPill: (faceLoader.item && faceLoader.item.batPill) ? faceLoader.item.batPill : null
-    readonly property var recRow: (faceLoader.item && faceLoader.item.recRow) ? faceLoader.item.recRow : null
-    readonly property var recCol: (faceLoader.item && faceLoader.item.recCol) ? faceLoader.item.recCol : null
-
     property real targetX: isVertical ? (barWindow ? ((barWindow.baseOffsetX !== undefined ? barWindow.baseOffsetX : 0) + (barWindow.barHeight - width) / 2) : 0) : 0
     property real targetY: 0
 
@@ -62,11 +53,11 @@ Rectangle {
         if (implicitLength !== undefined && implicitLength > 0) {
             return implicitLength;
         }
-        return (isVertical ? faceLoader.item.height : faceLoader.item.width) || 0;
+        return 0;
     }
 
-    property real targetWidth: isVertical ? width : effectiveTargetLength
-    property real targetHeight: isVertical ? effectiveTargetLength : height
+    property real targetWidth: isVertical ? thickness : effectiveTargetLength
+    property real targetHeight: isVertical ? effectiveTargetLength : thickness
 
     x: targetX
     Behavior on x {

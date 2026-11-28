@@ -119,6 +119,9 @@ Rectangle {
         SettingsRow {
             visible: monDelegate.tab.monitorsList.length > 1
             rootObj: monDelegate.rootObj
+            settingId: "display_monitor_enable_" + monDelegate.monName
+            section: monDelegate.monName
+            searchKeywords: "display monitor screen output enable disable power on off " + monDelegate.monName
             baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
             icon: "󰐥"
             title: I18n.t("guide.display.enable.title", "Enable Monitor")
@@ -147,6 +150,9 @@ Rectangle {
 
         SettingsGroup {
             rootObj: monDelegate.rootObj
+            settingId: "display_gamma_" + monDelegate.monName
+            section: monDelegate.monName
+            searchKeywords: "display night light blue light filter gamma redshift warm eye care " + monDelegate.monName
             icon: "󰖔"
             title: I18n.t("guide.display.gamma.title")
             description: I18n.t("guide.display.gamma.desc")
@@ -176,6 +182,9 @@ Rectangle {
             subSettings: [
                 SettingsRow {
                     rootObj: monDelegate.rootObj
+                    settingId: "display_gamma_schedule_" + monDelegate.monName
+                    section: monDelegate.monName
+                    searchKeywords: "display night light blue light gamma schedule sunset sunrise automatic " + monDelegate.monName
                     baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                     icon: "󰥔"
                     title: I18n.t("guide.display.schedule.title")
@@ -222,6 +231,9 @@ Rectangle {
                         anchors.right: parent.right
                         anchors.top: parent.top
                         rootObj: monDelegate.rootObj
+                        settingId: "display_gamma_temp_" + monDelegate.monName
+                        section: monDelegate.monName
+                        searchKeywords: "display color temperature kelvin warm night light blue light gamma " + monDelegate.monName
                         baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
                         icon: "󰔏"
                         title: I18n.t("guide.display.temperature.title")
@@ -263,6 +275,9 @@ Rectangle {
         SettingsRow {
             visible: monDelegate.tab.compositor !== "mango"
             rootObj: monDelegate.rootObj
+            settingId: "display_uiscale_" + monDelegate.monName
+            section: monDelegate.monName
+            searchKeywords: "display ui scale scaling hidpi dpi fractional zoom monitor " + monDelegate.monName
             baseColor: Qt.alpha(ThemeBackend.surface1, 0.35)
             icon: "󰍍"
             title: I18n.t("guide.display.uiscale.title")

@@ -79,7 +79,7 @@ Item {
                         accentColor: ThemeBackend.surface1
                         bgOpacity: ThemeBackend.elementOpacity
                         textColor: ThemeBackend.text
-                        onClicked: Quickshell.execDetached(["bash", "-c", Caching.serpantinumDir + "/scripts/qs_manager.sh toggle settings"])
+                        onClicked: ShellRouter.toggle("settings")
                     }
 
                     ClickButton {
@@ -115,190 +115,37 @@ Item {
                         { cmd: "poweroff", icon: "", weight: 3.0, color: ThemeBackend.red }
                     ]
 
-                    delegate: Rectangle {
+                    delegate: FillButton {
                         id: actionCapsule
+                        required property var modelData
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        radius: ThemeBackend.borderRadius > 0 ? Math.min(ThemeBackend.borderRadius, Scaler.s(8)) : Scaler.s(8)
-                        clip: true
+                        vertical: true
+                        horizontalPadding: 0
+                        cornerRadius: ThemeBackend.borderRadius > 0 ? Math.min(ThemeBackend.borderRadius, Scaler.s(8)) : Scaler.s(8)
+                        buttonIcon: modelData.icon
+                        buttonText: ""
+                        iconFontSize: Scaler.s(16)
+                        accentColor: modelData.color
+                        baseColor: ThemeBackend.surface1
+                        hoverColor: ThemeBackend.surface2 !== undefined ? ThemeBackend.surface2 : Qt.lighter(ThemeBackend.surface1, 1.12)
+                        bgOpacity: ThemeBackend.elementOpacity
+                        textColor: ThemeBackend.text
+                        restTextColor: ThemeBackend.subtext0
+                        filledTextColor: ThemeBackend.crust
+                        fillDuration: Math.round(550 * modelData.weight)
+                        autoResetTimeout: 450
 
-                        property real fillLevel: 0.0
-                        property bool triggered: false
-                        property real flashOpacity: 0.0
-                        property int chargingSoundHandle: -1
-                        property color fillColor: modelData.color
-                        property real weight: modelData.weight
-                        property string cmd: modelData.cmd
-                        property string icon: modelData.icon
-
-                        color: Qt.alpha(actionMa.containsMouse ? (ThemeBackend.surface2 !== undefined ? ThemeBackend.surface2 : Qt.lighter(ThemeBackend.surface1, 1.12)) : ThemeBackend.surface1, ThemeBackend.elementOpacity)
-                        Behavior on color {
-                            ColorAnimation { duration: 250 }
-                        }
-
-                        scale: actionMa.pressed ? (0.98 - (0.01 * weight)) : (actionMa.containsMouse ? 1.02 : 1.0)
-                        Behavior on scale {
-                            NumberAnimation { duration: 400; easing.type: Easing.OutQuart }
-                        }
-
-                        FluidWave {
-                            id: actionWaveCanvas
-                            anchors.fill: parent
-                            visible: actionCapsule.fillLevel > 0.001
-
-                            property real wavePhase: 0.0
-                            NumberAnimation on wavePhase {
-                                running: actionCapsule.fillLevel > 0.0 && actionCapsule.fillLevel < 1.0
-                                loops: Animation.Infinite
-                                from: 0
-                                to: Math.PI * 2
-                                duration: 800
-                            }
-
-                            radius: actionCapsule.radius
-                            fillLevel: actionCapsule.fillLevel
-                            waveAmp: actionCapsule.fillLevel < 0.99 ? (Scaler.s(8) * Math.sin(actionCapsule.fillLevel * Math.PI)) : 0
-                            phase: wavePhase
-                            vertical: 1.0
-                            color1: actionCapsule.fillColor
-                            color2: actionCapsule.fillColor
-                        }
-
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: actionCapsule.radius
-                            color: "#ffffff"
-                            opacity: actionCapsule.flashOpacity
-                            PropertyAnimation on opacity {
-                                id: cardFlashAnim
-                                to: 0
-                                duration: 500
-                                easing.type: Easing.OutExpo
-                            }
-                        }
-
-                        Text {
-                            anchors.centerIn: parent
-                            font.family: ThemeBackend.iconFont
-                            font.pixelSize: Scaler.s(16)
-                            color: actionMa.containsMouse ? ThemeBackend.text : ThemeBackend.subtext0
-                            text: actionCapsule.icon
-                            Behavior on color {
-                                ColorAnimation { duration: 150 }
-                            }
-                        }
-
-                        Item {
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            anchors.bottom: parent.bottom
-                            height: actionCapsule.height * actionCapsule.fillLevel
-                            clip: true
-
-                            Text {
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                y: (actionCapsule.height / 2) - (height / 2) - (actionCapsule.height - parent.height)
-                                font.family: ThemeBackend.iconFont
-                                font.pixelSize: Scaler.s(16)
-                                color: ThemeBackend.crust
-                                text: actionCapsule.icon
-                            }
-                        }
-
-                        MouseArea {
-                            id: actionMa
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: actionCapsule.triggered ? Qt.ArrowCursor : Qt.PointingHandCursor
-
-                            onPressed: {
-                                if (!actionCapsule.triggered) {
-                                    if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                        Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                        actionCapsule.chargingSoundHandle = -1;
-                                    }
-                                    if (typeof Sounds !== "undefined") {
-                                        actionCapsule.chargingSoundHandle = Sounds.playUntilStopped("reusables/fillbutton/charge_loop.wav", 0.6, false);
-                                    }
-                                    drainAnim.stop();
-                                    fillAnim.start();
-                                }
-                            }
-
-                            onReleased: {
-                                if (!actionCapsule.triggered && actionCapsule.fillLevel < 1.0) {
-                                    if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                        Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                        actionCapsule.chargingSoundHandle = -1;
-                                    }
-                                    fillAnim.stop();
-                                    drainAnim.start();
-                                }
-                            }
-
-                            onCanceled: {
-                                if (!actionCapsule.triggered) {
-                                    if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                        Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                        actionCapsule.chargingSoundHandle = -1;
-                                    }
-                                    fillAnim.stop();
-                                    drainAnim.start();
-                                }
-                            }
-                        }
-
-                        NumberAnimation {
-                            id: fillAnim
-                            target: actionCapsule
-                            property: "fillLevel"
-                            to: 1.0
-                            duration: (550 * weight) * (1.0 - actionCapsule.fillLevel)
-                            easing.type: Easing.InSine
-                            onFinished: {
-                                actionCapsule.triggered = true;
-                                actionCapsule.flashOpacity = 0.6;
-                                if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                    Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                    actionCapsule.chargingSoundHandle = -1;
-                                }
-                                if (typeof Sounds !== "undefined") {
-                                    Sounds.playSfx("reusables/fillbutton/button.wav");
-                                }
-                                cardFlashAnim.start();
-                                drainAnim.start();
-                                exitTimer.start();
-                            }
-                        }
-
-                        NumberAnimation {
-                            id: drainAnim
-                            target: actionCapsule
-                            property: "fillLevel"
-                            to: 0.0
-                            duration: 1500 * actionCapsule.fillLevel
-                            easing.type: Easing.OutQuad
-                        }
+                        onTriggered: exitTimer.restart()
 
                         Timer {
                             id: exitTimer
                             interval: 450
+                            repeat: false
                             onTriggered: {
-                                if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                    Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                    actionCapsule.chargingSoundHandle = -1;
-                                }
+                                let cmd = actionCapsule.modelData.cmd;
                                 let scriptPath = Caching.serpantinumDir + "/scripts/system/" + (cmd === "sleep" ? "suspend.sh" : cmd + ".sh");
                                 Quickshell.execDetached(["bash", scriptPath]);
-                                actionCapsule.fillLevel = 0.0;
-                                actionCapsule.triggered = false;
-                            }
-                        }
-
-                        Component.onDestruction: {
-                            if (actionCapsule.chargingSoundHandle !== -1 && typeof Sounds !== "undefined") {
-                                Sounds.stopSfx(actionCapsule.chargingSoundHandle);
-                                actionCapsule.chargingSoundHandle = -1;
                             }
                         }
                     }

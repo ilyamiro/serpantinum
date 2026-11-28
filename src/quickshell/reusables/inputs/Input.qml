@@ -45,13 +45,8 @@ FocusScope {
     property int charSlotWidth: -1
     property int charSpacing: 1
     property alias symbolSpacing: root.charSpacing
-    readonly property real charSlotStep: (root.charSlotWidth > 0 ? root.charSlotWidth : globalCharMetrics.width) + root.charSpacing
-    property real scrollShift: 0
-    readonly property bool contentFits: charRow.contentWidth <= fieldArea.width
-    readonly property real alignOffset: root.contentFits ? root.computeRowX(charRow.contentWidth, fieldArea.width) : 0
-    readonly property real scrollOffset: root.alignOffset + root.scrollShift
-
-    Behavior on scrollShift { NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
+    readonly property real charSlotStep: charField.charSlotStep
+    readonly property real scrollOffset: charField.scrollOffset
 
     property var maskPainter: function(ctx, size, color) {
         ctx.beginPath();
@@ -67,7 +62,7 @@ FocusScope {
     property bool enabled: true
     property bool hasError: false
     property bool isBusy: false
-    readonly property bool hasFocus: root.multiLine ? innerTextEdit.activeFocus : innerInput.activeFocus
+    readonly property bool hasFocus: root.multiLine ? innerTextEdit.activeFocus : charField.hasFocus
     property bool action_highlight: false
     property bool isHoveredOrHighlighted: mainHover.hovered || root.action_highlight
     property bool isWidgetVisible: true
@@ -112,7 +107,7 @@ FocusScope {
                             if (root.multiLine) {
                                 innerTextEdit.focus = false;
                             } else {
-                                innerInput.focus = false;
+                                charField.releaseFocus();
                             }
                             root.focus = false;
                         }
@@ -130,15 +125,13 @@ FocusScope {
     }
 
     function clear() {
-        if ((root.multiLine ? innerTextEdit.text !== "" : innerInput.text !== "") && typeof Sounds !== "undefined") {
+        if ((root.multiLine ? innerTextEdit.text !== "" : charField.inputText !== "") && typeof Sounds !== "undefined") {
             Sounds.playSfx(root.keySound);
         }
         if (root.multiLine) {
             innerTextEdit.text = "";
         } else {
-            innerInput.text = "";
-            charModel.clear();
-            root.scrollShift = 0;
+            charField.clear();
         }
         root.text = "";
         root.cleared();
@@ -148,7 +141,7 @@ FocusScope {
         if (root.multiLine) {
             innerTextEdit.forceActiveFocus();
         } else {
-            innerInput.forceActiveFocus();
+            charField.forceInputFocus();
         }
     }
 
@@ -156,7 +149,7 @@ FocusScope {
         if (root.multiLine) {
             innerTextEdit.focus = false;
         } else {
-            innerInput.focus = false;
+            charField.releaseFocus();
         }
         root.focus = false;
     }
@@ -168,59 +161,17 @@ FocusScope {
         }
     }
 
-    function computeRowX(rowWidth, fieldWidth) {
-        switch (root.horizontalAlignment) {
-            case TextInput.AlignHCenter:
-            case Qt.AlignHCenter:
-                return (fieldWidth - rowWidth) / 2;
-            case TextInput.AlignRight:
-            case Qt.AlignRight:
-                return fieldWidth - rowWidth;
-            default:
-                return 0;
-        }
-    }
-
     function updateScroll() {
-        let totalW = charRow.contentWidth;
-        let visibleW = fieldArea.width;
-
-        if (visibleW <= 0) {
-            return;
-        }
-
-        if (totalW <= visibleW) {
-            root.scrollShift = 0;
-            return;
-        }
-
-        let curX = innerInput.cursorPosition * root.charSlotStep;
-        let minOffset = visibleW - totalW;
-        let maxOffset = 0;
-        let margin = 4;
-        let curScreenX = curX + root.scrollOffset;
-
-        if (curScreenX < margin) {
-            root.scrollShift = Math.min(maxOffset, Math.max(minOffset, margin - curX));
-        } else if (curScreenX > visibleW - margin - 2) {
-            root.scrollShift = Math.min(maxOffset, Math.max(minOffset, visibleW - margin - 2 - curX));
-        } else {
-            root.scrollShift = Math.min(maxOffset, Math.max(minOffset, root.scrollShift));
-        }
+        charField.updateScroll();
     }
-
-    onHorizontalAlignmentChanged: updateScroll()
 
     onTextChanged: {
         if (root.multiLine) {
             if (innerTextEdit.text !== root.text) {
                 innerTextEdit.text = root.text;
             }
-        } else {
-            if (innerInput.text !== root.text) {
-                innerInput.text = root.text;
-                syncModel();
-            }
+        } else if (charField.text !== root.text) {
+            charField.text = root.text;
         }
     }
 
@@ -228,37 +179,6 @@ FocusScope {
         if (hasFocus) {
             focusPopAnim.restart();
         }
-    }
-
-    function syncModel() {
-        let str = innerInput.text;
-        let oldCount = charModel.count;
-        let newCount = str.length;
-
-        let prefix = 0;
-        while (prefix < oldCount && prefix < newCount && charModel.get(prefix).char === str[prefix]) {
-            prefix++;
-        }
-
-        let suffix = 0;
-        while (suffix < (oldCount - prefix) && suffix < (newCount - prefix) && charModel.get(oldCount - 1 - suffix).char === str[newCount - 1 - suffix]) {
-            suffix++;
-        }
-
-        let deleteCount = oldCount - prefix - suffix;
-        if (deleteCount > 0) {
-            charModel.remove(prefix, deleteCount);
-        }
-
-        let insertStr = str.slice(prefix, newCount - suffix);
-        for (let i = 0; i < insertStr.length; i++) {
-            charModel.insert(prefix + i, { char: insertStr[i], stillPeeking: true });
-        }
-
-        if (root.masked && root.revealTyping) {
-            globalRevealTimer.restart();
-        }
-        updateScroll();
     }
 
     Process {
@@ -278,27 +198,6 @@ FocusScope {
         id: focusPopAnim
         NumberAnimation { target: root; property: "focusPop"; to: 1.03; duration: 110; easing.type: Easing.OutQuad }
         NumberAnimation { target: root; property: "focusPop"; to: 1.0; duration: 380; easing.type: Easing.OutQuint }
-    }
-
-    TextMetrics {
-        id: globalCharMetrics
-        font.family: root.fontFamily
-        font.pixelSize: root.fontPixelSize
-        text: "0"
-    }
-
-    ListModel {
-        id: charModel
-    }
-
-    Timer {
-        id: globalRevealTimer
-        interval: root.revealDuration
-        onTriggered: {
-            for (let i = 0; i < charModel.count; i++) {
-                charModel.setProperty(i, "stillPeeking", false);
-            }
-        }
     }
 
     HoverHandler {
@@ -370,185 +269,45 @@ FocusScope {
             Layout.fillWidth: true
             Layout.fillHeight: true
             clip: true
-            onWidthChanged: root.updateScroll()
 
-            Text {
-                id: placeholderLabel
-                visible: !root.multiLine
-                text: root.placeholderText
-                font.family: root.fontFamily
-                font.pixelSize: root.fontPixelSize
-                color: glass.active ? "#ffffff" : root.subTextColor
-                opacity: (innerInput.text.length === 0 && charModel.count === 0) ? (glass.active ? 1.0 : 0.45) : 0.0
-                x: root.computeRowX(implicitWidth, fieldArea.width)
-                anchors.verticalCenter: parent.verticalCenter
-                Behavior on opacity { NumberAnimation { duration: 150 } }
-            }
-
-            Rectangle {
-                id: selectionHighlight
-                visible: !root.multiLine
-                readonly property int selMin: Math.min(innerInput.selectionStart, innerInput.selectionEnd)
-                readonly property int selMax: Math.max(innerInput.selectionStart, innerInput.selectionEnd)
-                readonly property bool hasSelection: selMax > selMin
-
-                anchors.verticalCenter: parent.verticalCenter
-                height: Math.min(parent.height - 4, root.fontPixelSize * 1.7)
-                radius: 4
-                color: root.activeSignalColor
-                opacity: hasSelection ? 0.28 : 0.0
-
-                property real selX: selMin * root.charSlotStep - 2
-                x: root.scrollOffset + selX
-                width: hasSelection ? ((selMax - selMin) * root.charSlotStep - root.charSpacing + 4) : 0
-
-                Behavior on opacity { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
-                Behavior on selX { NumberAnimation { duration: 60; easing.type: Easing.OutQuad } }
-                Behavior on width { NumberAnimation { duration: 60; easing.type: Easing.OutQuad } }
-            }
-
-            ListView {
-                id: charRow
-                visible: !root.multiLine
-                height: parent.height
-                anchors.verticalCenter: parent.verticalCenter
-                orientation: ListView.Horizontal
-                interactive: false
-                boundsBehavior: Flickable.StopAtBounds
-                spacing: root.charSpacing
-                width: contentWidth
-                x: root.scrollOffset
-                model: charModel
-
-                onContentWidthChanged: root.updateScroll()
-
-                property int entranceDuration: 420
-                property real entranceOvershoot: 3.2
-                property int exitDuration: 160
-
-                add: Transition {
-                    ParallelAnimation {
-                        NumberAnimation { property: "scale"; from: 0.3; to: 1.0; duration: charRow.entranceDuration; easing.type: Easing.OutBack; easing.overshoot: charRow.entranceOvershoot }
-                        NumberAnimation { property: "y"; from: 10; to: 0; duration: charRow.entranceDuration; easing.type: Easing.OutBack; easing.overshoot: charRow.entranceOvershoot * 0.8 }
-                        NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 150; easing.type: Easing.OutCubic }
-                    }
-                }
-
-                remove: Transition {
-                    ParallelAnimation {
-                        NumberAnimation { property: "scale"; to: 0.3; duration: charRow.exitDuration; easing.type: Easing.InBack }
-                        NumberAnimation { property: "y"; to: -8; duration: charRow.exitDuration; easing.type: Easing.InCubic }
-                        NumberAnimation { property: "opacity"; to: 0; duration: charRow.exitDuration * 0.9; easing.type: Easing.InCubic }
-                    }
-                }
-
-                displaced: Transition {
-                    NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutBack; easing.overshoot: 1.6 }
-                }
-
-                delegate: Item {
-                    id: slot
-                    property bool stillPeeking: model.stillPeeking !== undefined ? model.stillPeeking : true
-                    width: root.charSlotWidth > 0 ? root.charSlotWidth : globalCharMetrics.width
-                    height: charRow.height
-                    transformOrigin: Item.Center
-                    property bool revealed: !root.masked || (root.revealTyping && stillPeeking)
-
-                    Text {
-                        anchors.centerIn: parent
-                        visible: slot.revealed
-                        text: model.char
-                        color: root.textColor
-                        font.family: root.fontFamily
-                        font.pixelSize: root.fontPixelSize
-                    }
-
-                    Loader {
-                        anchors.centerIn: parent
-                        active: root.masked
-                        sourceComponent: Canvas {
-                            id: maskCanvas
-                            visible: !slot.revealed
-                            width: root.fontPixelSize
-                            height: root.fontPixelSize
-                            onPaint: {
-                                var ctx = getContext("2d");
-                                ctx.reset();
-                                root.maskPainter(ctx, width, root.textColor);
-                            }
-                            Connections {
-                                target: root
-                                function onTextColorChanged() { maskCanvas.requestPaint(); }
-                            }
-                        }
-                    }
-                }
-            }
-
-            Rectangle {
-                id: caretRect
-                width: 2
-                height: root.fontPixelSize * 1.2
-                color: root.caretColor
-                visible: !root.multiLine && root.showCaret && (root.hasFocus || root.action_highlight)
-                anchors.verticalCenter: parent.verticalCenter
-                property real slotX: innerInput.cursorPosition * root.charSlotStep
-                x: root.scrollOffset + slotX
-
-                Behavior on slotX { NumberAnimation { duration: 250; easing.type: Easing.OutQuad } }
-
-                SequentialAnimation on opacity {
-                    running: !root.multiLine && root.showCaret && (root.hasFocus || root.action_highlight) && root.isWidgetVisible
-                    loops: Animation.Infinite
-                    NumberAnimation { to: 0; duration: 100; easing.type: Easing.InQuad }
-                    PauseAnimation { duration: 400 }
-                    NumberAnimation { to: 1; duration: 100; easing.type: Easing.OutQuad }
-                    PauseAnimation { duration: 400 }
-                }
-            }
-
-            TextInput {
-                id: innerInput
-                visible: !root.multiLine
+            AnimatedCharField {
+                id: charField
                 anchors.fill: parent
-                focus: !root.multiLine
-                opacity: 0
-                color: "transparent"
-                selectionColor: "transparent"
-                selectedTextColor: "transparent"
-                selectByMouse: true
-                mouseSelectionMode: TextInput.SelectCharacters
+                visible: !root.multiLine
+                text: root.text
+                placeholderText: root.placeholderText
+                fontFamily: root.fontFamily
+                fontPixelSize: root.fontPixelSize
+                textColor: root.textColor
+                placeholderColor: glass.active ? "#ffffff" : root.subTextColor
+                placeholderOpacity: glass.active ? 1.0 : 0.45
+                selectionColor: root.activeSignalColor
+                caretColor: root.caretColor
                 horizontalAlignment: root.horizontalAlignment
-                font.family: root.fontFamily
-                font.pixelSize: root.fontPixelSize
-                enabled: !root.multiLine && root.enabled && !root.isBusy
-                maximumLength: root.maximumLength > 0 ? root.maximumLength : 32767
+                charSlotWidth: root.charSlotWidth
+                charSpacing: root.charSpacing
+                maximumLength: root.maximumLength
                 validator: root.validator
+                masked: root.masked
+                revealTyping: root.revealTyping
+                revealDuration: root.revealDuration
+                maskPainter: root.maskPainter
+                enabled: !root.multiLine && root.enabled && !root.isBusy
+                inputFocus: !root.multiLine
+                showCaret: root.showCaret
+                actionHighlight: root.action_highlight
+                isWidgetVisible: root.isWidgetVisible
 
-                onCursorPositionChanged: root.updateScroll()
-                onSelectionStartChanged: root.updateScroll()
-                onSelectionEndChanged: root.updateScroll()
-
-                Keys.onPressed: function(event) {
-                    if (event.matches(StandardKey.Copy) || (event.modifiers & Qt.ControlModifier && event.key === Qt.Key_C)) {
-                        if (innerInput.selectedText.length > 0) {
-                            root.copyToClipboard(innerInput.selectedText);
-                            event.accepted = true;
-                        }
-                    }
-                }
-
-                onTextEdited: {
-                    root.text = text;
-                    syncModel();
+                onCopyRequested: function(sel) { root.copyToClipboard(sel); }
+                onTextEdited: function(newText) {
+                    root.text = newText;
                     if (typeof Sounds !== "undefined") {
                         Sounds.playSfx(root.keySound);
                     }
-                    root.textEdited(text);
+                    root.textEdited(newText);
                 }
-
-                onAccepted: {
-                    root.accepted(text);
+                onAccepted: function(finalText) {
+                    root.accepted(finalText);
                     root.triggered();
                 }
             }
@@ -577,16 +336,7 @@ FocusScope {
                     }
                 }
 
-                ScrollBar.vertical: ScrollBar {
-                    active: multiFlickable.moving || multiFlickable.movingVertically
-                    width: 4
-                    policy: ScrollBar.AsNeeded
-                    contentItem: Rectangle {
-                        implicitWidth: 4
-                        radius: 2
-                        color: ThemeBackend.surface2
-                    }
-                }
+                ScrollBar.vertical: StyledScrollBar {}
 
                 Text {
                     id: multiPlaceholder
@@ -706,7 +456,7 @@ FocusScope {
 
         Item {
             id: trailingWrapper
-            visible: (root.trailingIcon !== "" || (root.showClearButton && innerInput.text.length > 0)) && !root.multiLine
+            visible: (root.trailingIcon !== "" || (root.showClearButton && charField.inputText.length > 0)) && !root.multiLine
             Layout.preferredWidth: trailingTxt.implicitWidth + 16
             Layout.fillHeight: true
 
@@ -726,7 +476,7 @@ FocusScope {
             Text {
                 id: trailingTxt
                 anchors.centerIn: parent
-                text: root.showClearButton && innerInput.text.length > 0 ? "󰅖" : root.trailingIcon
+                text: root.showClearButton && charField.inputText.length > 0 ? "󰅖" : root.trailingIcon
                 font.family: root.iconFont
                 font.pixelSize: root.fontPixelSize
                 color: trailingMa.containsMouse ? root.textColor : root.subTextColor
@@ -738,7 +488,7 @@ FocusScope {
                 anchors.fill: parent
                 hoverEnabled: root.enabled
                 cursorShape: Qt.PointingHandCursor
-                visible: root.showClearButton && innerInput.text.length > 0
+                visible: root.showClearButton && charField.inputText.length > 0
                 onClicked: {
                     if (typeof Sounds !== "undefined") {
                         Sounds.playSfx(root.clickSound);

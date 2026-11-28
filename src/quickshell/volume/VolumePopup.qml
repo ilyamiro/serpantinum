@@ -9,14 +9,8 @@ import Quickshell.Services.Pipewire
 import "../"
 import "../reusables"
 
-Item {
+HostedPanel {
     id: window
-    visible: false
-    focus: true
-
-    function s(val) {
-        return Scaler.s(val);
-    }
 
     function gotoTab(tabName) {
         if (!tabName) return;
@@ -25,8 +19,6 @@ Item {
         else if (t === "input" || t === "inputs" || t === "source" || t === "sources") window.activeTab = "inputs";
         else if (t === "app" || t === "apps" || t === "stream" || t === "streams") window.activeTab = "apps";
     }
-
-    property var exitCallback: null
 
     function startExit(onFinished) {
         introAnim.stop();
@@ -42,19 +34,12 @@ Item {
         introAnim.restart();
     }
 
-    Timer {
-        id: focusTimer
-        interval: 50
-        repeat: false
-        onTriggered: window.forceActiveFocus()
-    }
-
     onVisibleChanged: {
         if (visible) {
-            forceActiveFocus();
-            focusTimer.restart();
+            window.scheduleFocus();
             resetAndPlayIntro();
         } else {
+            window.stopFocusTimer();
             introAnim.stop();
             exitAnim.stop();
             introMain = 0;
@@ -65,8 +50,7 @@ Item {
 
     Component.onCompleted: {
         if (visible) {
-            forceActiveFocus();
-            focusTimer.restart();
+            window.scheduleFocus();
             resetAndPlayIntro();
         }
     }
@@ -107,11 +91,11 @@ Item {
 
     readonly property PwNode activeNode: {
         if (window.activeTab === "inputs") {
-            return Audio.defaultSource || (Audio.inputs.length > 0 ? Audio.inputs[0] : null);
+            return Audio.effectiveSource;
         } else if (window.activeTab === "apps") {
             return Audio.apps.length > 0 ? Audio.apps[0] : null;
         } else {
-            return Audio.defaultSink || (Audio.outputs.length > 0 ? Audio.outputs[0] : null);
+            return Audio.effectiveSink;
         }
     }
 
@@ -172,13 +156,7 @@ Item {
             }
         }
         ScriptAction {
-            script: {
-                if (window.exitCallback) {
-                    let cb = window.exitCallback;
-                    window.exitCallback = null;
-                    cb();
-                }
-            }
+            script: window.finishExit()
         }
     }
 
@@ -401,10 +379,7 @@ Item {
                                     if (!window.activeNode) return;
                                     let delta = wheel.angleDelta.y > 0 ? 5 : -5;
                                     let newVol = Math.max(0, Math.min(100, window.activeVol + delta));
-                                    if (newVol > 0 && window.activeMute) {
-                                        Audio.toggleMute(window.activeNode);
-                                    }
-                                    Audio.setVolume(window.activeNode, newVol);
+                                    Audio.setVolumeAndUnmute(window.activeNode, newVol, false);
                                 }
                             }
                         }
@@ -468,8 +443,7 @@ Item {
 
                                 onMoved: (val) => {
                                     let pct = Math.max(0, Math.min(100, Math.round(val)));
-                                    if (pct > 0 && window.activeMute) Audio.toggleMute(window.activeNode);
-                                    Audio.setVolume(window.activeNode, pct);
+                                    Audio.setVolumeAndUnmute(window.activeNode, pct, false);
                                 }
                             }
 
@@ -702,8 +676,7 @@ Item {
 
                                         onMoved: (val) => {
                                             let pct = Math.max(0, Math.min(100, Math.round(val)));
-                                            if (pct > 0 && delegateRoot.nodeMute) Audio.toggleMute(delegateRoot.node);
-                                            Audio.setVolume(delegateRoot.node, pct);
+                                            Audio.setVolumeAndUnmute(delegateRoot.node, pct, false);
                                         }
                                     }
 

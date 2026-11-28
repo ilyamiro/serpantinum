@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if ! declare -f os_release_get >/dev/null; then
+    source "$(dirname "$(realpath "${BASH_SOURCE[0]}")")/os_release.sh"
+fi
+
 SUPPORTED_DISTROS=(
     "arch"
     "endeavouros"
@@ -70,12 +74,15 @@ check_supported_os() {
         exit 1
     fi
 
-    if [ -f /etc/os-release ]; then
-        local DETECTED_OS
-        DETECTED_OS=$(awk -F= '/^ID=/{gsub(/"/, "", $2); print $2}' /etc/os-release)
+    local os_release
+    os_release="$(os_release_path)"
+    if [ -f "$os_release" ]; then
+        local DETECTED_OS detected_os_lower
+        DETECTED_OS="$(os_release_get ID "$os_release")"
+        detected_os_lower="${DETECTED_OS,,}"
 
         for os in "${SUPPORTED_DISTROS[@]}"; do
-            if [ "$DETECTED_OS" = "$os" ]; then
+            if [ "$detected_os_lower" = "$os" ]; then
                 return 0
             fi
         done
@@ -195,8 +202,7 @@ sddm_packages() {
     printf '%s\n' sddm qt6-declarative qt6-svg "${PM_SDDM_EXTRA_PKGS[@]}"
     if [ "$SDDM_WAYLAND" = true ] \
         && ! find_sddm_binary kwin_wayland >/dev/null \
-        && ! find_sddm_binary weston >/dev/null \
-        && ! sddm_has_xorg; then
+        && ! find_sddm_binary weston >/dev/null; then
         echo weston
     fi
 }
