@@ -738,6 +738,10 @@
           "liquid": "Liquid glass"
         }
       },
+      "liquid_blur": {
+        "title": "Liquid glass blur",
+        "desc": "How strongly the liquid glass blurs the wallpaper behind it"
+      },
       "colors": {
         "title": "Color themes",
         "desc": "Select a predefined color palette preset or create your own custom theme.",

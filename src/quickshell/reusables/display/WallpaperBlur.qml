@@ -15,6 +15,7 @@ Item {
     property real bottomLeftRadius: radius
     property real bottomRightRadius: radius
     property real blurStrength: 1.0
+    property real liquidBlur: ThemeBackend.liquidBlurStrength
     property real tint: 0.0
     property real rim: 0.45
     property Item maskItem: null
@@ -113,6 +114,7 @@ Item {
     onLiquidChanged: refreshTexture()
     onTintChanged: refreshTexture()
     onBlurStrengthChanged: refreshTexture()
+    onLiquidBlurChanged: refreshTexture()
 
     property var geoSig: [NaN, 0, 0, 0, 0, 0, 0, 0]
 
@@ -371,7 +373,7 @@ Item {
                                 bottomRightRadius: root.bottomRightRadius
                                 tintColor: ThemeBackend.base
                                 tintAmount: Math.max(root.tint, 0.12) * (1 - 0.5 * root.nest)
-                                frost: Math.max(0.5, root.blurStrength * 2.5) * 1.08 * (1 - 0.5 * root.nest)
+                                frost: Math.max(0.5, root.blurStrength * 2.5) * root.liquidBlur * 1.08 * (1 - 0.5 * root.nest)
                                 rim: root.rim * (1 - 0.35 * root.nest)
                                 nest: root.nest
                                 bezel: root.bezelSize

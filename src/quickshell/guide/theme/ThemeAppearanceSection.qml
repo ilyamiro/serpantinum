@@ -240,4 +240,44 @@ SettingsBlob {
         }
     }
 
+
+    SettingsRow {
+        rootObj: section.tab.rootObj
+        settingId: "liquid_blur"
+        visible: section.tab.currentBlurBackground && section.tab.currentBlurStyle === "liquid"
+        icon: "󰂵"
+        title: I18n.t("guide.theme.liquid_blur.title", "Liquid glass blur")
+        description: I18n.t("guide.theme.liquid_blur.desc", "How strongly the liquid glass blurs the wallpaper behind it")
+        searchKeywords: "liquid glass blur strength frost intensity"
+
+        Draggable {
+            id: liquidBlurSlider
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.rightMargin: rootObj.s(8)
+            implicitWidth: rootObj.s(220)
+            implicitHeight: rootObj.s(18)
+            from: 1
+            to: 8
+            stepSize: 0.5
+            defaultValue: 1
+            showValueBubble: true
+            valueFormatter: function(v) { return (Math.round(v * 2) / 2).toFixed(1) + "x" }
+            value: section.tab.currentLiquidBlur
+            backgroundColor: ThemeBackend.surface0
+            accentColor: ThemeBackend.mauve
+            handleColor: ThemeBackend.text
+            handleBorderColor: ThemeBackend.mantle
+            onMoved: function(val) {
+                let snapped = Math.round(val * 2) / 2;
+                if (section.tab.currentLiquidBlur !== snapped) {
+                    ThemeBackend.liquidBlurStrength = snapped;
+                    section.tab.setLiquidBlurDebounced(snapped);
+                }
+            }
+            onDragFinished: {
+                section.tab.flushThemeSettings();
+            }
+        }
+    }
+
 }
