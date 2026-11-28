@@ -77,13 +77,17 @@ if [[ "$ACTION" =~ ^[0-9]+$ ]]; then
     DE="${DE,,}"
 
     if [[ "$DE" == *"niri"* ]] || [[ -n "${NIRI_SOCKET:-}" ]]; then
-        if [[ "$TARGET" == "move" ]]; then
+        if [[ "$TARGET" == "silent" ]]; then
+            niri msg action move-window-to-workspace --focus false "$ACTION" >/dev/null 2>&1 &
+        elif [[ "$TARGET" == "move" ]]; then
             niri msg action move-window-to-workspace "$ACTION" >/dev/null 2>&1 &
         else
             niri msg action focus-workspace "$ACTION" >/dev/null 2>&1 &
         fi
     elif [[ "$DE" == *"mango"* ]] || [[ -n "${MANGO_INSTANCE_SIGNATURE:-}" ]]; then
-        if [[ "$TARGET" == "move" ]]; then
+        if [[ "$TARGET" == "silent" ]]; then
+            mmsg dispatch "tag,$ACTION" >/dev/null 2>&1 &
+        elif [[ "$TARGET" == "move" ]]; then
             { mmsg dispatch "tag,$ACTION" && mmsg dispatch "view,$ACTION"; } >/dev/null 2>&1 &
         else
             mmsg dispatch "view,$ACTION" >/dev/null 2>&1 &
@@ -95,13 +99,15 @@ if [[ "$ACTION" =~ ^[0-9]+$ ]]; then
             { umbriel msg workspace-switch "$ACTION" 2>/dev/null || umbriel msg "workspace-switch:$ACTION"; } >/dev/null 2>&1 &
         fi
     elif [[ "$DE" == *"sway"* ]] || [[ -n "${SWAYSOCK:-}" ]]; then
-        if [[ "$TARGET" == "move" ]]; then
+        if [[ "$TARGET" == "move" || "$TARGET" == "silent" ]]; then
             swaymsg move container to workspace number "$ACTION" >/dev/null 2>&1 &
         else
             swaymsg workspace number "$ACTION" >/dev/null 2>&1 &
         fi
     else
-        if [[ "$TARGET" == "move" ]]; then
+        if [[ "$TARGET" == "silent" ]]; then
+            hyprctl dispatch movetoworkspacesilent "$ACTION" >/dev/null 2>&1 || hyprctl dispatch 'hl.dsp.window.move({ workspace = "'"$ACTION"'", follow = false })' >/dev/null 2>&1 &
+        elif [[ "$TARGET" == "move" ]]; then
             hyprctl dispatch movetoworkspace "$ACTION" >/dev/null 2>&1 || hyprctl dispatch 'hl.dsp.window.move({ workspace = "'"$ACTION"'" })' >/dev/null 2>&1 &
         else
             hyprctl dispatch workspace "$ACTION" >/dev/null 2>&1 || hyprctl dispatch 'hl.dsp.focus({ workspace = "'"$ACTION"'" })' >/dev/null 2>&1 &

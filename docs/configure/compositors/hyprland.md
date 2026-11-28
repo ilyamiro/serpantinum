@@ -50,6 +50,7 @@ Workspace switching is routed through the shell to update bar indicators:
 for i = 1, 10 do
   hl.bind("SUPER + " .. (i % 10), hl.dsp.exec_cmd("serpantinum msg workspace " .. i))
   hl.bind("SUPER + SHIFT + " .. (i % 10), hl.dsp.exec_cmd("serpantinum msg workspace " .. i .. " move"))
+  hl.bind("SUPER + CTRL + SHIFT + " .. (i % 10), hl.dsp.exec_cmd("serpantinum msg workspace " .. i .. " silent"))
 end
 ```
 

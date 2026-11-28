@@ -1999,7 +1999,7 @@
       "usage": "Verwendung: serpantinum msg <befehl|arbeitsfläche> [argumente...]",
       "description": "Layout-, Arbeitsflächen- und Fenstermanagement-Nachrichten direkt senden.",
       "available_commands": "Verfügbare Befehle:",
-      "cmd_workspace": "Zu Arbeitsfläche <num> wechseln ('move' anhängen, um aktives Fenster zu verschieben)",
+      "cmd_workspace": "Zu Arbeitsfläche <num> wechseln ('move' anhängen, um aktives Fenster zu verschieben, 'silent', um es ohne Wechsel zu verschieben)",
       "cmd_open": "Verwaltetes UI-Panel öffnen (network, guide, wallpaper, applauncher)",
       "cmd_toggle": "Verwaltetes UI-Panel umschalten",
       "cmd_close": "Aktives Shell-Overlay schließen"
