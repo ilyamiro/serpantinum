@@ -423,6 +423,8 @@ Item {
                 idleRoot.runCmd(actionObj.command);
             },
             resume: function(actionObj) {
+                dpmsWakeRetryTimer.stop();
+                if (!idleRoot.dpmsOffAction) return;
                 idleRoot.dpmsOffAction = null;
                 idleRoot.restoreDpms(actionObj);
             }
