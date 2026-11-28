@@ -201,6 +201,7 @@ Item {
     property bool lockOnSleep: idleSettings && idleSettings.lockOnSleep !== undefined ? idleSettings.lockOnSleep : true
     property bool isDimmed: false
     property bool isLocked: false
+    property var dpmsOffAction: null
 
     property bool isMediaPlaying: {
         try {
@@ -223,7 +224,10 @@ Item {
                 if (line === "inhibit 1") idleRoot.isAppInhibited = true;
                 else if (line === "inhibit 0") idleRoot.isAppInhibited = false;
                 else if (line === "sleep" && idleRoot.lockOnSleep) idleRoot.lockSession(true);
-                else if (line === "wake") idleRoot.reauthLockSession();
+                else if (line === "wake") {
+                    idleRoot.reauthLockSession();
+                    idleRoot.restoreDpmsAfterWake();
+                }
             }
         }
         onStarted: idleRoot.syncSleepLock()
@@ -347,6 +351,34 @@ Item {
         Compositor.setDpms(true);
     }
 
+    function restoreDpms(actionObj) {
+        if (actionObj.resumeCommand && actionObj.resumeCommand.trim().length > 0) {
+            idleRoot.runCmd(actionObj.resumeCommand);
+        } else {
+            idleRoot.dpmsOn();
+        }
+    }
+
+    function restoreDpmsAfterWake() {
+        let actionObj = idleRoot.dpmsOffAction;
+        if (!actionObj) return;
+        idleRoot.dpmsOffAction = null;
+        idleRoot.restoreDpms(actionObj);
+        dpmsWakeRetryTimer.actionObj = actionObj;
+        dpmsWakeRetryTimer.restart();
+    }
+
+    Timer {
+        id: dpmsWakeRetryTimer
+        interval: 2000
+        repeat: false
+        property var actionObj: null
+        onTriggered: {
+            if (actionObj) idleRoot.restoreDpms(actionObj);
+            actionObj = null;
+        }
+    }
+
     function teardownVisualStates() {
         if (idleRoot.isDimmed) {
             idleRoot.isDimmed = false;
@@ -386,15 +418,13 @@ Item {
             trigger: function(actionObj) {
                 idleRoot.teardownVisualStates();
                 idleRoot.runCmd(actionObj.beforeCommand);
+                idleRoot.dpmsOffAction = actionObj;
                 idleRoot.dpmsOff();
                 idleRoot.runCmd(actionObj.command);
             },
             resume: function(actionObj) {
-                if (actionObj.resumeCommand && actionObj.resumeCommand.trim().length > 0) {
-                    idleRoot.runCmd(actionObj.resumeCommand);
-                } else {
-                    idleRoot.dpmsOn();
-                }
+                idleRoot.dpmsOffAction = null;
+                idleRoot.restoreDpms(actionObj);
             }
         },
         "suspend": {
